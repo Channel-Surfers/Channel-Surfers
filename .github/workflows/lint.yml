@@ -29,4 +29,4 @@ jobs:
           submodules: true
       - run: npm ci
       - run: |
-          npx prettier -l . 2>&1 >/dev/null | awk '{ print "::error file=" $0 "::Prettier error"}'
+          npx prettier -l . 2>&1 | awk '{ print "::error file=" $0 "::Prettier error"}'
