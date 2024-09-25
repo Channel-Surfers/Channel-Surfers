@@ -1,22 +1,18 @@
-# Developing
+# Channel Surfers
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Developing
 
-```bash
-npm run dev
+To develop this application, you must have [NodeJS](https://nodejs.org) (20 or higher) and [npm](https://www.npmjs.com/) installed.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```sh
+npm install -D # Install Dependencies
+npm run dev    # Start Dev Server
 ```
 
-# Building
+## Building
 
-To create a production version of your app:
+To create a production version of the app:
 
 ```bash
 npm run build
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
