@@ -1,2 +1,7 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<svelte:head>
+    <title>Channel Surfers</title>
+</svelte:head>
+<h1>Welcome to Channel Surfers</h1>
+<p>
+    Visit <a href="https://github.com/Channel-Surfers/Channel-Surfers">the Wiki</a> to read the documentation
+</p>
