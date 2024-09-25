@@ -29,6 +29,9 @@ jobs:
           submodules: true
       - run: npm ci
       - run: |
+          echo "::error::error test"
+          echo "::debug::error test"
+          echo "::notice::error test"
           out=$(npx prettier -l . 2>&1)
           st=$?
           for f in $out; do
