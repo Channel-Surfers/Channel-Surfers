@@ -34,6 +34,6 @@ jobs:
           out=$(npx prettier -l . 2>&1)
           st=$?
           for f in $out; do
-            echo "::error::Prettier error in $f"
+            echo "::error file=$f::Prettier error in $f"
           done
           exit $st
