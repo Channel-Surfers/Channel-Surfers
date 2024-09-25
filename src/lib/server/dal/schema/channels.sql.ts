@@ -11,3 +11,6 @@ export const channel = pgTable('channel', {
     createdOn: timestamp('created_on').notNull().defaultNow(),
     updatedOn: timestamp('updated_on').notNull().defaultNow(),
 });
+
+export type Channel = typeof channel.$inferSelect;
+export type NewChannel = typeof channel.$inferInsert;

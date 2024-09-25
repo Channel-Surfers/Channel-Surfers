@@ -49,6 +49,7 @@
         "postgres": "^3.4.4",
         "tailwind-merge": "^2.5.2",
         "tailwind-variants": "^0.2.1",
+        "ts-results": "^3.3.0",
         "uuidv7": "^1.0.2"
     }
 }
