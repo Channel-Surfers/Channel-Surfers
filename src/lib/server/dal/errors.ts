@@ -1,5 +1,5 @@
 export const dbError = (message: string) => ({ type: 'DB_ERROR', message }) as const;
-export type DbError = typeof dbError;
+export type DbError = ReturnType<typeof dbError>;
 
 export const resourceNotFound = (resource: string, message: string) =>
     ({
@@ -7,4 +7,4 @@ export const resourceNotFound = (resource: string, message: string) =>
         resource,
         message,
     }) as const;
-export type ResourceNotFoundError = typeof resourceNotFound;
+export type ResourceNotFoundError = ReturnType<typeof resourceNotFound>;
