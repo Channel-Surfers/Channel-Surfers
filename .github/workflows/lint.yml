@@ -31,7 +31,8 @@ jobs:
       - name: prettier
         run: |
           out=$(npx prettier -l . 2>&1)
-          echo "$out"
+          echo "::notice::$(ls)"
+          echo "::notice::$(pwd)"
           st=$?
           for f in $out; do
             echo "::error::Prettier error in $f"
