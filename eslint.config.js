@@ -28,6 +28,6 @@ export default [
         }
     },
     {
-        ignores: ['build/', '.svelte-kit/', 'dist/', 'tailwind.config.ts', 'src/lib/components/ui/']
+        ignores: ['build/', '.svelte-kit/', 'dist/', 'tailwind.config.ts', 'src/lib/shadcn/']
     }
 ];
