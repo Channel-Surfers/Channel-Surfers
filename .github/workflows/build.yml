@@ -11,9 +11,9 @@ concurrency:
     cancel-in-progress: true
 name: build
 jobs:
-    fmt:
+    build:
         runs-on: ubuntu-latest
-        name: fmt
+        name: build
         strategy:
             matrix:
                 node-version: [20.x]
