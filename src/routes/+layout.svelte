@@ -1,5 +1,5 @@
 <script>
-    import DisplayMode from '$lib/components/utils/DisplayMode.svelte';
+    import DisplayMode from '$lib/shadcn/components/utils/DisplayMode.svelte';
     import '../app.css';
     import { ModeWatcher } from 'mode-watcher';
 </script>
