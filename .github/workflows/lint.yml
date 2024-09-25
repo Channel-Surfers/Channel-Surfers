@@ -29,4 +29,9 @@ jobs:
           submodules: true
       - run: npm ci
       - run: |
-          npx prettier -l . 2>&1 | awk '{ print "::error file=" $0 "::Prettier error"}'
+          out=$(npx prettier -l . 2>&1)
+          st=$?
+          for f in $out; do
+            echo "::error file=$f::Prettier error in $f"
+          done
+          exit $st
