@@ -28,11 +28,10 @@ jobs:
         with:
           submodules: true
       - run: npm ci
-      - run: |
-          echo "::error::error test"
-          echo "::debug::error test"
-          echo "::notice::error test"
+      - name: prettier
+        run: |
           out=$(npx prettier -l . 2>&1)
+          echo "$out"
           st=$?
           for f in $out; do
             echo "::error::Prettier error in $f"
