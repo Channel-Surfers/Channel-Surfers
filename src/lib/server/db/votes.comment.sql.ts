@@ -1,19 +1,19 @@
-import { pgTable, uuid, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, timestamp, primaryKey } from 'drizzle-orm/pg-core';
 import { user } from './users.sql';
 import { comment } from './comments.sql';
 import { voteEnum } from './types.sql';
 
-export const commentVote = pgTable('comment_vote', {
-    commentId: uuid('comment_id')
-        .primaryKey()
-        .references(() => comment.id),
-    userId: uuid('user_id')
-        .primaryKey()
-        .references(() => user.id),
-    vote: voteEnum('vote'),
-    createdOn: timestamp('created_on').notNull().defaultNow(),
-    updatedOn: timestamp('updated_on').notNull().defaultNow(),
-});
+export const commentVote = pgTable(
+    'comment_vote',
+    {
+        commentId: uuid('comment_id').references(() => comment.id),
+        userId: uuid('user_id').references(() => user.id),
+        vote: voteEnum('vote'),
+        createdOn: timestamp('created_on').notNull().defaultNow(),
+        updatedOn: timestamp('updated_on').notNull().defaultNow(),
+    },
+    (table) => ({ pk: primaryKey({ columns: [table.commentId, table.userId] }) })
+);
 
 /**
  * Represents a user's feelings toward a comment

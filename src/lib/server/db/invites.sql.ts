@@ -14,6 +14,7 @@ export const invite = pgTable(
             .references(() => user.id),
         // TODO: When building migration, ensure these expire when the invite table is updated (trigger)
         createdOn: timestamp('created_on').notNull().defaultNow(),
+        // TODO: If the corresponding role is deleted, what happens?
         roleId: uuid('role_id')
             .notNull()
             .references(() => role.id),
