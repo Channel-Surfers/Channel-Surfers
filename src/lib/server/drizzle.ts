@@ -4,3 +4,4 @@ import postgres from 'postgres';
 
 const queryClient = postgres(POSTGRES_CONNECTION_STRING);
 export const db = drizzle(queryClient);
+export type DB = typeof db;

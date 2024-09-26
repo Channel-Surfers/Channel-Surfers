@@ -30,4 +30,20 @@ export default [
     {
         ignores: ['build/', '.svelte-kit/', 'dist/', 'tailwind.config.ts', 'src/lib/shadcn/'],
     },
+    {
+        rules: {
+            '@typescript-eslint/no-unused-vars': [
+                'error', // Change to 'error' if you want it to be an error
+                {
+                    args: 'all',
+                    argsIgnorePattern: '^_',
+                    caughtErrors: 'all',
+                    caughtErrorsIgnorePattern: '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    ignoreRestSiblings: true,
+                },
+            ],
+        },
+    },
 ];
