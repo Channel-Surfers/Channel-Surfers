@@ -1,4 +1,4 @@
-import { boolean, pgTable, uuid, varchar } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, smallint, uuid, varchar } from 'drizzle-orm/pg-core';
 import { channel } from './channels.sql';
 
 export const role = pgTable('role', {
@@ -8,6 +8,8 @@ export const role = pgTable('role', {
         .references(() => channel.id),
     title: varchar('title', { length: 20 }).notNull(),
     isOwner: boolean('isOwner').notNull().default(false),
+    // Q: Is this the best way to implement ranking?
+    ranking: smallint('ranking').notNull(),
     // permissions pertaining to role management
     canCreateRoles: boolean('can_edit_roles').notNull().default(false),
     canViewRoles: boolean('can_edit_roles').notNull().default(false),
@@ -24,6 +26,8 @@ export const role = pgTable('role', {
     canBanUsers: boolean('can_ban_users').notNull().default(false),
     canViewBannedUsers: boolean('can_view_banned_users').notNull().default(false),
     canUnbanUsers: boolean('can_unban_users').notNull().default(false),
+    canDeletePosts: boolean('can_delete_posts').notNull().default(false),
+    canDeleteComments: boolean('can_delete_comments').notNull().default(false),
     // permissions to do with events
     canRegisterEvents: boolean('can_register_events').notNull().default(false),
     canViewEvents: boolean('can_view_events').notNull().default(false),
@@ -32,5 +36,9 @@ export const role = pgTable('role', {
     // TODO: permissions to manage monetization settings (crowdfunding, billing)
 });
 
+/**
+ * Represents a set of permissions a user can have within a channel
+ * The owner role (`isOwner`) has all permissions, and all channels have at least one owner.
+ */
 export type Role = typeof role.$inferSelect;
 export type NewRole = typeof role.$inferInsert;
