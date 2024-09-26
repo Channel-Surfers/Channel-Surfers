@@ -1,4 +1,4 @@
-import { pgTable, uuid, timestamp, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, primaryKey } from 'drizzle-orm/pg-core';
 import { user } from './users.sql';
 import { voteEnum } from './types.sql';
 import { post } from './posts.sql';
@@ -13,8 +13,6 @@ export const postVote = pgTable(
             .notNull()
             .references(() => user.id),
         vote: voteEnum('vote').notNull(),
-        createdOn: timestamp('created_on').notNull().defaultNow(),
-        updatedOn: timestamp('updated_on').notNull().defaultNow(),
     },
     (table) => ({
         pk: primaryKey({ columns: [table.postId, table.userId] }),
