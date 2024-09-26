@@ -7,7 +7,6 @@ export const comment = pgTable('comment', {
     // Be on lookout for ways of using uuidv7, ulid, or cuid2 instead of uuid
     id: uuid('id').primaryKey().defaultRandom(),
     content: text('content').notNull(),
-    description: text('description'),
     creatorId: uuid('creator_id')
         .notNull()
         .references(() => user.id),
@@ -26,5 +25,11 @@ export const comment = pgTable('comment', {
 //    }),
 //}));
 
+/**
+ * Represents a comment in reply to a post or in reply to another comment
+ */
 export type Comment = typeof comment.$inferSelect;
+/**
+ * Represents a comment which has yet to be persisted in the database
+ */
 export type NewComment = typeof comment.$inferInsert;
