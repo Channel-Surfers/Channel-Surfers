@@ -1,4 +1,11 @@
 import { pgEnum } from 'drizzle-orm/pg-core';
 
+/**
+ * The type of vote
+ */
 export const voteEnum = pgEnum('vote', ['UP', 'DOWN']);
-export const siteRoleEnum = pgEnum('site_role', ['USER', '', 'ADMIN']);
+
+/**
+ * User's role in the site
+ */
+export const siteRoleEnum = pgEnum('site_role', ['USER', 'MODERATOR', 'ADMIN', 'SUPER']);
