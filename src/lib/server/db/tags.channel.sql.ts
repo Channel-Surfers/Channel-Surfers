@@ -1,11 +1,11 @@
-import { pgTable, smallint, unique, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTable, unique, uuid, varchar } from "drizzle-orm/pg-core";
 import { channel } from './channels.sql';
 
 export const channelTags = pgTable("channel_tags", {
     id: uuid('id').primaryKey().defaultRandom(),
     channelId: uuid('channel_id').notNull().references(() => channel.id),
     name: varchar('name', { length: 16 }).notNull(),
-    color: smallint("color").array(4).notNull(),
+    color: varchar('color', { length: 16 }).notNull(),
 }, (table) => ({ unq: unique().on(table.name, table.channelId) }));
 
 /**
