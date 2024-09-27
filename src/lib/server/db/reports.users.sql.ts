@@ -1,9 +1,11 @@
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
-import { user } from "./users.sql";
+import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { user } from './users.sql';
 
 export const userReport = pgTable('user_report', {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').notNull().references(() => user.id),
+    userId: uuid('user_id')
+        .notNull()
+        .references(() => user.id),
     description: text('description').notNull(),
 });
 

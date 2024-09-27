@@ -1,9 +1,11 @@
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
-import { channel } from "./channels.sql";
+import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { channel } from './channels.sql';
 
 export const channelReport = pgTable('channel_report', {
     id: uuid('id').primaryKey().defaultRandom(),
-    channelId: uuid('channel_id').notNull().references(() => channel.id),
+    channelId: uuid('channel_id')
+        .notNull()
+        .references(() => channel.id),
     description: text('description').notNull(),
 });
 

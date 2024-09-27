@@ -1,9 +1,11 @@
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { post } from './posts.sql';
 
 export const postReport = pgTable('post_report', {
     id: uuid('id').primaryKey().defaultRandom(),
-    postId: uuid('post_id').notNull().references(() => post.id),
+    postId: uuid('post_id')
+        .notNull()
+        .references(() => post.id),
     description: text('description').notNull(),
 });
 
