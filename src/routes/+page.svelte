@@ -1,3 +1,8 @@
+<script lang="ts">
+    import Post from '$lib/components/Post.svelte';
+
+</script>
+
 <svelte:head>
     <title>Channel Surfers</title>
 </svelte:head>
@@ -6,3 +11,5 @@
     Visit <a href="https://github.com/Channel-Surfers/Channel-Surfers/wiki">the Wiki</a> to read the
     documentation
 </p>
+
+<Post />
