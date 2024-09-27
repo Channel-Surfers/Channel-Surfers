@@ -9,3 +9,13 @@ export const user = pgTable('user', {
     createdOn: timestamp('created_on').notNull().defaultNow(),
     updatedOn: timestamp('updated_on').notNull().defaultNow(),
 });
+
+/**
+ * Represents a user
+ * @property username Username valid chars are of regex: [a-zA-Z\-\_]{1, 25}
+ */
+export type User = typeof user.$inferSelect;
+/**
+ * Represents a new user yet to be persisted
+ */
+export type NewUser = typeof user.$inferInsert;
