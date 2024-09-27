@@ -12,8 +12,8 @@ concurrency:
 name: build
 jobs:
     build:
-      env:
-        PUBLIC_PREVIEW_HOST: ${{ env.PUBLIC_PREVIEW_HOST }}
+        env:
+            PUBLIC_PREVIEW_HOST: ${{ env.PUBLIC_PREVIEW_HOST }}
         runs-on: ubuntu-latest
         name: build
         strategy:
