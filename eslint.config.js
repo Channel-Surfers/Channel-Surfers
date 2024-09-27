@@ -28,7 +28,14 @@ export default [
         },
     },
     {
-        ignores: ['build/', '.svelte-kit/', 'dist/', 'tailwind.config.ts', 'src/lib/shadcn/'],
+        ignores: [
+            'build/',
+            '.svelte-kit/',
+            'dist/',
+            'tailwind.config.ts',
+            'src/lib/shadcn/',
+            'docs/',
+        ],
     },
     {
         rules: {
