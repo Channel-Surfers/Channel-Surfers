@@ -28,13 +28,6 @@ export const comment = pgTable(
     })
 );
 
-//export const commentRelations = relations(comment, ({ one }) => ({
-//    parent: one(comment, {
-//        fields: [comment.replyTo],
-//        references: [comment.id],
-//    }),
-//}));
-
 /**
  * Represents a comment in reply to a post or in reply to another comment
  */
