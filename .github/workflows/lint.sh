@@ -28,7 +28,7 @@ for file in $(npx prettier -l .); do
             else
                 message="Error from line $min to line $max"
             fi
-            printf $'::error file=%s,line=%s,endLine=%s,title=PRETTIER-ERROR::%s\n' "$file" "$min" "$max" "$message"
+            printf $'::error file=%s,line=%s,endLine=%s,title=prettier::%s\n' "$file" "$min" "$max" "$message"
         fi
     done
 done
