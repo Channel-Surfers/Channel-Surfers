@@ -17,7 +17,7 @@
         }
     };
 
-    $: clazz = upvotes > downvotes ? 'text-orange-600' : upvotes < downvotes ? 'text-cyan-600' : '';
+    $: clazz = upvotes > downvotes ? 'text-upvote' : upvotes < downvotes ? 'text-downvote' : '';
 </script>
 
 <Tooltip.Root>
@@ -25,11 +25,11 @@
         <span class="small-caps">{humanise(Math.abs(upvotes - downvotes))}</span>
     </Tooltip.Trigger>
     <Tooltip.Content>
-        <p class="small-caps flex flex-row items-center text-orange-600">
+        <p class="small-caps flex flex-row items-center text-upvote">
             <ArrowUp />
             {humanise(upvotes)}
         </p>
-        <p class="small-caps flex flex-row items-center text-cyan-600">
+        <p class="small-caps flex flex-row items-center text-downvote">
             <ArrowDown />
             {humanise(downvotes)}
         </p>

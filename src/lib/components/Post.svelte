@@ -1,16 +1,20 @@
 <script lang="ts">
     import { PUBLIC_PREVIEW_HOST } from '$env/static/public';
 
-    import * as Card from '$lib/shadcn/components/ui/card/index';
-    import { Badge } from '$lib/shadcn/components/ui/badge/index';
-    import { Toggle } from '$lib/shadcn/components/ui/toggle/index';
-    import { Skeleton } from '$lib/shadcn/components/ui/skeleton/index';
+    import * as Card from '$lib/shadcn/components/ui/card';
+    import * as Drawer from '$lib/shadcn/components/ui/drawer';
+    import { Badge } from '$lib/shadcn/components/ui/badge';
+    import { Button } from '$lib/shadcn/components/ui/button';
+    import { Skeleton } from '$lib/shadcn/components/ui/skeleton';
+    import { Toggle } from '$lib/shadcn/components/ui/toggle';
 
-    import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
+    import ArrowUp from 'lucide-svelte/icons/arrow-up';
+    import Share2 from 'lucide-svelte/icons/share-2';
 
-    import UserChannel from './UserChannel.svelte';
     import Score from './Score.svelte';
+    import ShareSheet from './ShareSheet.svelte';
+    import UserChannel from './UserChannel.svelte';
 
     const videoId = 'e0245338-7c04-4a6c-b44f-0e279a849cf5';
 
@@ -68,15 +72,27 @@
             {/if}
         </Card.Footer>
     </div>
-    <div class="flex flex-col justify-end justify-self-end">
+    <div class="flex flex-col items-center justify-between justify-self-end">
+        <Drawer.Root>
+            <Drawer.Trigger asChild let:builder>
+                <Button builders={[builder]} variant="ghost" size="icon" disabled={loading}>
+                    <div class:animate-pulse={loading}>
+                        <Share2 class="h-5 w-5" />
+                    </div>
+                </Button>
+            </Drawer.Trigger>
+            <Drawer.Content>
+                <ShareSheet title="Share Post" url={location.href}/>
+            </Drawer.Content>
+        </Drawer.Root>
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
                 disabled={loading}
-                class="hover:text-orange-600 data-[state=on]:text-orange-600"
+                class="hover:text-upvote data-[state=on]:text-upvote"
                 bind:pressed={upvote_pressed}
                 on:click={() => vote('up')}
-            >
+                >
                 <div class:animate-pulse={loading}>
                     <ArrowUp />
                 </div>
@@ -89,10 +105,10 @@
             <Toggle
                 size="sm"
                 disabled={loading}
-                class="hover:text-cyan-600 data-[state=on]:text-cyan-600"
+                class="hover:text-downvote data-[state=on]:text-downvote"
                 bind:pressed={downvote_pressed}
                 on:click={() => vote('down')}
-            >
+                >
                 <div class:animate-pulse={loading}>
                     <ArrowDown />
                 </div>
