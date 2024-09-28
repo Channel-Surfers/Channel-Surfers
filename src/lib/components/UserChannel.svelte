@@ -8,11 +8,11 @@
 <div class="flex items-center space-x-4">
     {#if user}
         <Avatar.Root class="h-12 w-12">
-            <Avatar.Image src={user.avatar || ''} />
-            <Avatar.Fallback>{user.username}</Avatar.Fallback>
+            <Avatar.Image src={user.avatar || ''} alt={user.username} />
+            <Avatar.Fallback>{user.username[0]?.toUpperCase() || '?'}</Avatar.Fallback>
         </Avatar.Root>
     {:else}
-        <Skeleton class="h-12 w-12 rounded-full" />
+        <Skeleton class="h-12 w-16 rounded-full" />
     {/if}
     <div class="w-full space-y-2">
         {#if user}
@@ -33,8 +33,8 @@
                 </a>
             </p>
         {:else}
-            <Skeleton class="h-4 w-full" />
-            <Skeleton class="h-4 w-4/5" />
+            <Skeleton class="h-4 w-2/3" />
+            <Skeleton class="h-4 w-1/3" />
         {/if}
     </div>
 </div>
