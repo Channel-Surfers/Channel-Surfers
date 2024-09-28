@@ -8,7 +8,7 @@ for file in $(npx prettier -l .); do
         code=1
         echo "$line"
         if [[ "$line" =~ ^[0-9] ]]; then
-            lines=$(echo $line | cut -dc -f1 | tr ',' $'\n')
+            lines=$(echo $line | tr 'da' 'cc' | cut -dc -f1 | tr ',' $'\n')
             idx=0;
             min=""
             max=""
