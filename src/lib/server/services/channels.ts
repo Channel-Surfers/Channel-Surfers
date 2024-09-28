@@ -1,6 +1,7 @@
-import { channel, type Channel } from '../db/channels.sql';
+import { channel } from '../db/channels.sql';
+import { Effect } from 'effect';
 import type { DB } from '..';
-import { asc, eq } from 'drizzle-orm';
+import { asc } from 'drizzle-orm';
 
 /**
  * Fine-tune what channel data we want to focus on
@@ -9,20 +10,21 @@ import { asc, eq } from 'drizzle-orm';
  */
 export type GetChannelsOptions = { pageSize: number; page: number };
 //export type GetChannelsError = DbError;
-export async function getChannels(db: DB, opts?: GetChannelsOptions): Promise<Channel[]> {
-    let result;
-    if (opts) {
-        result = await db
-            .select()
-            .from(channel)
-            .orderBy(asc(channel.createdOn))
-            .limit(opts.pageSize)
-            .offset(opts.pageSize * (opts.page - 1));
-    } else {
-        result = await db.select().from(channel);
-    }
-    return result;
-}
+export const getChannels = (db: DB, opts?: GetChannelsOptions) =>
+    Effect.tryPromise({
+        try: () => {
+            if (opts) {
+                return db
+                    .select()
+                    .from(channel)
+                    .limit(opts.pageSize)
+                    .offset(opts.pageSize * (opts.page - 1));
+            } else {
+                return db.select().from(channel);
+            }
+        },
+        catch: (err: unknown) => new Error(`Something went wrong: ${err}`),
+    });
 
 //export type GetChannelError = DbError | ResourceNotFoundError;
 /**
@@ -30,6 +32,13 @@ export async function getChannels(db: DB, opts?: GetChannelsOptions): Promise<Ch
  * @param _db PostgreSQL DB
  * @param _id Id of channel
  */
-export async function getChannelById(db: DB, id: string): Promise<Channel> {
-    return (await db.select().from(channel).where(eq(channel.id, id)))[0];
-}
+export const getChannelById = (db: DB, id: string) =>
+    Effect.tryPromise({
+        try: () =>
+            db.query.channel.findFirst({
+                with: {
+                    id,
+                },
+            }),
+        catch: (err: unknown) => new Error(`Something went wrong: ${err}`),
+    });

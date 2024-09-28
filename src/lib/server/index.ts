@@ -4,6 +4,8 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
 
+import * as schema from './db/schema';
+
 // automatically run migrations if changes are made
 const migrationClient = postgres(POSTGRES_CONNECTION_STRING);
 const migrationConfig: MigrationConfig = {
@@ -12,5 +14,5 @@ const migrationConfig: MigrationConfig = {
 migrate(drizzle(migrationClient), migrationConfig);
 
 const queryClient = postgres(POSTGRES_CONNECTION_STRING);
-export const db = drizzle(queryClient);
+export const db = drizzle(queryClient, { schema });
 export type DB = typeof db;
