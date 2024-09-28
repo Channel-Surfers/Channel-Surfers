@@ -11,17 +11,13 @@
         if (n < 1000) {
             return `${n}`;
         } else if (n < 1_000_000) {
-            return `${(n / 1000).toFixed(1)}k`
+            return `${(n / 1000).toFixed(1)}k`;
         } else {
-            return `${(n / 1_000_000).toFixed(1)}m`
+            return `${(n / 1_000_000).toFixed(1)}m`;
         }
     };
 
-    $: clazz = upvotes > downvotes
-        ? 'text-orange-600'
-        : upvotes < downvotes
-            ?'text-cyan-600'
-            : '';
+    $: clazz = upvotes > downvotes ? 'text-orange-600' : upvotes < downvotes ? 'text-cyan-600' : '';
 </script>
 
 <Tooltip.Root>
@@ -29,13 +25,19 @@
         <span class="small-caps">{humanise(Math.abs(upvotes - downvotes))}</span>
     </Tooltip.Trigger>
     <Tooltip.Content>
-        <p class="flex flex-row text-orange-600 items-center small-caps"><ArrowUp /> {humanise(upvotes)}</p>
-        <p class="flex flex-row text-cyan-600 items-center small-caps"><ArrowDown /> {humanise(downvotes)}</p>
+        <p class="small-caps flex flex-row items-center text-orange-600">
+            <ArrowUp />
+            {humanise(upvotes)}
+        </p>
+        <p class="small-caps flex flex-row items-center text-cyan-600">
+            <ArrowDown />
+            {humanise(downvotes)}
+        </p>
     </Tooltip.Content>
 </Tooltip.Root>
 
 <style>
     .small-caps {
-        font-variant: small-caps
+        font-variant: small-caps;
     }
 </style>

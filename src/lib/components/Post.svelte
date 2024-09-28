@@ -15,7 +15,7 @@
     const videoId = 'e0245338-7c04-4a6c-b44f-0e279a849cf5';
 
     let loading = true;
-    setTimeout(() => loading = false, 1000);
+    setTimeout(() => (loading = false), 1000);
 
     let upvote_pressed = false;
     let downvote_pressed = false;
@@ -33,28 +33,32 @@
     };
 
     let hovering = false;
-    $: src = `${PUBLIC_PREVIEW_HOST}/${videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`
+    $: src = `${PUBLIC_PREVIEW_HOST}/${videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`;
 </script>
 
-<Card.Root class="flex flex-row h-48 w-2/3 p-2 m-auto my-4">
-    <img src="{src}" alt="" class="rounded-lg cursor-pointer" on:mouseenter={() => hovering = true} on:mouseleave={() => hovering = false}>
-    <div class="flex flex-col grow justify-between h-full img">
+<Card.Root class="m-auto my-4 flex h-48 w-2/3 flex-row p-2">
+    <img
+        {src}
+        alt=""
+        class="cursor-pointer rounded-lg"
+        on:mouseenter={() => (hovering = true)}
+        on:mouseleave={() => (hovering = false)}
+    />
+    <div class="img flex h-full grow flex-col justify-between">
         <Card.Header class="p-2 px-6">
             <Card.Title class="space-y-1">
                 <div class="mb-4">
                     <UserChannel user={loading ? undefined : { username: 'foo', channel: 'bar' }} />
                 </div>
                 {#if loading}
-                    <Skeleton class="h-5 mt-3 w-full" />
+                    <Skeleton class="mt-3 h-5 w-full" />
                     <Skeleton class="h-5 w-2/3" />
                 {:else}
-                    <h1 class="mt-3 w-full text-ellipse text-pretty">
-                        Lorem ipsum dolor sit amet
-                    </h1>
+                    <h1 class="text-ellipse mt-3 w-full text-pretty">Lorem ipsum dolor sit amet</h1>
                 {/if}
             </Card.Title>
         </Card.Header>
-        <Card.Footer class="flex gap-1.5 p-2 px-6 mt-2">
+        <Card.Footer class="mt-2 flex gap-1.5 p-2 px-6">
             {#if loading}
                 <Skeleton class="h-6 w-[50px] rounded-full" />
                 <Skeleton class="h-6 w-[50px] rounded-full" />
@@ -64,9 +68,15 @@
             {/if}
         </Card.Footer>
     </div>
-    <div class="justify-self-end flex flex-col justify-end">
+    <div class="flex flex-col justify-end justify-self-end">
         <div class="flex flex-col items-center">
-            <Toggle size="sm" disabled={loading} class="hover:text-orange-600 data-[state=on]:text-orange-600" bind:pressed={upvote_pressed} on:click={() => vote('up')}>
+            <Toggle
+                size="sm"
+                disabled={loading}
+                class="hover:text-orange-600 data-[state=on]:text-orange-600"
+                bind:pressed={upvote_pressed}
+                on:click={() => vote('up')}
+            >
                 <div class:animate-pulse={loading}>
                     <ArrowUp />
                 </div>
@@ -76,7 +86,13 @@
             {:else}
                 <Score upvotes={3000} downvotes={4000} />
             {/if}
-            <Toggle size="sm" disabled={loading} class="hover:text-cyan-600 data-[state=on]:text-cyan-600" bind:pressed={downvote_pressed} on:click={() => vote('down')}>
+            <Toggle
+                size="sm"
+                disabled={loading}
+                class="hover:text-cyan-600 data-[state=on]:text-cyan-600"
+                bind:pressed={downvote_pressed}
+                on:click={() => vote('down')}
+            >
                 <div class:animate-pulse={loading}>
                     <ArrowDown />
                 </div>
@@ -84,4 +100,3 @@
         </div>
     </div>
 </Card.Root>
-
