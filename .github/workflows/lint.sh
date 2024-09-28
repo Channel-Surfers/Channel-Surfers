@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 code=0;
 for file in $(npx prettier -l .); do
