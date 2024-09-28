@@ -1,9 +1,10 @@
 import { exec } from 'child_process';
+import { exit } from 'process';
 
 exec('npx eslint -f json', (err, stdout) => {
     if (!err) {
         // Everything is fine, so we can skip
-        return;
+        exit(0);
     }
 
     const data = JSON.parse(stdout);
@@ -29,4 +30,7 @@ exec('npx eslint -f json', (err, stdout) => {
             console.log(`::error ${argstr}::${message.message}`);
         }
     }
+
+    exit(1);
 });
+
