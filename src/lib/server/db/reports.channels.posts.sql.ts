@@ -1,20 +1,18 @@
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { post } from './posts.sql';
-import { channel } from './channels.sql';
+import { reportStatusEnum } from './types.sql';
 
 export const channelPostReport = pgTable('channel_post_report', {
     id: uuid('id').primaryKey().defaultRandom(),
-    postId: uuid('post_id')
-        .notNull()
-        .references(() => post.id),
-    channelId: uuid('channel_id')
-        .notNull()
-        .references(() => channel.id),
+    postId: uuid('post_id').references(() => post.id),
     description: text('description').notNull(),
+    resolution: text('resolution'),
+    status: reportStatusEnum('status').notNull().default('INVESTIGATING'),
 });
 
 /**
  * Represents a report that a post violates the rules of a channel
+ * A `null` `postId` indicates that the offending post has been deleted.
  */
 export type ChannelPostReport = typeof channelPostReport.$inferSelect;
 /**

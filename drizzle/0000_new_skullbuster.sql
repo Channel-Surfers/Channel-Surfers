@@ -1,4 +1,10 @@
 DO $$ BEGIN
+ CREATE TYPE "public"."report_status" AS ENUM('INVESTIGATING', 'RESOLVED', 'DELETED');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."site_role" AS ENUM('USER', 'MODERATOR', 'ADMIN', 'SUPER');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -15,8 +21,7 @@ CREATE TABLE IF NOT EXISTS "channel_user_ban" (
 	"channel_id" uuid NOT NULL,
 	"user_id" uuid NOT NULL,
 	"created_on" timestamp DEFAULT now() NOT NULL,
-	"pardoned" boolean DEFAULT false NOT NULL,
-	CONSTRAINT "channel_user_ban_channel_id_user_id_unique" UNIQUE("channel_id","user_id")
+	"pardoned" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_block" (
@@ -28,6 +33,8 @@ CREATE TABLE IF NOT EXISTS "user_block" (
 CREATE TABLE IF NOT EXISTS "channel" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
+	"description" text,
+	"guidelines" text,
 	"created_by" uuid NOT NULL,
 	"created_on" timestamp DEFAULT now() NOT NULL,
 	"updated_on" timestamp DEFAULT now() NOT NULL
@@ -92,34 +99,43 @@ CREATE TABLE IF NOT EXISTS "public_channel" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "channel_post_report" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid NOT NULL,
-	"channel_id" uuid NOT NULL,
-	"description" text NOT NULL
+	"post_id" uuid,
+	"description" text NOT NULL,
+	"resolution" text,
+	"status" "report_status" DEFAULT 'INVESTIGATING' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "channel_report" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"channel_id" uuid NOT NULL,
-	"description" text NOT NULL
+	"channel_id" uuid,
+	"description" text NOT NULL,
+	"resolution" text,
+	"status" "report_status" DEFAULT 'INVESTIGATING' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "channel_user_reports" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL,
 	"channel_id" uuid NOT NULL,
-	"description" text NOT NULL
+	"description" text NOT NULL,
+	"resolution" text,
+	"status" "report_status" DEFAULT 'INVESTIGATING' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "post_report" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"post_id" uuid NOT NULL,
-	"description" text NOT NULL
+	"post_id" uuid,
+	"description" text NOT NULL,
+	"resolution" text,
+	"status" "report_status" DEFAULT 'INVESTIGATING' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_report" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
-	"description" text NOT NULL
+	"user_id" uuid,
+	"description" text NOT NULL,
+	"resolution" text,
+	"status" "report_status" DEFAULT 'INVESTIGATING' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "role" (
@@ -145,6 +161,9 @@ CREATE TABLE IF NOT EXISTS "role" (
 	"can_delete_posts" boolean DEFAULT false NOT NULL,
 	"can_delete_comments" boolean DEFAULT false NOT NULL,
 	"can_edit_post_tags" boolean DEFAULT false NOT NULL,
+	"can_view_post_reports" boolean DEFAULT false NOT NULL,
+	"can_update_post_reports" boolean DEFAULT false NOT NULL,
+	"can_resolve_post_reports" boolean DEFAULT false NOT NULL,
 	"can_register_events" boolean DEFAULT false NOT NULL,
 	"can_view_events" boolean DEFAULT false NOT NULL,
 	"can_edit_events" boolean DEFAULT false NOT NULL,
@@ -161,6 +180,12 @@ CREATE TABLE IF NOT EXISTS "session" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" uuid NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "subscription" (
+	"id" uuid DEFAULT gen_random_uuid() NOT NULL,
+	"channel_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "channel_tags" (
@@ -309,19 +334,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "channel_post_report" ADD CONSTRAINT "channel_post_report_channel_id_channel_id_fk" FOREIGN KEY ("channel_id") REFERENCES "public"."channel"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "channel_report" ADD CONSTRAINT "channel_report_channel_id_channel_id_fk" FOREIGN KEY ("channel_id") REFERENCES "public"."channel"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "channel_user_reports" ADD CONSTRAINT "channel_user_reports_post_id_user_id_fk" FOREIGN KEY ("post_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "channel_user_reports" ADD CONSTRAINT "channel_user_reports_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -364,6 +383,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "subscription" ADD CONSTRAINT "subscription_channel_id_channel_id_fk" FOREIGN KEY ("channel_id") REFERENCES "public"."channel"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "subscription" ADD CONSTRAINT "subscription_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

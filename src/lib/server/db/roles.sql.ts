@@ -23,6 +23,7 @@ export const role = pgTable('role', {
     canViewUserTable: boolean('can_view_user_table').notNull().default(false),
     canEditTags: boolean('can_edit_tags').notNull().default(false),
     // permissions to channel moderation
+    canSetGuidelines: boolean('can_timeout_users').notNull().default(false),
     canTimeoutUsers: boolean('can_timeout_users').notNull().default(false),
     canBanUsers: boolean('can_ban_users').notNull().default(false),
     canViewBannedUsers: boolean('can_view_banned_users').notNull().default(false),
@@ -30,6 +31,9 @@ export const role = pgTable('role', {
     canDeletePosts: boolean('can_delete_posts').notNull().default(false),
     canDeleteComments: boolean('can_delete_comments').notNull().default(false),
     canEditPostTags: boolean('can_edit_post_tags').notNull().default(false),
+    canViewReports: boolean('can_view_post_reports').notNull().default(false),
+    canUpdateReports: boolean('can_update_post_reports').notNull().default(false),
+    canResolveReports: boolean('can_resolve_post_reports').notNull().default(false),
     // permissions to do with events
     canRegisterEvents: boolean('can_register_events').notNull().default(false),
     canViewEvents: boolean('can_view_events').notNull().default(false),

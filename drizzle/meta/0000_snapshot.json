@@ -1,5 +1,5 @@
 {
-  "id": "db7560c7-40a6-4326-9b7d-62041207d1b2",
+  "id": "0828418d-5903-460f-8ba9-329a4199b537",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -72,16 +72,7 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "channel_user_ban_channel_id_user_id_unique": {
-          "name": "channel_user_ban_channel_id_user_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "channel_id",
-            "user_id"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     },
     "public.user_block": {
       "name": "user_block",
@@ -156,6 +147,18 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "guidelines": {
+          "name": "guidelines",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_by": {
           "name": "created_by",
@@ -675,19 +678,27 @@
           "name": "post_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "resolution": {
+          "name": "resolution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "report_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'INVESTIGATING'"
         }
       },
       "indexes": {},
@@ -698,19 +709,6 @@
           "tableTo": "post",
           "columnsFrom": [
             "post_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "channel_post_report_channel_id_channel_id_fk": {
-          "name": "channel_post_report_channel_id_channel_id_fk",
-          "tableFrom": "channel_post_report",
-          "tableTo": "channel",
-          "columnsFrom": [
-            "channel_id"
           ],
           "columnsTo": [
             "id"
@@ -737,13 +735,27 @@
           "name": "channel_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "resolution": {
+          "name": "resolution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "report_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'INVESTIGATING'"
         }
       },
       "indexes": {},
@@ -776,8 +788,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "post_id": {
-          "name": "post_id",
+        "user_id": {
+          "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -793,16 +805,30 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "resolution": {
+          "name": "resolution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "report_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'INVESTIGATING'"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "channel_user_reports_post_id_user_id_fk": {
-          "name": "channel_user_reports_post_id_user_id_fk",
+        "channel_user_reports_user_id_user_id_fk": {
+          "name": "channel_user_reports_user_id_user_id_fk",
           "tableFrom": "channel_user_reports",
           "tableTo": "user",
           "columnsFrom": [
-            "post_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -842,13 +868,27 @@
           "name": "post_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "resolution": {
+          "name": "resolution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "report_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'INVESTIGATING'"
         }
       },
       "indexes": {},
@@ -885,13 +925,27 @@
           "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "resolution": {
+          "name": "resolution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "report_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'INVESTIGATING'"
         }
       },
       "indexes": {},
@@ -1068,6 +1122,27 @@
           "notNull": true,
           "default": false
         },
+        "can_view_post_reports": {
+          "name": "can_view_post_reports",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "can_update_post_reports": {
+          "name": "can_update_post_reports",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "can_resolve_post_reports": {
+          "name": "can_resolve_post_reports",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "can_register_events": {
           "name": "can_register_events",
           "type": "boolean",
@@ -1200,6 +1275,62 @@
         "session_user_id_user_id_fk": {
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.subscription": {
+      "name": "subscription",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "channel_id": {
+          "name": "channel_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "subscription_channel_id_channel_id_fk": {
+          "name": "subscription_channel_id_channel_id_fk",
+          "tableFrom": "subscription",
+          "tableTo": "channel",
+          "columnsFrom": [
+            "channel_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "subscription_user_id_user_id_fk": {
+          "name": "subscription_user_id_user_id_fk",
+          "tableFrom": "subscription",
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
@@ -1509,6 +1640,15 @@
     }
   },
   "enums": {
+    "public.report_status": {
+      "name": "report_status",
+      "schema": "public",
+      "values": [
+        "INVESTIGATING",
+        "RESOLVED",
+        "DELETED"
+      ]
+    },
     "public.site_role": {
       "name": "site_role",
       "schema": "public",
