@@ -1,7 +1,6 @@
-import type { DB } from '../drizzle';
-import type { DbError, ResourceNotFoundError } from './utils/errors';
-import type { DbResult } from './utils/types';
-import type { Channel } from '../db/channels.sql';
+import { channel, type Channel } from '../db/channels.sql';
+import type { DB } from '..';
+import { asc, eq } from 'drizzle-orm';
 
 /**
  * Fine-tune what channel data we want to focus on
@@ -9,20 +8,28 @@ import type { Channel } from '../db/channels.sql';
  * @property page specifies which page to fetch
  */
 export type GetChannelsOptions = { pageSize: number; page: number };
-export type GetChannelsError = DbError;
-export function getChannels(
-    _db: DB,
-    _opts?: GetChannelsOptions
-): DbResult<Channel[], GetChannelsError> {
-    throw new Error('Not implemented');
+//export type GetChannelsError = DbError;
+export async function getChannels(db: DB, opts?: GetChannelsOptions): Promise<Channel[]> {
+    let result;
+    if (opts) {
+        result = await db
+            .select()
+            .from(channel)
+            .orderBy(asc(channel.createdOn))
+            .limit(opts.pageSize)
+            .offset(opts.pageSize * (opts.page - 1));
+    } else {
+        result = await db.select().from(channel);
+    }
+    return result;
 }
 
-export type GetChannelError = DbError | ResourceNotFoundError;
+//export type GetChannelError = DbError | ResourceNotFoundError;
 /**
  * Retrieve channel by its id
  * @param _db PostgreSQL DB
  * @param _id Id of channel
  */
-export function getChannelById(_db: DB, _id: string): DbResult<Channel, GetChannelError> {
-    throw new Error('Not implemented');
+export async function getChannelById(db: DB, id: string): Promise<Channel> {
+    return (await db.select().from(channel).where(eq(channel.id, id)))[0];
 }
