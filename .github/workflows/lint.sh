@@ -22,7 +22,7 @@ for file in $(npx prettier -l .); do
                 ((idx+=1))
             done
             echo "min=$min max=$max"
-            echo "::error file=$file,line=$min,endLine=$max,title=PRETTIER-ERROR::Prettier error in $file"
+            echo "::error file=$file,line=$min,endLine=$max,title=PRETTIER-ERROR::\`\`\`suggestion\nfoobar\`\`\`"
         fi
     done
 done
