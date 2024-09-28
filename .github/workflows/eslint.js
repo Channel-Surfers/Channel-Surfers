@@ -33,4 +33,3 @@ exec('npx eslint -f json', (err, stdout) => {
 
     exit(1);
 });
-
