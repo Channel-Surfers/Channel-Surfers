@@ -14,6 +14,7 @@ jobs:
     build:
         env:
             PUBLIC_PREVIEW_HOST: ${{ secrets.PUBLIC_PREVIEW_HOST }}
+            PUBLIC_LIBRARY_ID: ${{ secrets.PUBLIC_LIBRARY_ID }}
         runs-on: ubuntu-latest
         name: build
         strategy:

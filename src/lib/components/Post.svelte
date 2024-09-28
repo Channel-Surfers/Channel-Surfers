@@ -11,10 +11,12 @@
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import Share2 from 'lucide-svelte/icons/share-2';
+    import Play from 'lucide-svelte/icons/play';
 
     import Score from './Score.svelte';
     import ShareSheet from './ShareSheet.svelte';
     import UserChannel from './UserChannel.svelte';
+    import Player from './Player.svelte';
 
     const videoId = 'e0245338-7c04-4a6c-b44f-0e279a849cf5';
 
@@ -36,18 +38,34 @@
         console.log(dir, new_state);
     };
 
+    let playing_video = false;
+
     let hovering = false;
     $: src = `${PUBLIC_PREVIEW_HOST}/${videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`;
 </script>
 
 <Card.Root class="m-auto my-4 flex h-48 w-2/3 flex-row p-2">
-    <img
-        {src}
-        alt=""
-        class="cursor-pointer rounded-lg"
+    <div
+        class="relative h-full w-2/5"
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
-    />
+        role="img"
+    >
+        {#if loading}
+            <Skeleton class="h-full w-full rounded-lg" />
+        {:else if playing_video}
+            <Player {videoId} autoplay />
+        {:else}
+            <button
+                class="absolute flex h-full w-full items-center justify-center rounded-lg bg-black/50"
+                class:hidden={!hovering}
+                on:click={() => (playing_video = true)}
+            >
+                <Play fill="white" size="48" />
+            </button>
+            <img {src} alt="" class="h-full w-full rounded-lg object-cover" />
+        {/if}
+    </div>
     <div class="img flex h-full grow flex-col justify-between">
         <Card.Header class="p-2 px-6">
             <Card.Title class="space-y-1">

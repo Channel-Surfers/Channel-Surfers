@@ -20,11 +20,11 @@
     $: clazz = upvotes > downvotes ? 'text-upvote' : upvotes < downvotes ? 'text-downvote' : '';
 </script>
 
-<Tooltip.Root>
+<Tooltip.Root openDelay={5}>
     <Tooltip.Trigger class={clazz}>
         <span class="small-caps">{humanise(Math.abs(upvotes - downvotes))}</span>
     </Tooltip.Trigger>
-    <Tooltip.Content>
+    <Tooltip.Content side="left">
         <p class="small-caps flex flex-row items-center text-upvote">
             <ArrowUp />
             {humanise(upvotes)}
