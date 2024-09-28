@@ -82,7 +82,7 @@
                 </Button>
             </Drawer.Trigger>
             <Drawer.Content>
-                <ShareSheet title="Share Post" url={location.href}/>
+                <ShareSheet title="Share Post" url={location.href} />
             </Drawer.Content>
         </Drawer.Root>
         <div class="flex flex-col items-center">
@@ -92,7 +92,7 @@
                 class="hover:text-upvote data-[state=on]:text-upvote"
                 bind:pressed={upvote_pressed}
                 on:click={() => vote('up')}
-                >
+            >
                 <div class:animate-pulse={loading}>
                     <ArrowUp />
                 </div>
@@ -108,7 +108,7 @@
                 class="hover:text-downvote data-[state=on]:text-downvote"
                 bind:pressed={downvote_pressed}
                 on:click={() => vote('down')}
-                >
+            >
                 <div class:animate-pulse={loading}>
                     <ArrowDown />
                 </div>

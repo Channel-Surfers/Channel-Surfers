@@ -1,6 +1,6 @@
 <script lang="ts">
-    import * as Drawer from "$lib/shadcn/components/ui/drawer";
-    import { Button } from "$lib/shadcn/components/ui/button";
+    import * as Drawer from '$lib/shadcn/components/ui/drawer';
+    import { Button } from '$lib/shadcn/components/ui/button';
 
     export let title: string = 'Share';
     export let url: string;
@@ -11,9 +11,7 @@
     <Drawer.Header>
         <Drawer.Title>{title}</Drawer.Title>
     </Drawer.Header>
-    <div class="p-4 pb-0">
-        Not yet implemented!
-    </div>
+    <div class="p-4 pb-0">Not yet implemented!</div>
     <Drawer.Footer>
         <Drawer.Close asChild let:builder>
             <Button builders={[builder]} variant="outline">Close</Button>
