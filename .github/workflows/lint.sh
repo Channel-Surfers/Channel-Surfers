@@ -6,7 +6,7 @@ for file in $(npx prettier -l .); do
     IFS=$'\n'
     for line in $DIFF; do
         code=1
-        echo "DIFF: '$line'"
+        echo "$line"
         if [[ "$line" =~ ^[0-9] ]]; then
             lines=$(echo $line | cut -dc -f1 | tr ',' $'\n')
             idx=0;
@@ -22,7 +22,13 @@ for file in $(npx prettier -l .); do
                 ((idx+=1))
             done
             echo "min=$min max=$max"
-            printf $'::error file=%s,line=%s,endLine=%s,title=PRETTIER-ERROR::`code test`' "$file" "$min" "$max"
+            message=""
+            if [ "$min" -eq "$max" ]; then
+                message="Error on line $min"
+            else
+                message="Error from line $min to line $max"
+            fi
+            printf $'::error file=%s,line=%s,endLine=%s,title=PRETTIER-ERROR::%s\n' "$file" "$min" "$max" "$message"
         fi
     done
 done
