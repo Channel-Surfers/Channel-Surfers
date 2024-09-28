@@ -3,10 +3,6 @@ import { twMerge } from 'tailwind-merge';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 
-const f = () => {
-    console.log('f');
-};
-
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
