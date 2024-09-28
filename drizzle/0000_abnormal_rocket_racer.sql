@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS "post" (
 	"alt_text" text,
 	"created_by" uuid NOT NULL,
 	"channel_id" uuid NOT NULL,
+	"video_id" text NOT NULL,
 	"created_on" timestamp DEFAULT now() NOT NULL,
 	"updated_on" timestamp DEFAULT now() NOT NULL
 );
@@ -296,7 +297,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "public_channel" ADD CONSTRAINT "public_channel_post_id_post_id_fk" FOREIGN KEY ("post_id") REFERENCES "public"."post"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "public_channel" ADD CONSTRAINT "public_channel_post_id_channel_id_fk" FOREIGN KEY ("post_id") REFERENCES "public"."channel"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

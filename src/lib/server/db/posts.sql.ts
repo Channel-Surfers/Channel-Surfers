@@ -14,6 +14,7 @@ export const post = pgTable('post', {
     channelId: uuid('channel_id')
         .notNull()
         .references(() => channel.id),
+    videoId: text('video_id').notNull(),
     createdOn: timestamp('created_on').notNull().defaultNow(),
     updatedOn: timestamp('updated_on').notNull().defaultNow(),
 });

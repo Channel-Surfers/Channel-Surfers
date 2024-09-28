@@ -1,10 +1,10 @@
 import { pgTable, uuid, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { post } from './posts.sql';
+import { channel } from './channels.sql';
 
 export const publicChannel = pgTable('public_channel', {
     channelId: uuid('post_id')
         .notNull()
-        .references(() => post.id),
+        .references(() => channel.id),
     name: varchar('name', { length: 25 }).notNull().unique(),
     datePublished: timestamp('date_published').notNull().defaultNow(),
 });

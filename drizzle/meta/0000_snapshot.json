@@ -1,5 +1,5 @@
 {
-  "id": "d5653c0c-6fd4-4929-a255-ae9d914af497",
+  "id": "db7560c7-40a6-4326-9b7d-62041207d1b2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -556,6 +556,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "video_id": {
+          "name": "video_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_on": {
           "name": "created_on",
           "type": "timestamp",
@@ -629,10 +635,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "public_channel_post_id_post_id_fk": {
-          "name": "public_channel_post_id_post_id_fk",
+        "public_channel_post_id_channel_id_fk": {
+          "name": "public_channel_post_id_channel_id_fk",
           "tableFrom": "public_channel",
-          "tableTo": "post",
+          "tableTo": "channel",
           "columnsFrom": [
             "post_id"
           ],
