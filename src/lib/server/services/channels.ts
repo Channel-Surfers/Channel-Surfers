@@ -1,7 +1,6 @@
 import { channel } from '../db/channels.sql';
 import { Effect } from 'effect';
 import type { DB } from '..';
-import { asc } from 'drizzle-orm';
 
 /**
  * Fine-tune what channel data we want to focus on
