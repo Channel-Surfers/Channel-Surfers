@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "dev": "vite dev",
+        "dev": "vite --env-file=.env dev",
         "build": "vite build",
         "preview": "vite preview",
         "test": "npm run test:integration && npm run test:unit",
@@ -12,7 +12,11 @@
         "lint": "prettier --check .; eslint .",
         "format": "prettier --write .",
         "test:integration": "playwright test",
-        "test:unit": "vitest"
+        "test:unit": "vitest",
+        "generate": "drizzle-kit generate:postgres",
+        "migrate": "drizzle-kit push:postgres",
+        "studio": "drizzle-kit studio",
+        "db:start": "docker run --rm --name surf-dev-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=dev -d -p 5432:5432 docker.io/postgres"
     },
     "devDependencies": {
         "@playwright/test": "^1.28.1",
@@ -22,6 +26,7 @@
         "@tailwindcss/typography": "^0.5.14",
         "@types/eslint": "^9.6.0",
         "autoprefixer": "^10.4.20",
+        "drizzle-kit": "^0.24.2",
         "eslint": "^9.0.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-svelte": "^2.36.0",
@@ -45,14 +50,12 @@
         "@sveltejs/adapter-node": "^5.2.4",
         "bits-ui": "^0.21.15",
         "clsx": "^2.1.1",
-        "drizzle-kit": "^0.24.2",
         "drizzle-orm": "^0.33.0",
         "lucide-svelte": "^0.445.0",
         "mode-watcher": "^0.4.1",
         "postgres": "^3.4.4",
         "tailwind-merge": "^2.5.2",
         "tailwind-variants": "^0.2.1",
-        "ts-results": "^3.3.0",
-        "uuidv7": "^1.0.2"
+        "ts-results": "^3.3.0"
     }
 }
