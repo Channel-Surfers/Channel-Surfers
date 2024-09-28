@@ -7,6 +7,7 @@ export const post = pgTable('post', {
     id: uuid('id').primaryKey().defaultRandom(),
     title: text('name').notNull(),
     description: text('description'),
+    altText: text('alt_text'),
     createdBy: uuid('created_by')
         .notNull()
         .references(() => user.id),

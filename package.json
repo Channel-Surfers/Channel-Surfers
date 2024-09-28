@@ -13,8 +13,8 @@
         "format": "prettier --write .",
         "test:integration": "playwright test",
         "test:unit": "vitest",
-        "generate": "drizzle-kit generate:postgres",
-        "migrate": "drizzle-kit push:postgres",
+        "generate": "drizzle-kit generate",
+        "migrate": "drizzle-kit push",
         "studio": "drizzle-kit studio",
         "db:start": "docker run --rm --name surf-dev-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=dev -d -p 5432:5432 docker.io/postgres"
     },

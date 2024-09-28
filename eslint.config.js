@@ -35,6 +35,7 @@ export default [
             'tailwind.config.ts',
             'src/lib/shadcn/',
             'docs/',
+            'drizle/',
         ],
     },
     {
