@@ -1,4 +1,4 @@
-import { pgTable, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, smallint, uuid } from 'drizzle-orm/pg-core';
 import { playlist } from './playlists.sql';
 import { post } from './posts.sql';
 
@@ -10,6 +10,7 @@ export const playlistPost = pgTable('playlist_post', {
     postId: uuid('post_id')
         .notNull()
         .references(() => post.id),
+    sortIndex: smallint('sort_index').notNull(),
 });
 
 export type PlaylistPost = typeof playlistPost.$inferSelect;

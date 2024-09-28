@@ -11,16 +11,17 @@ export const role = pgTable('role', {
     // Q: Is this the best way to implement ranking?
     ranking: smallint('ranking').notNull(),
     // permissions pertaining to role management
-    canCreateRoles: boolean('can_edit_roles').notNull().default(false),
-    canViewRoles: boolean('can_edit_roles').notNull().default(false),
+    canCreateRoles: boolean('can_create_roles').notNull().default(false),
+    canViewRoles: boolean('can_view_roles').notNull().default(false),
     canEditRoles: boolean('can_edit_roles').notNull().default(false),
-    canDeleteRoles: boolean('can_edit_roles').notNull().default(false),
+    canDeleteRoles: boolean('can_delete_roles').notNull().default(false),
     canAssignRoles: boolean('can_assign_roles').notNull().default(false),
     // permissions to channel management
     canSetMessageOfTheDay: boolean('can_set_message_of_the_day').notNull().default(false),
     canEditName: boolean('can_edit_name').notNull().default(false),
     canSetImage: boolean('can_set_image').notNull().default(false),
     canViewUserTable: boolean('can_view_user_table').notNull().default(false),
+    canEditTags: boolean('can_edit_tags').notNull().default(false),
     // permissions to channel moderation
     canTimeoutUsers: boolean('can_timeout_users').notNull().default(false),
     canBanUsers: boolean('can_ban_users').notNull().default(false),
@@ -28,6 +29,7 @@ export const role = pgTable('role', {
     canUnbanUsers: boolean('can_unban_users').notNull().default(false),
     canDeletePosts: boolean('can_delete_posts').notNull().default(false),
     canDeleteComments: boolean('can_delete_comments').notNull().default(false),
+    canEditPostTags: boolean('can_edit_post_tags').notNull().default(false),
     // permissions to do with events
     canRegisterEvents: boolean('can_register_events').notNull().default(false),
     canViewEvents: boolean('can_view_events').notNull().default(false),
