@@ -31,4 +31,5 @@ jobs:
               with:
                   submodules: true
             - run: npm ci
+            - run: nc -lp 5432 2>&1 > /dev/null &
             - run: npm run build
