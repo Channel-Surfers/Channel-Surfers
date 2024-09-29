@@ -1,13 +1,13 @@
 import { pgTable, uuid, primaryKey } from 'drizzle-orm/pg-core';
-import { user } from './users.sql';
-import { comment } from './comments.sql';
+import { userTable } from './users.sql';
+import { commentTable } from './comments.sql';
 import { voteEnum } from './types.sql';
 
-export const commentVote = pgTable(
+export const commentVoteTable = pgTable(
     'comment_vote',
     {
-        commentId: uuid('comment_id').references(() => comment.id),
-        userId: uuid('user_id').references(() => user.id),
+        commentId: uuid('comment_id').references(() => commentTable.id),
+        userId: uuid('user_id').references(() => userTable.id),
         vote: voteEnum('vote'),
     },
     (table) => ({ pk: primaryKey({ columns: [table.commentId, table.userId] }) })
@@ -16,5 +16,5 @@ export const commentVote = pgTable(
 /**
  * Represents a user's feelings toward a comment
  */
-export type CommentVote = typeof comment.$inferSelect;
-export type NewCommentVote = typeof comment.$inferInsert;
+export type CommentVote = typeof commentTable.$inferSelect;
+export type NewCommentVote = typeof commentTable.$inferInsert;

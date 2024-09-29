@@ -1,17 +1,17 @@
 import { pgTable, uuid, primaryKey } from 'drizzle-orm/pg-core';
-import { user } from './users.sql';
+import { userTable } from './users.sql';
 import { voteEnum } from './types.sql';
-import { post } from './posts.sql';
+import { postTable } from './posts.sql';
 
-export const postVote = pgTable(
+export const postVoteTable = pgTable(
     'post_vote',
     {
         postId: uuid('post_id')
             .notNull()
-            .references(() => post.id),
+            .references(() => postTable.id),
         userId: uuid('user_id')
             .notNull()
-            .references(() => user.id),
+            .references(() => userTable.id),
         vote: voteEnum('vote').notNull(),
     },
     (table) => ({
@@ -22,5 +22,5 @@ export const postVote = pgTable(
 /**
  * Represents a User's feelings toward a particular post
  */
-export type PostVote = typeof postVote.$inferSelect;
-export type NewPostVote = typeof postVote.$inferInsert;
+export type PostVote = typeof postVoteTable.$inferSelect;
+export type NewPostVote = typeof postVoteTable.$inferInsert;

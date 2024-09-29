@@ -10,3 +10,8 @@ export const createTestingDb = async <T>(generator?: (db: DB) => Promise<T>) => 
 
     return { container: startedContainer, db, generated };
 };
+
+export const mustGenerate = <T>(generated: T | null) => {
+    if (!generated) process.exit(1);
+    return generated;
+};

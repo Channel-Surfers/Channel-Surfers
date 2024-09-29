@@ -1,13 +1,13 @@
 import { pgTable, unique, uuid, varchar } from 'drizzle-orm/pg-core';
-import { channel } from './channels.sql';
+import { channelTable } from './channels.sql';
 
-export const channelTags = pgTable(
+export const channelTagsTable = pgTable(
     'channel_tags',
     {
         id: uuid('id').primaryKey().defaultRandom(),
         channelId: uuid('channel_id')
             .notNull()
-            .references(() => channel.id),
+            .references(() => channelTable.id),
         name: varchar('name', { length: 16 }).notNull(),
         color: varchar('color', { length: 16 }).notNull(),
     },
@@ -17,8 +17,8 @@ export const channelTags = pgTable(
 /**
  * Represents an available tag for a channel's posts
  */
-export type ChannelTag = typeof channelTags.$inferSelect;
+export type ChannelTag = typeof channelTagsTable.$inferSelect;
 /**
  * Represents an new available tag for a channel's posts yet to be persisted
  */
-export type NewChannelTag = typeof channelTags.$inferInsert;
+export type NewChannelTag = typeof channelTagsTable.$inferInsert;

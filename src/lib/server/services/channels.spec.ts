@@ -1,61 +1,49 @@
 import { describe, it } from 'vitest';
-import { getChannelById, getChannels } from './channels';
+import { getChannelById, getChannels, getChannelsByOwner } from './channels';
 import { Effect } from 'effect';
-import { createTestingDb } from '$lib/testing/utils';
-import { channel } from '../db/channels.sql';
-import { user } from '../db/users.sql';
+import { createTestingDb, mustGenerate } from '$lib/testing/utils';
+import { channelTable } from '../db/channels.sql';
+import { userTable } from '../db/users.sql';
+import type { DB } from '..';
+
+const generateUserAndChannel = async (db: DB) => {
+    const creator = (await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning())[0];
+    const createdChannel = (
+        await db
+            .insert(channelTable)
+            .values({ name: 'Channel-Surfers', createdBy: creator.id })
+            .returning()
+    )[0];
+    return { creator, createdChannel };
+};
 
 describe('channels suite', () => {
-    it.concurrent(
-        'getting channels returns successfully',
-        { timeout: 20000 },
-        async ({ expect }) => {
-            const { db, generated } = await createTestingDb(async (db) => {
-                const creator = (
-                    await db.insert(user).values({ username: 'AwesomeGuy' }).returning()
-                )[0];
-                const createdChannel = (
-                    await db
-                        .insert(channel)
-                        .values({ name: 'Channel-Surfers', createdBy: creator.id })
-                        .returning()
-                )[0];
-                return { creator, createdChannel };
-            });
+    it.concurrent('getting channels returns successfully', async ({ expect }) => {
+        const { db, generated } = await createTestingDb(generateUserAndChannel);
 
-            if (!generated) process.exit(1);
+        const { createdChannel } = mustGenerate(generated);
 
-            const { createdChannel } = generated;
+        const channels = await Effect.runPromise(getChannels(db));
+        expect(channels.length).toStrictEqual(1);
+        expect(channels[0].name).toStrictEqual(createdChannel.name);
+    });
 
-            const channels = await Effect.runPromise(getChannels(db));
-            expect(channels.length).toStrictEqual(1);
-            expect(channels[0].name).toStrictEqual(createdChannel.name);
-        }
-    );
+    it.concurrent('getting channel by id returns successfully', async ({ expect }) => {
+        const { db, generated } = await createTestingDb(generateUserAndChannel);
 
-    it.concurrent(
-        'getting channel by id returns successfully',
-        { timeout: 20000 },
-        async ({ expect }) => {
-            const { db, generated } = await createTestingDb(async (db) => {
-                const creator = (
-                    await db.insert(user).values({ username: 'AwesomeGuy' }).returning()
-                )[0];
-                const createdChannel = (
-                    await db
-                        .insert(channel)
-                        .values({ name: 'Channel-Surfers', createdBy: creator.id })
-                        .returning()
-                )[0];
-                return { creator, createdChannel };
-            });
+        const { createdChannel } = mustGenerate(generated);
 
-            if (!generated) process.exit(1);
+        const channel = await Effect.runPromise(getChannelById(db, createdChannel.id));
+        expect(channel?.name).toStrictEqual(createdChannel.name);
+    });
 
-            const { createdChannel } = generated;
+    it.concurrent('getting channels by user id returns successfully', async ({ expect }) => {
+        const { db, generated } = await createTestingDb(generateUserAndChannel);
+        mustGenerate(generated);
 
-            const c = await Effect.runPromise(getChannelById(db, createdChannel.id));
-            expect(c?.name).toStrictEqual(createdChannel.name);
-        }
-    );
+        const { creator, createdChannel } = mustGenerate(generated);
+
+        const userChannels = await Effect.runPromise(getChannelsByOwner(db, creator.id));
+        expect(userChannels).toStrictEqual([createdChannel]);
+    });
 });

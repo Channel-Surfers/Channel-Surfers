@@ -1,10 +1,10 @@
 import { pgTable, uuid, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { channel } from './channels.sql';
+import { channelTable } from './channels.sql';
 
-export const publicChannel = pgTable('public_channel', {
+export const publicChannelTable = pgTable('public_channel', {
     channelId: uuid('post_id')
         .notNull()
-        .references(() => channel.id),
+        .references(() => channelTable.id),
     name: varchar('name', { length: 25 }).notNull().unique(),
     datePublished: timestamp('date_published').notNull().defaultNow(),
 });
@@ -12,5 +12,5 @@ export const publicChannel = pgTable('public_channel', {
 /**
  * This implies that a channel has been made public
  */
-export type PublicChannel = typeof publicChannel.$inferSelect;
-export type NewPublicChannel = typeof publicChannel.$inferInsert;
+export type PublicChannel = typeof publicChannelTable.$inferSelect;
+export type NewPublicChannel = typeof publicChannelTable.$inferInsert;

@@ -1,17 +1,17 @@
 import { pgTable, smallint, uuid } from 'drizzle-orm/pg-core';
-import { playlist } from './playlists.sql';
-import { post } from './posts.sql';
+import { playlistTable } from './playlists.sql';
+import { postTable } from './posts.sql';
 
-export const playlistPost = pgTable('playlist_post', {
+export const playlistPostTable = pgTable('playlist_post', {
     id: uuid('id').primaryKey().defaultRandom(),
     playlistId: uuid('playlist_id')
         .notNull()
-        .references(() => playlist.id),
+        .references(() => playlistTable.id),
     postId: uuid('post_id')
         .notNull()
-        .references(() => post.id),
+        .references(() => postTable.id),
     sortIndex: smallint('sort_index').notNull(),
 });
 
-export type PlaylistPost = typeof playlistPost.$inferSelect;
-export type NewPlaylistPost = typeof playlistPost.$inferInsert;
+export type PlaylistPost = typeof playlistPostTable.$inferSelect;
+export type NewPlaylistPost = typeof playlistPostTable.$inferInsert;

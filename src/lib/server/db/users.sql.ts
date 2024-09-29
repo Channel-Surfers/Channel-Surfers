@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { siteRoleEnum } from './types.sql';
 
-export const user = pgTable('user', {
+export const userTable = pgTable('user', {
     id: uuid('id').primaryKey().defaultRandom(),
     /**
      * Username valid chars are of regex: [a-zA-Z\-\_]{1, 25}
@@ -18,8 +18,8 @@ export const user = pgTable('user', {
  * @property `username` Username valid chars are of regex: [a-zA-Z\-\_]{1, 25}
  * @property `role` Role in site (defaults to USER)
  */
-export type User = typeof user.$inferSelect;
+export type User = typeof userTable.$inferSelect;
 /**
  * Represents a new user yet to be persisted
  */
-export type NewUser = typeof user.$inferInsert;
+export type NewUser = typeof userTable.$inferInsert;

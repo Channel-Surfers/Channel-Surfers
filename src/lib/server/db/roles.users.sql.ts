@@ -1,16 +1,16 @@
 import { pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { user } from './users.sql';
-import { role } from './roles.sql';
+import { userTable } from './users.sql';
+import { roleTable } from './roles.sql';
 
-export const userRole = pgTable(
+export const userRoleTable = pgTable(
     'user_role',
     {
         userId: uuid('user_id')
             .notNull()
-            .references(() => user.id),
+            .references(() => userTable.id),
         roleId: uuid('role_id')
             .notNull()
-            .references(() => role.id),
+            .references(() => roleTable.id),
         updatedOn: timestamp('updated_on').notNull().defaultNow(),
     },
     (table) => ({ pk: { columns: [table.userId, table.roleId] } })
@@ -19,8 +19,8 @@ export const userRole = pgTable(
 /**
  * Represents a *has* relationship between user and role
  */
-export type UserRole = typeof userRole.$inferSelect;
+export type UserRole = typeof userRoleTable.$inferSelect;
 /**
  * Represents a new *has* relationship between user and role yet to be persisted
  */
-export type NewUserRole = typeof userRole.$inferInsert;
+export type NewUserRole = typeof userRoleTable.$inferInsert;

@@ -1,9 +1,9 @@
 import { pgTable, uuid, text, timestamp, foreignKey } from 'drizzle-orm/pg-core';
-import { user } from './users.sql';
-import { post } from './posts.sql';
+import { userTable } from './users.sql';
+import { postTable } from './posts.sql';
 //import { relations } from 'drizzle-orm';
 
-export const comment = pgTable(
+export const commentTable = pgTable(
     'comment',
     {
         // Be on lookout for ways of using uuidv7, ulid, or cuid2 instead of uuid
@@ -11,10 +11,10 @@ export const comment = pgTable(
         content: text('content').notNull(),
         creatorId: uuid('creator_id')
             .notNull()
-            .references(() => user.id),
+            .references(() => userTable.id),
         postId: uuid('post_id')
             .notNull()
-            .references(() => post.id),
+            .references(() => postTable.id),
         replyTo: uuid('reply_to'),
         createdOn: timestamp('created_on').notNull().defaultNow(),
         updatedOn: timestamp('updated_on').notNull().defaultNow(),
@@ -31,8 +31,8 @@ export const comment = pgTable(
 /**
  * Represents a comment in reply to a post or in reply to another comment
  */
-export type Comment = typeof comment.$inferSelect;
+export type Comment = typeof commentTable.$inferSelect;
 /**
  * Represents a comment which has yet to be persisted in the database
  */
-export type NewComment = typeof comment.$inferInsert;
+export type NewComment = typeof commentTable.$inferInsert;

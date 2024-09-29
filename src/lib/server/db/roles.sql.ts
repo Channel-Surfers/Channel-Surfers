@@ -1,11 +1,11 @@
 import { boolean, pgTable, smallint, uuid, varchar } from 'drizzle-orm/pg-core';
-import { channel } from './channels.sql';
+import { channelTable } from './channels.sql';
 
-export const role = pgTable('role', {
+export const roleTable = pgTable('role', {
     id: uuid('id').primaryKey().defaultRandom(),
     channelId: uuid('channel_id')
         .notNull()
-        .references(() => channel.id),
+        .references(() => channelTable.id),
     title: varchar('title', { length: 20 }).notNull(),
     isOwner: boolean('isOwner').notNull().default(false),
     // Q: Is this the best way to implement ranking?
@@ -46,5 +46,5 @@ export const role = pgTable('role', {
  * Represents a set of permissions a user can have within a channel
  * The owner role (`isOwner`) has all permissions, and all channels have at least one owner.
  */
-export type Role = typeof role.$inferSelect;
-export type NewRole = typeof role.$inferInsert;
+export type Role = typeof roleTable.$inferSelect;
+export type NewRole = typeof roleTable.$inferInsert;

@@ -1,16 +1,16 @@
 import { pgTable, uuid } from 'drizzle-orm/pg-core';
-import { channel } from './channels.sql';
-import { user } from './users.sql';
+import { channelTable } from './channels.sql';
+import { userTable } from './users.sql';
 
-export const subscription = pgTable('subscription', {
+export const subscriptionTable = pgTable('subscription', {
     id: uuid('id').notNull().defaultRandom(),
     channelId: uuid('channel_id')
         .notNull()
-        .references(() => channel.id),
+        .references(() => channelTable.id),
     userId: uuid('user_id')
         .notNull()
-        .references(() => user.id),
+        .references(() => userTable.id),
 });
 
-export type Subscription = typeof subscription.$inferSelect;
-export type NewSubscription = typeof subscription.$inferInsert;
+export type Subscription = typeof subscriptionTable.$inferSelect;
+export type NewSubscription = typeof subscriptionTable.$inferInsert;

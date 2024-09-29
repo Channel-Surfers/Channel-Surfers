@@ -1,27 +1,25 @@
-import { channel, type Channel } from '../db/channels.sql';
+import { channelTable, type Channel } from '../db/channels.sql';
 import { Effect } from 'effect';
 import type { DB } from '..';
 import { DbError, ResourceNotFoundError } from './utils/errors';
 import { eq } from 'drizzle-orm';
 
 /**
- * Fine-tune what channel data we want to focus on
- * @property pageSize specifies how many elements are to be fetched
- * @property page specifies which page to fetch
+ * Return a list of channels
+ * @param db PostgreSQL DB
+ * @param opts Pagination options
  */
-export type GetChannelsOptions = { pageSize: number; page: number };
-export type GetChannelsError = DbError;
-export const getChannels = (db: DB, opts?: GetChannelsOptions) =>
+export const getChannels = (db: DB, opts?: { pageSize: number; page: number }) =>
     Effect.gen(function* (_) {
         const dbResponse = yield* Effect.tryPromise({
             try: () =>
                 opts
                     ? db
                           .select()
-                          .from(channel)
+                          .from(channelTable)
                           .limit(opts.pageSize)
                           .offset(opts.pageSize * (opts.page - 1))
-                    : db.select().from(channel),
+                    : db.select().from(channelTable),
             catch: (error: unknown) =>
                 new DbError({ message: `Unknown database error occurred: ${error}` }),
         });
@@ -29,16 +27,18 @@ export const getChannels = (db: DB, opts?: GetChannelsOptions) =>
         return dbResponse;
     });
 
-export type GetChannelError = DbError | ResourceNotFoundError;
 /**
  * Retrieve channel by its id
- * @param _db PostgreSQL DB
- * @param _id Id of channel
+ * @param db PostgreSQL DB
+ * @param id Id of channel
  */
-export const getChannelById = (db: DB, id: string): Effect.Effect<Channel, GetChannelError> =>
+export const getChannelById = (
+    db: DB,
+    id: string
+): Effect.Effect<Channel, DbError | ResourceNotFoundError> =>
     Effect.gen(function* (_) {
         const dbResponse = yield* Effect.tryPromise({
-            try: () => db.select().from(channel).where(eq(channel.id, id)),
+            try: () => db.select().from(channelTable).where(eq(channelTable.id, id)),
             catch: (err: unknown) => new DbError({ message: `Something went wrong: ${err}` }),
         });
         if (dbResponse.length == 0) {
@@ -48,4 +48,13 @@ export const getChannelById = (db: DB, id: string): Effect.Effect<Channel, GetCh
         }
 
         return dbResponse[0];
+    });
+
+export const getChannelsByOwner = (db: DB, userId: string): Effect.Effect<Channel[], DbError> =>
+    Effect.gen(function* (_) {
+        const dbResponse = yield* Effect.tryPromise({
+            try: () => db.select().from(channelTable).where(eq(channelTable.createdBy, userId)),
+            catch: (err: unknown) => new DbError({ message: `Something went wrong: ${err}` }),
+        });
+        return dbResponse;
     });

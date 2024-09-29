@@ -1,15 +1,15 @@
 import { boolean, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { channel } from './channels.sql';
-import { user } from './users.sql';
+import { channelTable } from './channels.sql';
+import { userTable } from './users.sql';
 
-export const channelBannedUser = pgTable('channel_user_ban', {
+export const channelBannedUserTable = pgTable('channel_user_ban', {
     id: uuid('id').primaryKey().defaultRandom(),
     channelId: uuid('channel_id')
         .notNull()
-        .references(() => channel.id),
+        .references(() => channelTable.id),
     userId: uuid('user_id')
         .notNull()
-        .references(() => user.id),
+        .references(() => userTable.id),
     createdOn: timestamp('created_on').notNull().defaultNow(),
     pardoned: boolean('pardoned').notNull().default(false),
 });
@@ -17,8 +17,8 @@ export const channelBannedUser = pgTable('channel_user_ban', {
 /**
  * Represents a *ban* relation between a channel and a user
  */
-export type ChannelBannedUser = typeof channelBannedUser.$inferSelect;
+export type ChannelBannedUser = typeof channelBannedUserTable.$inferSelect;
 /**
  * Represents a new *ban* relation between a channel and a user yet to be persisted
  */
-export type NewChannelBannedUser = typeof channelBannedUser.$inferInsert;
+export type NewChannelBannedUser = typeof channelBannedUserTable.$inferInsert;

@@ -1,23 +1,23 @@
 import { pgTable, primaryKey, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { channel } from './channels.sql';
-import { user } from './users.sql';
-import { role } from './roles.sql';
+import { channelTable } from './channels.sql';
+import { userTable } from './users.sql';
+import { roleTable } from './roles.sql';
 
-export const invite = pgTable(
+export const inviteTable = pgTable(
     'invite',
     {
         channelId: uuid('channel_id')
             .notNull()
-            .references(() => channel.id),
+            .references(() => channelTable.id),
         userId: uuid('user_id')
             .notNull()
-            .references(() => user.id),
+            .references(() => userTable.id),
         // TODO: When building migration, ensure these expire when the invite table is updated (trigger)
         createdOn: timestamp('created_on').notNull().defaultNow(),
         // TODO: If the corresponding role is deleted, what happens?
         roleId: uuid('role_id')
             .notNull()
-            .references(() => role.id),
+            .references(() => roleTable.id),
     },
     (table) => ({
         pk: primaryKey({ columns: [table.channelId, table.userId] }),
@@ -27,5 +27,5 @@ export const invite = pgTable(
 /**
  * Represents an invitation to a user to join a channel
  */
-export type Invite = typeof invite.$inferSelect;
-export type NewInvite = typeof invite.$inferInsert;
+export type Invite = typeof inviteTable.$inferSelect;
+export type NewInvite = typeof inviteTable.$inferInsert;
