@@ -1,14 +1,19 @@
-export const dbError = (message: string) => ({ type: 'DB_ERROR', message }) as const;
-export type DbError = ReturnType<typeof dbError>;
+import { Data } from 'effect';
 
-export const resourceNotFound = (resource: string, message: string) =>
-    ({
-        type: 'RESOURCE_NOT_FOUND',
-        resource,
-        message,
-    }) as const;
-export type ResourceNotFoundError = ReturnType<typeof resourceNotFound>;
-
-export const badOptsError = <T>(message: string, opts: T) =>
-    ({ type: 'BAD_OPTS_ERROR', message, opts }) as const;
-export type BadOptsError<T> = ReturnType<typeof badOptsError<T>>;
+/**
+ * Indicates that some unknown DB error occurred
+ */
+export class DbError extends Data.TaggedError('DbError')<{ message: string }> {}
+/**
+ * Indicates that a requested resource could not be identified
+ */
+export class ResourceNotFoundError extends Data.TaggedError('ResourceNotFoundError')<{
+    message: string;
+}> {}
+/**
+ * Indicates that provided options of type `T` were malformed
+ */
+export class BadOptsError<T> extends Data.TaggedError('BadOptsError')<{
+    message: string;
+    opts: T;
+}> {}

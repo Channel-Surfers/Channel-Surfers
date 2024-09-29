@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Either } from 'effect';
+
     export let data;
 </script>
 
@@ -7,7 +9,7 @@
 </svelte:head>
 <h1>Welcome to Channel Surfers</h1>
 
-{#if data.channels}
+{#if !Either.isLeft(data.channels)}
     <p>retrieved {data.channels.length} channels successfully</p>
 {:else}
     <p>retrieved no channels due to error</p>
