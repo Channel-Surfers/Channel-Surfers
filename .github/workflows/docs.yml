@@ -35,3 +35,5 @@ jobs:
                   branch: gh-pages
                   clean: true
                   folder: docs
+                  git-config-name: Channel-Surfer CI
+                  git-config-email: <>
