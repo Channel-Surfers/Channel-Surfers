@@ -52,9 +52,9 @@ export const flyAndScale = (
 
             return styleToString({
                 transform: `${transform} translate3d(${x}px, ${y}px, 0) scale(${scale})`,
-                opacity: t
+                opacity: t,
             });
         },
-        easing: cubicOut
+        easing: cubicOut,
     };
 };

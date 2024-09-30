@@ -15,19 +15,43 @@ export default [
         languageOptions: {
             globals: {
                 ...globals.browser,
-                ...globals.node
-            }
-        }
+                ...globals.node,
+            },
+        },
     },
     {
         files: ['**/*.svelte'],
         languageOptions: {
             parserOptions: {
-                parser: ts.parser
-            }
-        }
+                parser: ts.parser,
+            },
+        },
     },
     {
-        ignores: ['build/', '.svelte-kit/', 'dist/', 'tailwind.config.ts', 'src/lib/shadcn/']
-    }
+        ignores: [
+            'build/',
+            '.svelte-kit/',
+            'dist/',
+            'tailwind.config.ts',
+            'src/lib/shadcn/',
+            'docs/',
+            'drizle/',
+        ],
+    },
+    {
+        rules: {
+            '@typescript-eslint/no-unused-vars': [
+                'error', // Change to 'error' if you want it to be an error
+                {
+                    args: 'all',
+                    argsIgnorePattern: '^_',
+                    caughtErrors: 'all',
+                    caughtErrorsIgnorePattern: '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    ignoreRestSiblings: true,
+                },
+            ],
+        },
+    },
 ];
