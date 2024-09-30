@@ -22,7 +22,7 @@ exec('npx eslint -f json', (err, stdout) => {
                 endLine: message.endLine,
                 col: message.column,
                 endColumn: message.endColumn,
-                title: 'eslint'
+                title: 'eslint',
             };
             const argstr = Object.entries(args)
                 .map(([k, v]) => `${k}=${v}`)
