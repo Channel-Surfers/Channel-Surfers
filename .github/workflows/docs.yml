@@ -15,7 +15,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-              node-version: [20.x]
+                node-version: [20.x]
         steps:
             - uses: actions/checkout@v2
             - name: Use Node.js ${{ matrix.node-version }}
@@ -24,6 +24,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
             - uses: actions/checkout@v2
+            - run: npm ci --include=dev
             - name: Build docs
               run: npx typedoc
             - name: Deploy
