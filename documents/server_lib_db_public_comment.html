@@ -1,0 +1,129 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>server/lib/db/public.comment | channel-surfers</title><meta name="description" content="Documentation for channel-surfers"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="../assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">channel-surfers</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><ul class="tsd-breadcrumb"><li><a href="../index.html">channel-surfers</a></li><li><a href="server_lib_db_public_comment.html">server/lib/db/public.comment</a></li></ul></div><div class="tsd-panel tsd-typography"><a id="md:publiccomment" class="tsd-anchor"></a><h1 class="tsd-anchor-link">public.comment<a href="#md:publiccomment" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1><a id="md:description" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Description<a href="#md:description" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><a id="md:columns" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Columns<a href="#md:columns" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Nullable</th>
+<th>Children</th>
+<th>Parents</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>uuid</td>
+<td>gen_random_uuid()</td>
+<td>false</td>
+<td><a href="server_lib_db_public_comment.html">public.comment</a> <a href="server_lib_db_public_comment_vote.html">public.comment_vote</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>content</td>
+<td>text</td>
+<td></td>
+<td>false</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>creator_id</td>
+<td>uuid</td>
+<td></td>
+<td>false</td>
+<td></td>
+<td><a href="server_lib_db_public_user.html">public.user</a></td>
+<td></td>
+</tr>
+<tr>
+<td>post_id</td>
+<td>uuid</td>
+<td></td>
+<td>false</td>
+<td></td>
+<td><a href="server_lib_db_public_post.html">public.post</a></td>
+<td></td>
+</tr>
+<tr>
+<td>reply_to</td>
+<td>uuid</td>
+<td></td>
+<td>true</td>
+<td></td>
+<td><a href="server_lib_db_public_comment.html">public.comment</a></td>
+<td></td>
+</tr>
+<tr>
+<td>created_on</td>
+<td>timestamp without time zone</td>
+<td>now()</td>
+<td>false</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>updated_on</td>
+<td>timestamp without time zone</td>
+<td>now()</td>
+<td>false</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<a id="md:constraints" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Constraints<a href="#md:constraints" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>comment_pkey</td>
+<td>PRIMARY KEY</td>
+<td>PRIMARY KEY (id)</td>
+</tr>
+<tr>
+<td>comments_parent_id_fkey</td>
+<td>FOREIGN KEY</td>
+<td>FOREIGN KEY (reply_to) REFERENCES comment(id)</td>
+</tr>
+<tr>
+<td>comment_post_id_post_id_fk</td>
+<td>FOREIGN KEY</td>
+<td>FOREIGN KEY (post_id) REFERENCES post(id)</td>
+</tr>
+<tr>
+<td>comment_creator_id_user_id_fk</td>
+<td>FOREIGN KEY</td>
+<td>FOREIGN KEY (creator_id) REFERENCES &quot;user&quot;(id)</td>
+</tr>
+</tbody>
+</table>
+<a id="md:indexes" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Indexes<a href="#md:indexes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>comment_pkey</td>
+<td>CREATE UNIQUE INDEX comment_pkey ON public.comment USING btree (id)</td>
+</tr>
+</tbody>
+</table>
+<a id="md:relations" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Relations<a href="#md:relations" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><p><img src="../media/public.comment.svg" alt="er"></p>
+<hr>
+<blockquote>
+<p>Generated by <a href="https://github.com/k1LoW/tbls" target="_blank" class="external">tbls</a></p>
+</blockquote>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:publiccomment"><span>public.comment</span></a><ul><li><a href="#md:description"><span>Description</span></a></li><li><a href="#md:columns"><span>Columns</span></a></li><li><a href="#md:constraints"><span>Constraints</span></a></li><li><a href="#md:indexes"><span>Indexes</span></a></li><li><a href="#md:relations"><span>Relations</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="../index.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-1"></use></svg><span>channel-surfers</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base=".."><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
