@@ -50,7 +50,7 @@ jobs:
             - name: Run tbls for generate database document
               run: tbls doc $POSTGRES_CONNECTION_STRING
             - name: Build docs
-              run: npx typedoc
+              run: npx typedoc --tsconfig ./tsconfig.json
             - name: Push to `gh-pages`
               uses: JamesIves/github-pages-deploy-action@v4
               with:
