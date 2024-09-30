@@ -25,7 +25,6 @@ jobs:
                     POSTGRES_DB: ci
                     POSTGRES_PASSWORD: password
                     POSTGRES_PORT: 5432
-                    POSTGRES_USER: localhost
                 ports:
                     - 5432:5432
                 options: >-
