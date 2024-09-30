@@ -24,6 +24,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
             - uses: actions/checkout@v2
+            - run: cp .env{.example,}
             - run: npm ci --include=dev
             - name: Build docs
               run: npx typedoc
