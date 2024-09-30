@@ -11,8 +11,6 @@ concurrency:
 jobs:
     docs:
         runs-on: ubuntu-latest
-        env:
-            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
         strategy:
             matrix:
                 node-version: [20.x]
@@ -26,6 +24,8 @@ jobs:
                   cache: 'npm'
             - name: Install Dependencies
               run: npm ci --include=dev
+            - name: Source dummy env
+              run: source .env.example
             - name: Build docs
               run: npx typedoc
             - name: Push to `gh-pages`

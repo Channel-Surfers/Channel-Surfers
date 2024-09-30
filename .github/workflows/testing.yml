@@ -14,9 +14,6 @@ jobs:
     unit:
         runs-on: ubuntu-latest
         name: Unit tests
-        env:
-            # This is a fake connection string that is placed just for the compiler to stop whining
-            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
         strategy:
             matrix:
                 node-version: [20.x]
@@ -29,5 +26,7 @@ jobs:
                   cache: 'npm'
             - name: Install Dependencies
               run: npm ci
+            - name: Source dummy env
+              run: source .env.example
             - name: Run tests
               run: npm run test:unit
