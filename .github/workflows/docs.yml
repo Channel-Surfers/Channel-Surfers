@@ -12,10 +12,26 @@ jobs:
     docs:
         runs-on: ubuntu-latest
         env:
-            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
+            # connection string for service container
+            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/ci-db'
         strategy:
             matrix:
                 node-version: [20.x]
+        services:
+            # Label used to access the service container
+            postgres:
+                # Docker Hub image
+                image: postgres
+                # Provide the password for postgres
+                env:
+                    POSTGRES_PASSWORD: password
+                    POSTGRES_DB: ci-db
+                # Set health checks to wait until postgres has started
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
         steps:
             - name: Checkout Repo
               uses: actions/checkout@v2
@@ -26,6 +42,11 @@ jobs:
                   cache: 'npm'
             - name: Install Dependencies
               run: npm ci --include=dev
+            - name: Checkout .tbls.yml
+              uses: actions/checkout@v3
+            - uses: k1low/setup-tbls@v1
+            - name: Run tbls for generate database document
+              run: tbls doc $POSTGRES_CONNECTION_STRING
             - name: Build docs
               run: npx typedoc
             - name: Push to `gh-pages`
