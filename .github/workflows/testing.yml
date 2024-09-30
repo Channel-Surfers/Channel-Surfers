@@ -1,0 +1,55 @@
+permissions:
+    contents: read
+on:
+    push:
+        branches: [main]
+    pull_request:
+# If new code is pushed to a PR branch, then cancel in progress workflows for that PR. Ensures that
+# we don't waste CI time, and returns results quicker https://github.com/jonhoo/rust-ci-conf/pull/5
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
+name: build
+jobs:
+    e2e:
+        runs-on: ubuntu-latest
+        name: E2E tests
+        env:
+            # This is a fake connection string that is placed just for the compiler to stop whining
+            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
+        strategy:
+            matrix:
+                node-version: [20.x]
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+            - name: Install Dependencies
+              run: npm ci
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps
+            - name: Run playwright tests
+              run: npm run test:integration
+    unit:
+        runs-on: ubuntu-latest
+        name: Unit tests
+        env:
+            # This is a fake connection string that is placed just for the compiler to stop whining
+            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
+        strategy:
+            matrix:
+                node-version: [20.x]
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+            - name: Install Dependencies
+              run: npm ci
+            - name: Run tests
+              run: npm run test:unit
