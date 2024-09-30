@@ -13,17 +13,17 @@ export async function GET(event: RequestEvent): Promise<Response> {
     if (!code || !state || !storedState || state !== storedState) {
         console.dir({ code, state, storedState });
         return new Response(null, {
-            status: 400
+            status: 400,
         });
     }
 
     try {
         const tokens = await discord.validateAuthorizationCode(code);
-        console.log({tokens});
+        console.log({ tokens });
         const discordUserResponse = await fetch('https://discord.com/api/users/@me', {
             headers: {
-                Authorization: `Bearer ${tokens.accessToken}`
-            }
+                Authorization: `Bearer ${tokens.accessToken}`,
+            },
         });
         const discordUser: DiscordUser = await discordUserResponse.json();
         console.log({ discordUser });
@@ -33,7 +33,9 @@ export async function GET(event: RequestEvent): Promise<Response> {
         const db = await getDb();
 
         // Replace this with your own DB client.
-        const existingUser = await Effect.runPromise(getUserByAuth(db, { discordId: BigInt(discord_id) }));
+        const existingUser = await Effect.runPromise(
+            getUserByAuth(db, { discordId: BigInt(discord_id) })
+        );
 
         const lucia = await getLucia();
         if (existingUser) {
@@ -41,27 +43,29 @@ export async function GET(event: RequestEvent): Promise<Response> {
             const sessionCookie = lucia.createSessionCookie(session.id);
             event.cookies.set(sessionCookie.name, sessionCookie.value, {
                 path: '.',
-                ...sessionCookie.attributes
+                ...sessionCookie.attributes,
             });
         } else {
             // Replace this with your own DB client.
-            const user = await Effect.runPromise(createUser(db, {
-                discordId: BigInt(discordUser.id),
-                username: discordUser.username,
-            }));
+            const user = await Effect.runPromise(
+                createUser(db, {
+                    discordId: BigInt(discordUser.id),
+                    username: discordUser.username,
+                })
+            );
 
             const session = await lucia.createSession(user.id, {});
             const sessionCookie = lucia.createSessionCookie(session.id);
             event.cookies.set(sessionCookie.name, sessionCookie.value, {
                 path: '.',
-                ...sessionCookie.attributes
+                ...sessionCookie.attributes,
             });
         }
         return new Response(null, {
             status: 302,
             headers: {
-                Location: '/'
-            }
+                Location: '/',
+            },
         });
     } catch (e) {
         console.error(e);
@@ -69,11 +73,11 @@ export async function GET(event: RequestEvent): Promise<Response> {
         if (e instanceof OAuth2RequestError) {
             // invalid code
             return new Response(null, {
-                status: 400
+                status: 400,
             });
         }
         return new Response(null, {
-            status: 500
+            status: 500,
         });
     }
 }

@@ -10,9 +10,7 @@ export const getUserById = (
 ): Effect.Effect<User, DbError | ResourceNotFoundError> =>
     Effect.gen(function* (_) {
         const dbResponse = yield* Effect.tryPromise({
-            try: () => db.select()
-                        .from(userTable)
-                        .where(eq(userTable.id, id)),
+            try: () => db.select().from(userTable).where(eq(userTable.id, id)),
             catch: (err: unknown) => new DbError({ message: `Something went wrong: ${err}` }),
         });
         if (dbResponse.length == 0) {
@@ -30,9 +28,7 @@ export const getUserByAuth = (
 ): Effect.Effect<User, DbError | ResourceNotFoundError> =>
     Effect.gen(function* (_) {
         const dbResponse = yield* Effect.tryPromise({
-            try: () => db.select()
-                        .from(userTable)
-                        .where(eq(userTable.discordId, auth.discordId)),
+            try: () => db.select().from(userTable).where(eq(userTable.discordId, auth.discordId)),
             catch: (err: unknown) => new DbError({ message: `Something went wrong: ${err}` }),
         });
         if (dbResponse.length == 0) {
@@ -44,20 +40,15 @@ export const getUserByAuth = (
         return dbResponse[0];
     });
 
-export const createUser = (
-    db: DB,
-    newUser: NewUser
-): Effect.Effect<User, DbError> => 
+export const createUser = (db: DB, newUser: NewUser): Effect.Effect<User, DbError> =>
     Effect.gen(function* (_) {
         const dbResponse = yield* Effect.tryPromise({
             try: () => db.insert(userTable).values(newUser).returning(),
-                catch: (err) => new DbError({ message: `Something went wrong: ${err}` }),
+            catch: (err) => new DbError({ message: `Something went wrong: ${err}` }),
         });
 
         if (dbResponse.length == 0) {
-            Effect.fail(
-                new ResourceNotFoundError({ message: 'Could not create new user' })
-            );
+            Effect.fail(new ResourceNotFoundError({ message: 'Could not create new user' }));
         }
         return dbResponse[0];
     });
