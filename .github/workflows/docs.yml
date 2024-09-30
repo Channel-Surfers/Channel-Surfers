@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         env:
             # connection string for service container
-            POSTGRES_CONNECTION_STRING: 'postgresql://postgres:password@localhost:5432/ci-db?sslmode=disable'
+            POSTGRES_CONNECTION_STRING: 'postgresql://postgres:password@postgres:5432/ci-db?sslmode=disable'
         strategy:
             matrix:
                 node-version: [20.x]
@@ -43,6 +43,8 @@ jobs:
                   cache: 'npm'
             - name: Install Dependencies
               run: npm ci --include=dev
+            - name: Run migrations
+              run: npm run migrate
             - name: Checkout .tbls.yml
               uses: actions/checkout@v3
             - uses: k1low/setup-tbls@v1
