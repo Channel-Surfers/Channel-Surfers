@@ -28,7 +28,5 @@ jobs:
               run: npm ci
             - name: Source dummy env
               run: source .env.example
-            - name: Build Docs
-              run: npx typedoc
             - name: Build Project
               run: npm run build
