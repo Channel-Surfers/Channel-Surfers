@@ -8,6 +8,13 @@
       "when": 1727555035367,
       "tag": "0000_new_skullbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1727711835354,
+      "tag": "0001_safe_sabretooth",
+      "breakpoints": true
     }
   ]
 }
