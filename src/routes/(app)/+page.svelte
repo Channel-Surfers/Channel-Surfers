@@ -9,6 +9,8 @@
 </svelte:head>
 <h1>Welcome to Channel Surfers</h1>
 
+<a href="/user" class="text-blue-700">User page</a>
+
 {#if !Either.isLeft(data.channels)}
     <p>retrieved {data.channels.length} channels successfully</p>
 {:else}
