@@ -27,6 +27,8 @@ jobs:
                 env:
                     POSTGRES_PASSWORD: password
                     POSTGRES_DB: ci-db
+                ports:
+                    - 5432:5432
                 # Set health checks to wait until postgres has started
                 options: >-
                     --health-cmd pg_isready
