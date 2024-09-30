@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         env:
             # connection string for service container
-            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/ci-db'
+            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@localhost:5432/ci-db'
         strategy:
             matrix:
                 node-version: [20.x]
