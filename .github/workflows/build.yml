@@ -28,5 +28,7 @@ jobs:
               run: npm ci
             - name: Copy dummy env
               run: cp .env.example .env
+            - name: Build docs
+              run: npx typedoc
             - name: Build Project
               run: npm run build
