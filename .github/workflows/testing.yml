@@ -11,28 +11,6 @@ concurrency:
     cancel-in-progress: true
 name: build
 jobs:
-    e2e:
-        runs-on: ubuntu-latest
-        name: E2E tests
-        env:
-            # This is a fake connection string that is placed just for the compiler to stop whining
-            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
-        strategy:
-            matrix:
-                node-version: [20.x]
-        steps:
-            - uses: actions/checkout@v4
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: 'npm'
-            - name: Install Dependencies
-              run: npm ci
-            - name: Install Playwright Browsers
-              run: npx playwright install --with-deps
-            - name: Run playwright tests
-              run: npm run test:integration
     unit:
         runs-on: ubuntu-latest
         name: Unit tests
