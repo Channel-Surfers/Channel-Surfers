@@ -44,11 +44,9 @@ jobs:
               run: npm ci --include=dev
             - name: Run migrations
               run: npm run migrate
-            - name: Checkout .tbls.yml
-              uses: actions/checkout@v3
             - uses: k1low/setup-tbls@v1
             - name: Run tbls for generate database document
-              run: tbls doc $POSTGRES_CONNECTION_STRING
+              run: tbls doc $POSTGRES_CONNECTION_STRING src/server/lib/db
             - name: Build docs
               run: npx typedoc --tsconfig ./tsconfig.json
             - name: Push to `gh-pages`
