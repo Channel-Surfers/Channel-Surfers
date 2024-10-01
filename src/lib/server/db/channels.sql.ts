@@ -1,6 +1,9 @@
 import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core';
 import { userTable } from './users.sql';
 
+/**
+ * @document dbdocs/public.channel.md
+ */
 export const channelTable = pgTable('channel', {
     // Be on lookout for ways of using uuidv7, ulid, or cuid2 instead of uuid
     id: uuid('id').primaryKey().defaultRandom(),
