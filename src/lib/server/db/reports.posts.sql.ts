@@ -2,6 +2,9 @@ import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { postTable } from './posts.sql';
 import { reportStatusEnum } from './types.sql';
 
+/**
+ * @document public.post_report.md
+ */
 export const postReportTable = pgTable('post_report', {
     id: uuid('id').primaryKey().defaultRandom(),
     postId: uuid('post_id').references(() => postTable.id),

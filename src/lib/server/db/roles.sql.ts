@@ -1,6 +1,9 @@
 import { boolean, pgTable, smallint, uuid, varchar } from 'drizzle-orm/pg-core';
 import { channelTable } from './channels.sql';
 
+/**
+ * @document public.role.md
+ */
 export const roleTable = pgTable('role', {
     id: uuid('id').primaryKey().defaultRandom(),
     channelId: uuid('channel_id')

@@ -3,6 +3,9 @@ import { userTable } from './users.sql';
 import { commentTable } from './comments.sql';
 import { voteEnum } from './types.sql';
 
+/**
+ * @document public.comment_vote.md
+ */
 export const commentVoteTable = pgTable(
     'comment_vote',
     {

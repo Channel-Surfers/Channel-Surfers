@@ -2,6 +2,9 @@ import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { userTable } from './users.sql';
 import { reportStatusEnum } from './types.sql';
 
+/**
+ * @document public.user_report.md
+ */
 export const userReportTable = pgTable('user_report', {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id').references(() => userTable.id),

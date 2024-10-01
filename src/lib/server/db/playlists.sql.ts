@@ -1,6 +1,9 @@
 import { pgTable, uuid, varchar, text, boolean } from 'drizzle-orm/pg-core';
 import { userTable } from './users.sql';
 
+/**
+ * @document public.playlist.md
+ */
 export const playlistTable = pgTable('playlist', {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id')

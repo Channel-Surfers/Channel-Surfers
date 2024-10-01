@@ -1,5 +1,8 @@
 import { pgTable, uuid } from 'drizzle-orm/pg-core';
 
+/**
+ * @document public.follow.md
+ */
 export const followTable = pgTable(
     'follow',
     {

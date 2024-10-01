@@ -1,6 +1,9 @@
 import { pgTable, primaryKey, uuid } from 'drizzle-orm/pg-core';
 import { userTable } from './users.sql';
 
+/**
+ * @document public.user_block.md
+ */
 export const userBlockTable = pgTable(
     'user_block',
     {
