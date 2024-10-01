@@ -46,7 +46,7 @@ jobs:
               run: npm run migrate
             - uses: k1low/setup-tbls@v1
             - name: Run tbls for generate database document
-              run: tbls doc $POSTGRES_CONNECTION_STRING src/server/lib/db
+              run: tbls doc $POSTGRES_CONNECTION_STRING src/lib/server/db
             - name: Build docs
               run: npx typedoc --tsconfig ./tsconfig.json
             - name: Push to `gh-pages`

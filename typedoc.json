@@ -1,6 +1,6 @@
 {
     "entryPoints": ["./src"],
     "entryPointStrategy": "expand",
-    "projectDocuments": ["dbdoc/*.md", "src/**/*.md"],
+    "projectDocuments": ["src/**/*.md"],
     "out": "docs"
 }
