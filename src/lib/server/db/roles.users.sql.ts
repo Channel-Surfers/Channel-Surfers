@@ -2,6 +2,9 @@ import { pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { userTable } from './users.sql';
 import { roleTable } from './roles.sql';
 
+/**
+ * @document public.user_role.md
+ */
 export const userRoleTable = pgTable(
     'user_role',
     {

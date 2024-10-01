@@ -2,6 +2,9 @@ import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { channelTable } from './channels.sql';
 import { reportStatusEnum } from './types.sql';
 
+/**
+ * @document public.channel_report.md
+ */
 export const channelReportTable = pgTable('channel_report', {
     id: uuid('id').primaryKey().defaultRandom(),
     channelId: uuid('channel_id').references(() => channelTable.id),

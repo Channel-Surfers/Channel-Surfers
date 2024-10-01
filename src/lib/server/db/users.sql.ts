@@ -1,6 +1,9 @@
 import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { siteRoleEnum } from './types.sql';
 
+/**
+ * @document public.user.md
+ */
 export const userTable = pgTable('user', {
     id: uuid('id').primaryKey().defaultRandom(),
     /**

@@ -3,6 +3,9 @@ import { userTable } from './users.sql';
 import { channelTable } from './channels.sql';
 import { reportStatusEnum } from './types.sql';
 
+/**
+ * @document public.channel_user_reports.md
+ */
 export const channelUserReportTable = pgTable('channel_user_reports', {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id')

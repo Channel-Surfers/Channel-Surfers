@@ -2,6 +2,9 @@ import { pgTable, uuid } from 'drizzle-orm/pg-core';
 import { channelTable } from './channels.sql';
 import { userTable } from './users.sql';
 
+/**
+ * @document public.subscription.md
+ */
 export const subscriptionTable = pgTable('subscription', {
     id: uuid('id').notNull().defaultRandom(),
     channelId: uuid('channel_id')

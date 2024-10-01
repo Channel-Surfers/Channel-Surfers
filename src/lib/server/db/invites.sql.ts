@@ -3,6 +3,9 @@ import { channelTable } from './channels.sql';
 import { userTable } from './users.sql';
 import { roleTable } from './roles.sql';
 
+/**
+ * @document public.invite.md
+ */
 export const inviteTable = pgTable(
     'invite',
     {

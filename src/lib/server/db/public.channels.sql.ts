@@ -1,6 +1,9 @@
 import { pgTable, uuid, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { channelTable } from './channels.sql';
 
+/**
+ * @document public.public_channel.md
+ */
 export const publicChannelTable = pgTable('public_channel', {
     channelId: uuid('post_id')
         .notNull()
