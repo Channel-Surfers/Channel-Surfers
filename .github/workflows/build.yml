@@ -13,13 +13,12 @@ name: build
 jobs:
     build:
         env:
+            # This is a fake connection string that is placed just for the compiler to stop whining
+            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
             PUBLIC_PREVIEW_HOST: ${{ secrets.PUBLIC_PREVIEW_HOST }}
             PUBLIC_LIBRARY_ID: ${{ secrets.PUBLIC_LIBRARY_ID }}
         runs-on: ubuntu-latest
         name: build
-        env:
-            # This is a fake connection string that is placed just for the compiler to stop whining
-            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
         strategy:
             matrix:
                 node-version: [20.x]
