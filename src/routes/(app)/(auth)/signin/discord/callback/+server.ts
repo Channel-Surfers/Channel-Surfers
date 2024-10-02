@@ -11,7 +11,6 @@ export async function GET(event: RequestEvent): Promise<Response> {
     const storedState = event.cookies.get('discord_oauth_state') ?? null;
 
     if (!code || !state || !storedState || state !== storedState) {
-        console.dir({ code, state, storedState });
         return new Response(null, {
             status: 400,
         });
@@ -19,48 +18,47 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
     try {
         const tokens = await discord.validateAuthorizationCode(code);
-        console.log({ tokens });
+
+        // Get information about the user we just authenticated
         const discordUserResponse = await fetch('https://discord.com/api/users/@me', {
             headers: {
                 Authorization: `Bearer ${tokens.accessToken}`,
             },
         });
         const discordUser: DiscordUser = await discordUserResponse.json();
-        console.log({ discordUser });
-
-        const discord_id = discordUser.id;
 
         const db = await getDb();
 
-        // Replace this with your own DB client.
-        const existingUser = await Effect.runPromise(
-            getUserByAuth(db, { discordId: BigInt(discord_id) })
+        let user = await Effect.runPromise(
+            getUserByAuth(db, {
+                discordId: BigInt(discordUser.id),
+            })
         );
 
         const lucia = await getLucia();
-        if (existingUser) {
-            const session = await lucia.createSession(existingUser.id, {});
-            const sessionCookie = lucia.createSessionCookie(session.id);
-            event.cookies.set(sessionCookie.name, sessionCookie.value, {
-                path: '.',
-                ...sessionCookie.attributes,
-            });
-        } else {
-            // Replace this with your own DB client.
-            const user = await Effect.runPromise(
+
+        // if user doesn't exist, create one
+        if (!user) {
+            user = await Effect.runPromise(
                 createUser(db, {
                     discordId: BigInt(discordUser.id),
                     username: discordUser.username,
+                    // TODO: Upload this to our own platform
+                    profileImage: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${discordUser.avatar.startsWith('a_') ? 'gif' : 'png'}`,
                 })
             );
-
-            const session = await lucia.createSession(user.id, {});
-            const sessionCookie = lucia.createSessionCookie(session.id);
-            event.cookies.set(sessionCookie.name, sessionCookie.value, {
-                path: '.',
-                ...sessionCookie.attributes,
-            });
         }
+
+        // Set session & cookies
+        const session = await lucia.createSession(user.id, {});
+        const sessionCookie = lucia.createSessionCookie(session.id);
+        event.cookies.set(sessionCookie.name, sessionCookie.value, {
+            path: '.',
+            ...sessionCookie.attributes,
+        });
+
+        // Redirect to '/'
+        // TODO: Let the user continue to their target destination
         return new Response(null, {
             status: 302,
             headers: {
@@ -69,7 +67,6 @@ export async function GET(event: RequestEvent): Promise<Response> {
         });
     } catch (e) {
         console.error(e);
-        // the specific error message depends on the provider
         if (e instanceof OAuth2RequestError) {
             // invalid code
             return new Response(null, {

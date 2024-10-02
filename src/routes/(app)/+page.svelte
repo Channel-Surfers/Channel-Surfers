@@ -7,7 +7,7 @@
 <svelte:head>
     <title>Channel Surfers</title>
 </svelte:head>
-<h1>Welcome to Channel Surfers</h1>
+<h1>Welcome to Channel Surfers{data.user ? `, ${data.user.username}` : ''}</h1>
 
 <a href="/user" class="text-blue-700">User page</a>
 
