@@ -29,14 +29,7 @@ jobs:
                   submodules: true
             - run: npm ci
             - name: prettier
-              run: |
-                  set +e
-                  out=$(npx prettier -l . 2>&1)
-                  st=$?
-                  for f in $out; do
-                    echo "::error file=$f::Prettier error in $f"
-                  done
-                  exit $st
+              run: './.github/workflows/lint.sh'
     eslint:
         runs-on: ubuntu-latest
         name: eslint
@@ -55,4 +48,4 @@ jobs:
                   submodules: true
             - run: npm ci
             - name: prettier
-              run: npx eslint .
+              run: node .github/workflows/eslint.js

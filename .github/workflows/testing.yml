@@ -1,0 +1,32 @@
+permissions:
+    contents: read
+on:
+    push:
+        branches: [main]
+    pull_request:
+# If new code is pushed to a PR branch, then cancel in progress workflows for that PR. Ensures that
+# we don't waste CI time, and returns results quicker https://github.com/jonhoo/rust-ci-conf/pull/5
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
+name: test
+jobs:
+    unit:
+        runs-on: ubuntu-latest
+        name: Unit tests
+        strategy:
+            matrix:
+                node-version: [20.x]
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+            - name: Install Dependencies
+              run: npm ci
+            - name: Copy dummy env
+              run: cp .env.example .env
+            - name: Run tests
+              run: npm run test:unit
