@@ -21,6 +21,7 @@
     import { createEventDispatcher } from 'svelte';
 
     export let post: PostData | undefined = undefined;
+    export let playing_video: boolean = false;
     const dispatch = createEventDispatcher();
 
     let upvote_pressed = false;
@@ -38,8 +39,6 @@
         const voteChangeValue: 'up' | 'down' | 'none' = new_state ? dir : 'none';
         dispatch('voteChange', voteChangeValue);
     };
-
-    let playing_video = false;
 
     let hovering = false;
     $: src = post
