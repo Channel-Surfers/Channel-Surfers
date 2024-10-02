@@ -7,8 +7,12 @@ export type uuid = string;
  * Data required for the Post component
  */
 export interface PostData {
+    title: string;
     videoId: uuid;
     user: UserChannelData;
+    badges: string[];
+    upvotes: number;
+    downvotes: number;
 }
 
 /**
@@ -17,4 +21,5 @@ export interface PostData {
 export interface UserChannelData {
     username: string;
     channel: string;
+    avatar: string | undefined;
 }
