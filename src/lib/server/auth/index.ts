@@ -9,6 +9,8 @@ import type { SiteRole } from '../db/types.sql';
 import { userTable } from '../db/users.sql';
 
 import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, ORIGIN } from '$env/static/private';
+import { Effect } from 'effect';
+import { getUserByAuth, getUserById } from '../services/users';
 
 let lucia: Lucia | undefined;
 
@@ -87,7 +89,21 @@ export const updateLocals = async ({
             ...sessionCookie.attributes,
         });
     }
-    locals.user = user;
+
+    if (user === null) return;
+
+    const db = await getDb();
+    let dbUser = await Effect.runPromise(
+        getUserById(db, user.id)
+    );
+
+    locals.user = {
+        id: dbUser.id,
+        username: dbUser.username,
+        profileImage: dbUser.profileImage,
+        role: dbUser.role,
+        createdOn: dbUser.createdOn,
+    };
     locals.session = session;
 };
 
@@ -101,7 +117,7 @@ declare module 'lucia' {
 export interface AuthUser {
     id: string;
     username: string;
-    profileImage: string;
+    profileImage: string | null;
     role: SiteRole;
     createdOn: Date;
 }
