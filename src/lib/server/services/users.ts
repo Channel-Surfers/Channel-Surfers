@@ -24,7 +24,7 @@ export const getUserById = (
 
 export const getUserByAuth = (
     db: DB,
-    auth: { discordId: BigInt }
+    auth: { discordId: bigint }
 ): Effect.Effect<User, DbError | ResourceNotFoundError> =>
     Effect.gen(function* (_) {
         const dbResponse = yield* Effect.tryPromise({
