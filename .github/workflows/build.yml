@@ -12,11 +12,13 @@ concurrency:
 name: build
 jobs:
     build:
-        runs-on: ubuntu-latest
-        name: build
         env:
             # This is a fake connection string that is placed just for the compiler to stop whining
             POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
+            PUBLIC_PREVIEW_HOST: 'https://example.com/'
+            PUBLIC_LIBRARY_ID: 000000
+        runs-on: ubuntu-latest
+        name: build
         strategy:
             matrix:
                 node-version: [20.x]

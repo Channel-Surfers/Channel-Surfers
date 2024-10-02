@@ -1,4 +1,5 @@
 import { fontFamily } from 'tailwindcss/defaultTheme';
+import colors from 'tailwindcss/colors';
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -15,6 +16,8 @@ const config: Config = {
         },
         extend: {
             colors: {
+                upvote: colors.orange[600],
+                downvote: colors.cyan[600],
                 border: 'hsl(var(--border) / <alpha-value>)',
                 input: 'hsl(var(--input) / <alpha-value>)',
                 ring: 'hsl(var(--ring) / <alpha-value>)',
