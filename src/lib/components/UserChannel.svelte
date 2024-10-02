@@ -1,6 +1,7 @@
 <script lang="ts">
     import * as Avatar from '$lib/shadcn/components/ui/avatar/index';
     import { Skeleton } from '$lib/shadcn/components/ui/skeleton/index';
+    import type { UserChannelData } from '$lib/types';
 
     export let user: UserChannelData | undefined;
 </script>
