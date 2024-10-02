@@ -18,7 +18,11 @@
     import UserChannel from './UserChannel.svelte';
     import Player from './Player.svelte';
 
-    const videoId = 'e0245338-7c04-4a6c-b44f-0e279a849cf5';
+    import type { PostData } from '$lib/types';
+    import { createEventDispatcher } from 'svelte';
+
+    export let post: PostData;
+	const dispatch = createEventDispatcher();
 
     let loading = true;
     setTimeout(() => (loading = false), 1000);
@@ -36,12 +40,13 @@
             new_state = !downvote_pressed;
         }
         console.log(dir, new_state);
+
     };
 
     let playing_video = false;
 
     let hovering = false;
-    $: src = `${PUBLIC_PREVIEW_HOST}/${videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`;
+    $: src = `${PUBLIC_PREVIEW_HOST}/${post.videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`;
 </script>
 
 <Card.Root class="m-auto my-4 flex h-48 w-2/3 flex-row p-2">
@@ -54,7 +59,7 @@
         {#if loading}
             <Skeleton class="h-full w-full rounded-lg" />
         {:else if playing_video}
-            <Player {videoId} autoplay />
+            <Player videoId={post.videoId} autoplay />
         {:else}
             <button
                 class="absolute flex h-full w-full items-center justify-center rounded-lg bg-black/50"
@@ -70,7 +75,7 @@
         <Card.Header class="p-2 px-6">
             <Card.Title class="space-y-1">
                 <div class="mb-4">
-                    <UserChannel user={loading ? undefined : { username: 'foo', channel: 'bar' }} />
+                    <UserChannel user={loading ? post.user : undefined} />
                 </div>
                 {#if loading}
                     <Skeleton class="mt-3 h-5 w-full" />

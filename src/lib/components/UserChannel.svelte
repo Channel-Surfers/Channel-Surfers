@@ -2,7 +2,7 @@
     import * as Avatar from '$lib/shadcn/components/ui/avatar/index';
     import { Skeleton } from '$lib/shadcn/components/ui/skeleton/index';
 
-    export let user: { username: string; channel: string; avatar?: string } | undefined;
+    export let user: UserChannelData | undefined;
 </script>
 
 <div class="flex items-center space-x-4">

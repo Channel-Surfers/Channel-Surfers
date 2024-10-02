@@ -15,8 +15,8 @@ jobs:
         env:
             # This is a fake connection string that is placed just for the compiler to stop whining
             POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
-            PUBLIC_PREVIEW_HOST: ${{ secrets.PUBLIC_PREVIEW_HOST }}
-            PUBLIC_LIBRARY_ID: ${{ secrets.PUBLIC_LIBRARY_ID }}
+            PUBLIC_PREVIEW_HOST: 'https://example.com/'
+            PUBLIC_LIBRARY_ID: 000000
         runs-on: ubuntu-latest
         name: build
         strategy:
