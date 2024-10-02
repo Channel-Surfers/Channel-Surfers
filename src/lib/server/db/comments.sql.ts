@@ -3,6 +3,9 @@ import { userTable } from './users.sql';
 import { postTable } from './posts.sql';
 //import { relations } from 'drizzle-orm';
 
+/**
+ * @document public.comment.md
+ */
 export const commentTable = pgTable(
     'comment',
     {

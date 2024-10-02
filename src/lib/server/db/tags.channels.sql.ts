@@ -1,6 +1,9 @@
 import { pgTable, unique, uuid, varchar } from 'drizzle-orm/pg-core';
 import { channelTable } from './channels.sql';
 
+/**
+ * @document public.channel_tags.md
+ */
 export const channelTagsTable = pgTable(
     'channel_tags',
     {

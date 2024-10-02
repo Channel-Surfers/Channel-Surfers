@@ -2,6 +2,9 @@ import { boolean, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { channelTable } from './channels.sql';
 import { userTable } from './users.sql';
 
+/**
+ * @document public.channel_user_ban.md
+ */
 export const channelBannedUserTable = pgTable('channel_user_ban', {
     id: uuid('id').primaryKey().defaultRandom(),
     channelId: uuid('channel_id')
