@@ -4,23 +4,22 @@ import { and, eq } from 'drizzle-orm';
 import { userTable, type NewUser, type User } from '../db/users.sql';
 
 export const getUserById = async (db: DB, id: string): Promise<User> => {
-    const [ ret ] = await db
-        .select()
-        .from(userTable)
-        .where(eq(userTable.id, id));
+    const [ret] = await db.select().from(userTable).where(eq(userTable.id, id));
 
     if (!ret) {
-        throw new ResourceNotFoundError({ message: 'Could not find user by provided id' })
+        throw new ResourceNotFoundError({ message: 'Could not find user by provided id' });
     }
 
     return ret;
-}
+};
 
-export const getUserByAuth = async (db: DB, auth: { discordId?: bigint, githubId?: number }): Promise<User | undefined> => {
-
+export const getUserByAuth = async (
+    db: DB,
+    auth: { discordId?: bigint; githubId?: number }
+): Promise<User | undefined> => {
     if (!auth.discordId && !auth.githubId) return undefined;
 
-    const [ ret ] = await db
+    const [ret] = await db
         .select()
         .from(userTable)
         .where(
@@ -31,17 +30,14 @@ export const getUserByAuth = async (db: DB, auth: { discordId?: bigint, githubId
         );
 
     return ret;
-}
+};
 
 export const createUser = async (db: DB, newUser: NewUser): Promise<User> => {
-    const [ ret ] = await db
-        .insert(userTable)
-        .values(newUser)
-        .returning();
+    const [ret] = await db.insert(userTable).values(newUser).returning();
 
     if (!ret) {
         throw new ResourceNotFoundError({ message: 'Could not create new user' });
     }
 
     return ret;
-}
+};

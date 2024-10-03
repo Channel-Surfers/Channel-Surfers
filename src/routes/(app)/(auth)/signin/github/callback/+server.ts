@@ -17,11 +17,11 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
     try {
         const tokens = await github.validateAuthorizationCode(code);
-        
+
         // Get information about the user we just authenticated
         const githubUserResponse = await fetch('https://api.github.com/user', {
             headers: {
-                Authorization: `Bearer ${tokens.accessToken}`
+                Authorization: `Bearer ${tokens.accessToken}`,
             },
         });
         const githubUser: GitHubUser = await githubUserResponse.json();
@@ -55,23 +55,22 @@ export async function GET(event: RequestEvent): Promise<Response> {
         return new Response(null, {
             status: 302,
             headers: {
-                Location: '/'
-            }
+                Location: '/',
+            },
         });
     } catch (e) {
         console.error(e);
         if (e instanceof OAuth2RequestError) {
             // invalid code
             return new Response(null, {
-                status: 400
+                status: 400,
             });
         }
         return new Response(null, {
-            status: 500
+            status: 500,
         });
     }
 }
-
 
 interface GitHubUser {
     id: number;

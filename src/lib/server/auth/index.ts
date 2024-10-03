@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import { GitHub } from "arctic";
+import { GitHub } from 'arctic';
 import { Discord } from 'arctic';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { getDb } from '..';
@@ -11,7 +11,13 @@ import { userTable } from '../db/users.sql';
 import type { Cookies } from '@sveltejs/kit';
 import type { SiteRole } from '../db/types.sql';
 
-import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, ORIGIN, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '$env/static/private';
+import {
+    DISCORD_CLIENT_ID,
+    DISCORD_CLIENT_SECRET,
+    ORIGIN,
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET,
+} from '$env/static/private';
 
 let lucia: Lucia | undefined;
 
@@ -93,7 +99,7 @@ export const updateLocals = async ({
     if (user === null) return;
 
     const db = await getDb();
-    let dbUser = await getUserById(db, user.id);
+    const dbUser = await getUserById(db, user.id);
 
     locals.user = {
         id: dbUser.id,
@@ -141,5 +147,5 @@ export const discord = new Discord(
 );
 
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
-    redirectURI: `${origin}/signin/github/callback`
+    redirectURI: `${origin}/signin/github/callback`,
 });
