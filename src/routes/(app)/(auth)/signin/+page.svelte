@@ -10,5 +10,6 @@
     </Card.Header>
     <Card.Content class="flex flex-col gap-2">
         <Button href="/signin/discord" variant="secondary" class="w-full">Discord</Button>
+        <Button href="/signin/github" variant="secondary" class="w-full">GitHub</Button>
     </Card.Content>
 </Card.Root>

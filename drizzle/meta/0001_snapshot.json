@@ -1,5 +1,5 @@
 {
-  "id": "6d962c32-55a1-4a68-93b7-0b95332419e4",
+  "id": "bda1013b-66f4-4a19-9f26-ff76924bf883",
   "prevId": "0828418d-5903-460f-8ba9-329a4199b537",
   "version": "7",
   "dialect": "postgresql",
@@ -1507,6 +1507,12 @@
         "discord_id": {
           "name": "discord_id",
           "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "github_id": {
+          "name": "github_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         }

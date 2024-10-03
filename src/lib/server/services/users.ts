@@ -1,54 +1,47 @@
-import { Effect } from 'effect';
 import type { DB } from '..';
-import { DbError, ResourceNotFoundError } from './utils/errors';
-import { eq } from 'drizzle-orm';
+import { ResourceNotFoundError } from './utils/errors';
+import { and, eq } from 'drizzle-orm';
 import { userTable, type NewUser, type User } from '../db/users.sql';
 
-export const getUserById = (
-    db: DB,
-    id: string
-): Effect.Effect<User, DbError | ResourceNotFoundError> =>
-    Effect.gen(function* (_) {
-        const dbResponse = yield* Effect.tryPromise({
-            try: () => db.select().from(userTable).where(eq(userTable.id, id)),
-            catch: (err: unknown) => new DbError({ message: `Something went wrong: ${err}` }),
-        });
-        if (dbResponse.length == 0) {
-            Effect.fail(
-                new ResourceNotFoundError({ message: 'Could not find user by provided id' })
-            );
-        }
+export const getUserById = async (db: DB, id: string): Promise<User> => {
+    const [ ret ] = await db
+        .select()
+        .from(userTable)
+        .where(eq(userTable.id, id));
 
-        return dbResponse[0];
-    });
+    if (!ret) {
+        throw new ResourceNotFoundError({ message: 'Could not find user by provided id' })
+    }
 
-export const getUserByAuth = (
-    db: DB,
-    auth: { discordId: bigint }
-): Effect.Effect<User, DbError | ResourceNotFoundError> =>
-    Effect.gen(function* (_) {
-        const dbResponse = yield* Effect.tryPromise({
-            try: () => db.select().from(userTable).where(eq(userTable.discordId, auth.discordId)),
-            catch: (err: unknown) => new DbError({ message: `Something went wrong: ${err}` }),
-        });
-        if (dbResponse.length == 0) {
-            Effect.fail(
-                new ResourceNotFoundError({ message: 'Could not find user by provided id' })
-            );
-        }
+    return ret;
+}
 
-        return dbResponse[0];
-    });
+export const getUserByAuth = async (db: DB, auth: { discordId?: bigint, githubId?: number }): Promise<User | undefined> => {
 
-export const createUser = (db: DB, newUser: NewUser): Effect.Effect<User, DbError> =>
-    Effect.gen(function* (_) {
-        const dbResponse = yield* Effect.tryPromise({
-            try: () => db.insert(userTable).values(newUser).returning(),
-            catch: (err) => new DbError({ message: `Something went wrong: ${err}` }),
-        });
+    if (!auth.discordId && !auth.githubId) return undefined;
 
-        if (dbResponse.length == 0) {
-            Effect.fail(new ResourceNotFoundError({ message: 'Could not create new user' }));
-        }
-        return dbResponse[0];
-    });
+    const [ ret ] = await db
+        .select()
+        .from(userTable)
+        .where(
+            and(
+                auth.discordId ? eq(userTable.discordId, auth.discordId) : undefined,
+                auth.githubId ? eq(userTable.githubId, auth.githubId) : undefined
+            )
+        );
+
+    return ret;
+}
+
+export const createUser = async (db: DB, newUser: NewUser): Promise<User> => {
+    const [ ret ] = await db
+        .insert(userTable)
+        .values(newUser)
+        .returning();
+
+    if (!ret) {
+        throw new ResourceNotFoundError({ message: 'Could not create new user' });
+    }
+
+    return ret;
+}

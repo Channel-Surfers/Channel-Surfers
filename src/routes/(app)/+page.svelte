@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { Either } from 'effect';
-
     export let data;
 </script>
 
@@ -11,7 +9,7 @@
 
 <a href="/user" class="text-blue-700">User page</a>
 
-{#if !Either.isLeft(data.channels)}
+{#if data.channels}
     <p>retrieved {data.channels.length} channels successfully</p>
 {:else}
     <p>retrieved no channels due to error</p>

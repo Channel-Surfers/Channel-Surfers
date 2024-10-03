@@ -1,16 +1,17 @@
 import { dev } from '$app/environment';
+import { GitHub } from "arctic";
 import { Discord } from 'arctic';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { getDb } from '..';
+import { getUserById } from '../services/users';
 import { Lucia, type Session } from 'lucia';
 import { sessionTable } from '../db/sessions.sql';
-import type { Cookies } from '@sveltejs/kit';
-import type { SiteRole } from '../db/types.sql';
 import { userTable } from '../db/users.sql';
 
-import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, ORIGIN } from '$env/static/private';
-import { Effect } from 'effect';
-import { getUserByAuth, getUserById } from '../services/users';
+import type { Cookies } from '@sveltejs/kit';
+import type { SiteRole } from '../db/types.sql';
+
+import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, ORIGIN, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '$env/static/private';
 
 let lucia: Lucia | undefined;
 
@@ -75,13 +76,12 @@ export const updateLocals = async ({
     const { session, user } = await lucia.validateSession(sessionId);
     if (session && session.fresh) {
         const sessionCookie = lucia.createSessionCookie(session.id);
-        // sveltekit types deviates from the de-facto standard
-        // you can use 'as any' too
         cookies.set(sessionCookie.name, sessionCookie.value, {
             path: '.',
             ...sessionCookie.attributes,
         });
     }
+
     if (!session) {
         const sessionCookie = lucia.createBlankSessionCookie();
         cookies.set(sessionCookie.name, sessionCookie.value, {
@@ -93,9 +93,7 @@ export const updateLocals = async ({
     if (user === null) return;
 
     const db = await getDb();
-    let dbUser = await Effect.runPromise(
-        getUserById(db, user.id)
-    );
+    let dbUser = await getUserById(db, user.id);
 
     locals.user = {
         id: dbUser.id,
@@ -123,7 +121,7 @@ export interface AuthUser {
 }
 
 const determineOrigin = () => {
-    let origin = ORIGIN ?? 'localhost:5173';
+    let origin = ORIGIN ?? '127.0.0.1:5173';
     if (origin.endsWith('/')) {
         origin = origin.substring(0, ORIGIN.length - 1);
     }
@@ -141,3 +139,7 @@ export const discord = new Discord(
     DISCORD_CLIENT_SECRET,
     `${origin}/signin/discord/callback`
 );
+
+export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
+    redirectURI: `${origin}/signin/github/callback`
+});
