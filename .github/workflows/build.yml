@@ -20,6 +20,8 @@ jobs:
             PUBLIC_LIBRARY_ID: 000000
             DISCORD_CLIENT_ID: ''
             DISCORD_CLIENT_SECRET: ''
+            GITHUB_CLIENT_ID: ''
+            GITHUB_CLIENT_SECRET: ''
         runs-on: ubuntu-latest
         name: build
         strategy:
