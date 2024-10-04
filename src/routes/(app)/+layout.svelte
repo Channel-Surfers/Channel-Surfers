@@ -1,13 +1,7 @@
 <script lang="ts">
-    import UserManagementIsland from '$lib/components/islands/UserManagementIsland.svelte';
     import LeftNav from '$lib/components/LeftNav.svelte';
-    //import DisplayMode from '$lib/shadcn/components/utils/DisplayMode.svelte';
     import '../../app.css';
     import { ModeWatcher } from 'mode-watcher';
-    import HomeInfo from '$lib/components/islands/HomeInfo.svelte';
-    import ChannelInfo from '$lib/components/islands/ChannelInfo.svelte';
-    import UserInfo from '$lib/components/islands/UserInfo.svelte';
-    import PlaylistInfo from '$lib/components/islands/PlaylistInfo.svelte';
     import type { LayoutServerData } from './$types';
 
     export let data: LayoutServerData;

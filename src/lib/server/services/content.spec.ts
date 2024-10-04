@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 import { createTestingDb, mustGenerate } from '$lib/testing/utils';
 import type { DB } from '..';
-import { userTable, type NewUser } from '../db/users.sql';
+import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
 import { postTable } from '../db/posts.sql';
 import { getPostStatistics } from './content';
@@ -44,7 +44,7 @@ const generateStatContext = async (db: DB) => {
             post1Upvoters.map((upvoter) => ({
                 postId: post1.id,
                 userId: upvoter.id,
-                vote: 'UP' as 'UP',
+                vote: 'UP' as const,
             }))
         )
         .returning();
@@ -55,7 +55,7 @@ const generateStatContext = async (db: DB) => {
             post1Downvoters.map((downvoter) => ({
                 postId: post1.id,
                 userId: downvoter.id,
-                vote: 'DOWN' as 'DOWN',
+                vote: 'DOWN' as const,
             }))
         )
         .returning();
@@ -66,7 +66,7 @@ const generateStatContext = async (db: DB) => {
             post2Upvoters.map((upvoter) => ({
                 postId: post2.id,
                 userId: upvoter.id,
-                vote: 'UP' as 'UP',
+                vote: 'UP' as const,
             }))
         )
         .returning();
@@ -77,7 +77,7 @@ const generateStatContext = async (db: DB) => {
             post2Downvoters.map((downvoter) => ({
                 postId: post2.id,
                 userId: downvoter.id,
-                vote: 'DOWN' as 'DOWN',
+                vote: 'DOWN' as const,
             }))
         )
         .returning();
@@ -100,6 +100,8 @@ describe('channels suite', () => {
         const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
             await getPostStatistics(db);
 
+        expect(numberOfChannelsWithPosts).toStrictEqual(1);
+        expect(numberOfPosts).toStrictEqual(2);
         expect(numberOfUpvotes).toStrictEqual(votes.upvotes1.length + votes.upvotes2.length);
         expect(numberOfDownvotes).toStrictEqual(votes.downvotes1.length + votes.downvotes2.length);
     });
