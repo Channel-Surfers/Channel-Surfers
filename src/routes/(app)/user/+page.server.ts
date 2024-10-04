@@ -9,12 +9,3 @@ export const load: PageServerLoad = async (event) => {
         username: event.locals.user.username,
     };
 };
-
-export const actions: Actions = {
-    default: async (event) => {
-        if (await signOut(event.locals.session, event.cookies)) {
-            redirect(302, '/');
-        }
-        return fail(401);
-    },
-};
