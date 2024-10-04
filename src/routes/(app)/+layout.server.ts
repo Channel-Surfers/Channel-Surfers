@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ route }) => {
         switch (route.id) {
             case '/(app)': {
                 // home page data
-                return { type: 'home', ...(await getPostStatistics(db)) } as const;
+                return { type: 'home', data: await getPostStatistics(db) } as const;
             }
             //case '/(app)/c': {
             //    // return channel data
@@ -30,6 +30,6 @@ export const load: LayoutServerLoad = async ({ route }) => {
     };
 
     return {
-        islandData: await getIslandData(),
+        island: await getIslandData(),
     };
 };

@@ -5,14 +5,17 @@ import { channelTable } from '../db/channels.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 
 export const getPostStatistics = async (db: DB) => {
-    const numberOfChannelsWithPostsQuery = db
-        .selectDistinctOn([channelTable.id], {
-            numberOfChannelsWithPosts: countDistinct(channelTable.id),
-        })
-        .from(channelTable)
-        .innerJoin(postTable, eq(channelTable.id, postTable.channelId))
-        .groupBy(channelTable.id)
-        .where(gte(postTable.createdOn, sql`now()::date`));
+    const numberOfChannelsWithPosts =
+        (
+            await db
+                .selectDistinctOn([channelTable.id], {
+                    numberOfChannelsWithPosts: countDistinct(channelTable.id),
+                })
+                .from(channelTable)
+                .innerJoin(postTable, eq(channelTable.id, postTable.channelId))
+                .groupBy(channelTable.id)
+                .where(gte(postTable.createdOn, sql`now()::date`))
+        )[0]?.numberOfChannelsWithPosts ?? 0;
 
     const numberOfPostsQuery = db
         .select({ numberOfPosts: count(postTable.id) })
@@ -28,17 +31,9 @@ export const getPostStatistics = async (db: DB) => {
         .from(postTable)
         .leftJoin(postVoteTable, eq(postTable.id, postVoteTable.postId))
         .where(and(gte(postTable.createdOn, sql`now()::date`), eq(postVoteTable.vote, 'DOWN')));
-    const [
-        [{ numberOfChannelsWithPosts }],
-        [{ numberOfPosts }],
-        [{ numberOfUpvotes }],
-        [{ numberOfDownvotes }],
-    ] = await Promise.all([
-        numberOfChannelsWithPostsQuery,
-        numberOfPostsQuery,
-        numberOfUpvotesQuery,
-        numberOfDownvotesQuery,
-    ]);
+    const [[{ numberOfPosts }], [{ numberOfUpvotes }], [{ numberOfDownvotes }]] = await Promise.all(
+        [numberOfPostsQuery, numberOfUpvotesQuery, numberOfDownvotesQuery]
+    );
     return {
         numberOfChannelsWithPosts,
         numberOfPosts,

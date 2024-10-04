@@ -3,6 +3,7 @@
     import '../../app.css';
     import { ModeWatcher } from 'mode-watcher';
     import type { LayoutServerData } from './$types';
+    import HomeInfo from '$lib/components/islands/HomeInfo.svelte';
 
     export let data: LayoutServerData;
 </script>
@@ -19,8 +20,10 @@
     <slot />
 
     <!-- Right islands -->
-    <div class="flex w-1/4 flex-col">
-        {data.islandData.type}
+    <div class="max-w-1/4 flex flex-col">
+        {#if data.island.type === 'home'}
+            <HomeInfo stats={data.island.data} />
+        {/if}
     </div>
 </div>
 
