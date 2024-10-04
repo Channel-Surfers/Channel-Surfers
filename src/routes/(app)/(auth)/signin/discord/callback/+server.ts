@@ -81,4 +81,4 @@ export const GET: RequestHandler = async (event) => {
             status: 500,
         });
     }
-}
+};

@@ -18,4 +18,4 @@ export const GET: RequestHandler = async (event) => {
     });
 
     redirect(302, url.toString());
-}
+};
