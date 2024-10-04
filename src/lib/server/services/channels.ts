@@ -3,6 +3,7 @@ import { Effect } from 'effect';
 import type { DB } from '..';
 import { DbError, ResourceNotFoundError } from './utils/errors';
 import { eq } from 'drizzle-orm';
+import { publicChannelTable, type NewPublicChannel, type PublicChannel } from '../db/public.channels.sql';
 
 /**
  * Return a list of channels
@@ -61,6 +62,18 @@ export const getChannelsByOwner = (db: DB, userId: string): Effect.Effect<Channe
 
 export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {
     const [channel] = await db.insert(channelTable).values(channelData).returning();
+
+    return channel;
+};
+
+export const publishChannel = async (db: DB, theChannel: Channel): Promise<PublicChannel> => {
+
+    const name = theChannel.name
+    const channelId = theChannel.id
+
+    const publishChannel: NewPublicChannel = {name, channelId}
+
+    const [channel] = await db.insert(publicChannelTable).values(publishChannel).returning();
 
     return channel;
 };

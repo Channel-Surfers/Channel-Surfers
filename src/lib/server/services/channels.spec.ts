@@ -1,10 +1,11 @@
 import { describe, it } from 'vitest';
-import { getChannelById, getChannels, getChannelsByOwner, createChannel } from './channels';
-import { Effect } from 'effect';
+import { getChannelById, getChannels, getChannelsByOwner, createChannel, publishChannel } from './channels';
+import { Channel, Effect } from 'effect';
 import { createTestingDb, mustGenerate } from '$lib/testing/utils';
 import { channelTable } from '../db/channels.sql';
 import { userTable } from '../db/users.sql';
 import type { DB } from '..';
+import type { NewPublicChannel, PublicChannel } from '../db/public.channels.sql';
 
 const generateUserAndChannel = async (db: DB) => {
     const creator = (await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning())[0];
@@ -65,5 +66,16 @@ describe('channels suite', () => {
             guidelines: 'None',
         });
         expect(userChannels.name).toStrictEqual("Evan's Channel");
+    });
+
+    it.concurrent('publishing channels returns successfully', async ({ expect }) => {
+        const { db, generated } = await createTestingDb(generateUserAndChannel);
+        mustGenerate(generated);
+
+        const { creator, createdChannel } = mustGenerate(generated);
+
+        const publishedChannel: PublicChannel = await publishChannel(db, createdChannel)
+        
+        expect(publishedChannel.name).toStrictEqual(createdChannel.name);
     });
 });
