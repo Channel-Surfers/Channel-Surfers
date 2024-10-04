@@ -2,7 +2,7 @@ import { getOrCreateUser } from '$lib/server/services/users';
 import { discord, setSessionCookies } from '$lib/server/auth';
 import { getDb } from '$lib/server';
 import { OAuth2RequestError } from 'arctic';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
 /**
  * Response received from the `https://discord.com/api/users/@me` endpoint.
@@ -22,7 +22,7 @@ interface DiscordUser {
     banner_color: '#09816b';
 }
 
-export async function GET(event: RequestEvent): Promise<Response> {
+export const GET: RequestHandler = async (event) => {
     const code = event.url.searchParams.get('code');
     const state = event.url.searchParams.get('state');
     const storedState = event.cookies.get('discord_oauth_state') ?? null;

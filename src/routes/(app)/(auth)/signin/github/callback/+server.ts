@@ -2,7 +2,7 @@ import { getOrCreateUser } from '$lib/server/services/users';
 import { getDb } from '$lib/server';
 import { github, setSessionCookies } from '$lib/server/auth';
 import { OAuth2RequestError } from 'arctic';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from '../$types';
 
 /**
  * Response received from the `https://api.github.com/user` endpoint.
@@ -15,7 +15,7 @@ interface GitHubUser {
     avatar_url: string;
 }
 
-export async function GET(event: RequestEvent): Promise<Response> {
+export const GET: RequestHandler = async (event) => {
     const code = event.url.searchParams.get('code');
     const state = event.url.searchParams.get('state');
     const storedState = event.cookies.get('github_oauth_state') ?? null;
