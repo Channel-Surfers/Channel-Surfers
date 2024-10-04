@@ -49,6 +49,12 @@ export const getLucia = async () => {
     return lucia;
 };
 
+/**
+ * Sign the user out of their currently active session
+ *
+ * If session is `null`, nothing happens
+ * @returns Whether the session was signed out successfully
+ */
 export const signOut = async (session: Session | null, cookies: Cookies) => {
     if (!session) {
         return false;
@@ -63,6 +69,9 @@ export const signOut = async (session: Session | null, cookies: Cookies) => {
     return true;
 };
 
+/**
+ * Set the cookies required for an active session
+ */
 export const setSessionCookies = async (user: User, cookies: Cookies) => {
     const lucia = await getLucia();
     // Set session & cookies
@@ -74,6 +83,10 @@ export const setSessionCookies = async (user: User, cookies: Cookies) => {
     });
 };
 
+/**
+ * Update the locals for a session -- must be called after a form action that
+ * modifies the users session in some way
+ */
 export const updateLocals = async ({
     cookies,
     locals,
@@ -129,6 +142,10 @@ declare module 'lucia' {
     }
 }
 
+/**
+ * A user that has been authenticated -- this struct should be safe to send to
+ * the client, so no sensitive data
+ */
 export interface AuthUser {
     id: string;
     username: string;
@@ -137,6 +154,10 @@ export interface AuthUser {
     createdOn: Date;
 }
 
+/**
+ * Get the origin from the `ORIGIN` environment variable and transform it into
+ * the desired form
+ */
 const determineOrigin = () => {
     let origin = ORIGIN ?? '127.0.0.1:5173';
     if (origin.endsWith('/')) {

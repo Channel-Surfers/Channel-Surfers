@@ -13,6 +13,9 @@ export const getUserById = async (db: DB, id: string): Promise<User> => {
     return ret;
 };
 
+/**
+ * Get user by an authentication method or methods
+ */
 export const getUserByAuth = async (
     db: DB,
     auth: { discordId?: bigint; githubId?: number }
@@ -42,6 +45,10 @@ export const createUser = async (db: DB, newUser: NewUser): Promise<User> => {
     return ret;
 };
 
+/**
+ * Get a user by their authentication method if they exist, otherwise create
+ * the new user
+ */
 export const getOrCreateUser = async (
     db: DB,
     auth: { discordId?: bigint; githubId?: number },
