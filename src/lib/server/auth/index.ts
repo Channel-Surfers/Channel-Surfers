@@ -159,7 +159,7 @@ export interface AuthUser {
  * the desired form
  */
 const determineOrigin = () => {
-    let origin = ORIGIN ?? '127.0.0.1:5173';
+    let origin = ORIGIN ?? 'localhost:5173';
     if (origin.endsWith('/')) {
         origin = origin.substring(0, ORIGIN.length - 1);
     }
