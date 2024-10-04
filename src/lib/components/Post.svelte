@@ -2,16 +2,20 @@
     import { PUBLIC_PREVIEW_HOST } from '$env/static/public';
 
     import * as Card from '$lib/shadcn/components/ui/card';
-    import * as Popover from '$lib/shadcn/components/ui/popover';
+    import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu'; 
+    import * as Dialog from '$lib/shadcn/components/ui/dialog';
+    import * as Select from '$lib/shadcn/components/ui/select';
     import { Badge } from '$lib/shadcn/components/ui/badge';
-    import { Button } from '$lib/shadcn/components/ui/button';
+    import { Button, buttonVariants} from '$lib/shadcn/components/ui/button';
+    
     import { Skeleton } from '$lib/shadcn/components/ui/skeleton';
     import { Toggle } from '$lib/shadcn/components/ui/toggle';
 
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
-    import Share2 from 'lucide-svelte/icons/share-2';
     import Play from 'lucide-svelte/icons/play';
+    import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical';
+    
 
     import Score from './Score.svelte';
     import UserChannel from './UserChannel.svelte';
@@ -19,6 +23,8 @@
 
     import type { PostData } from '$lib/types';
     import { createEventDispatcher } from 'svelte';
+    import { RuleTester } from 'eslint';
+    import { getAndIncrement } from 'effect/MutableRef';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -39,6 +45,11 @@
         const voteChangeValue: 'up' | 'down' | 'none' = new_state ? dir : 'none';
         dispatch('voteChange', voteChangeValue);
     };
+
+    const report_reason = [
+        {value: "post violates community rules", label: "post violates community rules"}, 
+        {value: "post violates site rules", label: "post violates site rules"}
+    ];
 
     let hovering = false;
     $: src = post
@@ -97,18 +108,34 @@
         </Card.Footer>
     </div>
     <div class="flex flex-col items-center justify-between justify-self-end">
-        <Popover.Root>
-            <Popover.Trigger asChild let:builder>
+        <Dialog.Root>
+        <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild let:builder>
                 <Button builders={[builder]} variant="ghost" size="icon" disabled={!post}>
                     <div class:animate-pulse={!post}>
-                        <Share2 class="h-5 w-5" />
+                        <EllipsisVertical class="h-5 w-5" />
                     </div>
                 </Button>
-            </Popover.Trigger>
-            <Popover.Content>
-                <h1>Not yet implemented!</h1>
-            </Popover.Content>
-        </Popover.Root>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content class="w-56">
+                <DropdownMenu.Group>
+                    <DropdownMenu.Item>
+                        Share
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                            <Dialog.Trigger>
+                                Report
+                            </Dialog.Trigger>
+                            <Dialog.Content class="sm:max-w-[425px]">
+                                <Dialog.Header>
+                                    <Dialog.Title>Report Form</Dialog.Title>
+                                    <Dialog.Description>This action cannot be undone</Dialog.Description>
+                                </Dialog.Header>
+                            </Dialog.Content>
+                </DropdownMenu.Group>
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
+    </Dialog.Root>
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
