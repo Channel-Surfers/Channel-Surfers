@@ -8,17 +8,16 @@ import { getPostStatistics } from './content';
 import { postVoteTable } from '../db/votes.posts.sql';
 
 const generateStatContext = async (db: DB) => {
-    const [creator] = (await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning());
-    const [channel] = (await db
+    const [creator] = await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning();
+    const [channel] = await db
         .insert(channelTable)
         .values({ name: 'Channel-Surfers', createdBy: creator.id })
-        .returning()
-    );
+        .returning();
     const [post1, post2] = await db
         .insert(postTable)
         .values([
             { channelId: channel.id, createdBy: creator.id, title: 'Awesome post 1', videoId: '' },
-            { channelId: channel.id, createdBy: creator.id, title: 'Awesome post 2', videoId: '' }
+            { channelId: channel.id, createdBy: creator.id, title: 'Awesome post 2', videoId: '' },
         ])
         .returning();
 
@@ -41,26 +40,56 @@ const generateStatContext = async (db: DB) => {
 
     const upvotes1 = await db
         .insert(postVoteTable)
-        .values(post1Upvoters.map(upvoter => ({ postId: post1.id, userId: upvoter.id, vote: 'UP' as 'UP' })))
+        .values(
+            post1Upvoters.map((upvoter) => ({
+                postId: post1.id,
+                userId: upvoter.id,
+                vote: 'UP' as 'UP',
+            }))
+        )
         .returning();
 
     const downvotes1 = await db
         .insert(postVoteTable)
-        .values(post1Downvoters.map(downvoter => ({ postId: post1.id, userId: downvoter.id, vote: 'DOWN' as 'DOWN' })))
+        .values(
+            post1Downvoters.map((downvoter) => ({
+                postId: post1.id,
+                userId: downvoter.id,
+                vote: 'DOWN' as 'DOWN',
+            }))
+        )
         .returning();
 
     const upvotes2 = await db
         .insert(postVoteTable)
-        .values(post2Upvoters.map(upvoter => ({ postId: post2.id, userId: upvoter.id, vote: 'UP' as 'UP' })))
+        .values(
+            post2Upvoters.map((upvoter) => ({
+                postId: post2.id,
+                userId: upvoter.id,
+                vote: 'UP' as 'UP',
+            }))
+        )
         .returning();
 
     const downvotes2 = await db
         .insert(postVoteTable)
-        .values(post2Downvoters.map(downvoter => ({ postId: post2.id, userId: downvoter.id, vote: 'DOWN' as 'DOWN' })))
+        .values(
+            post2Downvoters.map((downvoter) => ({
+                postId: post2.id,
+                userId: downvoter.id,
+                vote: 'DOWN' as 'DOWN',
+            }))
+        )
         .returning();
 
-    return { creator, channel, post1, post2, votes: { upvotes1, downvotes1, upvotes2, downvotes2 } };
-}
+    return {
+        creator,
+        channel,
+        post1,
+        post2,
+        votes: { upvotes1, downvotes1, upvotes2, downvotes2 },
+    };
+};
 
 describe('channels suite', () => {
     it.concurrent('site statistics is calculated correctly', async ({ expect }) => {
@@ -68,13 +97,8 @@ describe('channels suite', () => {
 
         const { votes } = mustGenerate(generated);
 
-        const {
-            numberOfChannelsWithPosts,
-            numberOfPosts,
-            numberOfUpvotes,
-            numberOfDownvotes,
-
-        } = await getPostStatistics(db);
+        const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
+            await getPostStatistics(db);
 
         expect(numberOfUpvotes).toStrictEqual(votes.upvotes1.length + votes.upvotes2.length);
         expect(numberOfDownvotes).toStrictEqual(votes.downvotes1.length + votes.downvotes2.length);

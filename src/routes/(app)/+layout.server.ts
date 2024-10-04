@@ -1,5 +1,5 @@
 import { getDb } from '$lib/server';
-import { getPostStatistics } from '$lib/server/services/posts';
+import { getPostStatistics } from '$lib/server/services/content';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route }) => {
