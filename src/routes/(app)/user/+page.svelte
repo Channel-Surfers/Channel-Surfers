@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
+    import { Button } from '$lib/shadcn/components/ui/button';
 
     export let data;
 </script>
 
 <h1>Hello {data.username}</h1>
 
-<form method="post" use:enhance>
-    <button>Sign out</button>
-</form>
+<Button href="/signout">Sign out</Button>
