@@ -11,6 +11,7 @@
 
     export let data: LayoutServerData;
 
+
     const dummyChannel: Channel = {
         id: '',
         name: 'awww',
@@ -21,15 +22,17 @@
         createdOn: new Date(),
         updatedOn: new Date(),
     };
+
+    $: ({ myChannels } = data);
 </script>
 
 <!-- Enable dark-mode detection and switching -->
 <ModeWatcher />
 <!--<DisplayMode />-->
 
-<div class="flex flex-row justify-between">
+<div class="flex flex-row justify-between min-h-screen max-h-screen">
     <!-- Left navigation -->
-    <div class="w-1/4"><LeftNav /></div>
+    <div class="w-1/4 p-4"><LeftNav channels={myChannels.map(channel => ({...channel, publicInfo: {displayName: channel.name}}))}/></div>
 
     <!-- Main content (infinite scroll) -->
     <slot />

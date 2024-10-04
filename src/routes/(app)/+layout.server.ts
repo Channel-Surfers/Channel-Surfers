@@ -1,5 +1,7 @@
 import { getDb } from '$lib/server';
+import { getChannels } from '$lib/server/services/channels';
 import { getPostStatistics } from '$lib/server/services/content';
+import { Effect } from 'effect';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route }) => {
@@ -32,5 +34,6 @@ export const load: LayoutServerLoad = async ({ route }) => {
 
     return {
         island: await getIslandData(),
+        myChannels: await Effect.runPromise(getChannels(db)),
     };
 };
