@@ -10,9 +10,10 @@ export interface PostData {
     title: string;
     videoId: uuid;
     user: UserChannelData;
-    badges: string[];
+    tags: string[];
     upvotes: number;
     downvotes: number;
+    comments: number;
 }
 
 /**

@@ -84,8 +84,8 @@
         </Card.Header>
         <Card.Footer class="mt-2 flex gap-1.5 p-2 px-6">
             {#if post}
-                {#if post.badges}
-                    {#each post.badges as badge}
+                {#if post.tags}
+                    {#each post.tags as badge}
                         <Badge>{badge}</Badge>
                     {/each}
                 {/if}
