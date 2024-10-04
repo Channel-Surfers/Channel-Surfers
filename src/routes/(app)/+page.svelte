@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Either } from 'effect';
-    import Post from '$lib/components/Post.svelte';
     import InfiniteScroll from '$lib/components/InfiniteScroll.svelte';
 
     export let data;

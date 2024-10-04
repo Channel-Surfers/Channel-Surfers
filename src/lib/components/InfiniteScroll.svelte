@@ -29,7 +29,7 @@
                 page: `${page}`,
             });
             const res = await fetch(`/api/posts?${search}`);
-            await new Promise(res => setTimeout(() => res(0), 2000));
+            await new Promise((res) => setTimeout(() => res(0), 2000));
             const new_posts = await res.json();
             buffer = buffer.concat(new_posts);
         } catch (e) {
@@ -45,7 +45,7 @@
     });
 </script>
 
-<div class="w-full flex flex-col items-center">
+<div class="flex w-full flex-col items-center">
     {#each buffer as post}
         <Post {post} />
     {/each}
