@@ -1,5 +1,5 @@
 {
-  "id": "84df5f42-655c-400f-8d98-b67d8a2d42d8",
+  "id": "e846f7f1-214d-4b4f-9312-f8a5cb4d8a7a",
   "prevId": "0828418d-5903-460f-8ba9-329a4199b537",
   "version": "7",
   "dialect": "postgresql",
@@ -165,6 +165,18 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "banner_image": {
+          "name": "banner_image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_on": {
           "name": "created_on",
@@ -616,10 +628,10 @@
       "name": "public_channel",
       "schema": "",
       "columns": {
-        "post_id": {
-          "name": "post_id",
+        "channel_id": {
+          "name": "channel_id",
           "type": "uuid",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "name": {
@@ -638,12 +650,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "public_channel_post_id_channel_id_fk": {
-          "name": "public_channel_post_id_channel_id_fk",
+        "public_channel_channel_id_channel_id_fk": {
+          "name": "public_channel_channel_id_channel_id_fk",
           "tableFrom": "public_channel",
           "tableTo": "channel",
           "columnsFrom": [
-            "post_id"
+            "channel_id"
           ],
           "columnsTo": [
             "id"
