@@ -3,6 +3,7 @@ import { getPostStatistics } from '$lib/server/services/content';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route }) => {
+    console.log('RUNNIN', route.id);
     const db = await getDb();
     const getIslandData = async () => {
         switch (route.id) {
