@@ -1,4 +1,4 @@
-import { and, count, eq, gte, sql } from 'drizzle-orm';
+import { and, count, countDistinct, eq, gte, sql } from 'drizzle-orm';
 import type { DB } from '..';
 import { postTable } from '../db/posts.sql';
 import { channelTable } from '../db/channels.sql';
@@ -6,10 +6,14 @@ import { postVoteTable } from '../db/votes.posts.sql';
 
 export const getPostStatistics = async (db: DB) => {
     const numberOfChannelsWithPostsQuery = db
-        .select({ numberOfChannelsWithPosts: count(channelTable.id) })
+        .selectDistinctOn([channelTable.id], {
+            numberOfChannelsWithPosts: countDistinct(channelTable.id),
+        })
         .from(channelTable)
         .innerJoin(postTable, eq(channelTable.id, postTable.channelId))
+        .groupBy(channelTable.id)
         .where(gte(postTable.createdOn, sql`now()::date`));
+
     const numberOfPostsQuery = db
         .select({ numberOfPosts: count(postTable.id) })
         .from(postTable)
