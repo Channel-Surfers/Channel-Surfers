@@ -1,5 +1,5 @@
 {
-  "id": "bda1013b-66f4-4a19-9f26-ff76924bf883",
+  "id": "84df5f42-655c-400f-8d98-b67d8a2d42d8",
   "prevId": "0828418d-5903-460f-8ba9-329a4199b537",
   "version": "7",
   "dialect": "postgresql",
@@ -1520,7 +1520,22 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "user_discord_id_unique": {
+          "name": "user_discord_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "discord_id"
+          ]
+        },
+        "user_github_id_unique": {
+          "name": "user_github_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "github_id"
+          ]
+        }
+      }
     },
     "public.comment_vote": {
       "name": "comment_vote",

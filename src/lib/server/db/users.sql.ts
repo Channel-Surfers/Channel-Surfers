@@ -15,8 +15,8 @@ export const userTable = pgTable('user', {
     createdOn: timestamp('created_on').notNull().defaultNow(),
     updatedOn: timestamp('updated_on').notNull().defaultNow(),
 
-    discordId: bigint('discord_id', { mode: 'bigint' }),
-    githubId: integer('github_id'),
+    discordId: bigint('discord_id', { mode: 'bigint' }).unique(undefined, { nulls: 'distinct' }),
+    githubId: integer('github_id').unique(undefined, { nulls: 'distinct' }),
 });
 
 /**
