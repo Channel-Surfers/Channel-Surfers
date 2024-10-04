@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 import { getChannelById, getChannels, getChannelsByOwner, createChannel } from './channels';
-import { Channel, Effect } from 'effect';
+import { Effect } from 'effect';
 import { createTestingDb, mustGenerate } from '$lib/testing/utils';
 import { channelTable } from '../db/channels.sql';
 import { userTable } from '../db/users.sql';
@@ -19,7 +19,7 @@ const generateUserAndChannel = async (db: DB) => {
 
 const generateUser = async (db: DB) => {
     const creator = (await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning())[0];
-    
+
     return { creator };
 };
 
@@ -57,11 +57,13 @@ describe('channels suite', () => {
         const { db, generated } = await createTestingDb(generateUser);
 
         const { creator } = mustGenerate(generated);
-        
-        const userChannels = await createChannel(db, {name: "Evan's Channel", createdBy: creator.id, description: "Funny", guidelines: "None"});
+
+        const userChannels = await createChannel(db, {
+            name: "Evan's Channel",
+            createdBy: creator.id,
+            description: 'Funny',
+            guidelines: 'None',
+        });
         expect(userChannels.name).toStrictEqual("Evan's Channel");
     });
-
-    
 });
-

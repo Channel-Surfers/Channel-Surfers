@@ -3,7 +3,6 @@ import { Effect } from 'effect';
 import type { DB } from '..';
 import { DbError, ResourceNotFoundError } from './utils/errors';
 import { eq } from 'drizzle-orm';
-import type { tryMapPromise } from 'effect/Effect';
 
 /**
  * Return a list of channels
@@ -60,10 +59,8 @@ export const getChannelsByOwner = (db: DB, userId: string): Effect.Effect<Channe
         return dbResponse;
     });
 
-
 export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {
-    
     const [channel] = await db.insert(channelTable).values(channelData).returning();
-    
+
     return channel;
-    };
+};
