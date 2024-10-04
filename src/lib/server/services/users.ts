@@ -41,3 +41,9 @@ export const createUser = async (db: DB, newUser: NewUser): Promise<User> => {
 
     return ret;
 };
+
+export const getOrCreateUser = async (
+    db: DB,
+    auth: { discordId?: bigint; githubId?: number },
+    newUser: NewUser
+): Promise<User> => (await getUserByAuth(db, auth)) ?? (await createUser(db, newUser));

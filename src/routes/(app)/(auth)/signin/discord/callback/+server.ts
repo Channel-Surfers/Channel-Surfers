@@ -1,8 +1,26 @@
-import { createUser, getUserByAuth } from '$lib/server/services/users';
-import { discord, getLucia } from '$lib/server/auth';
+import { getOrCreateUser } from '$lib/server/services/users';
+import { discord, setSessionCookies } from '$lib/server/auth';
 import { getDb } from '$lib/server';
 import { OAuth2RequestError } from 'arctic';
 import type { RequestEvent } from '@sveltejs/kit';
+
+/**
+ * Response received from the `https://discord.com/api/users/@me` endpoint.
+ *
+ * @see <https://discord.com/developers/docs/resources/user>
+ */
+interface DiscordUser {
+    id: string;
+    username: string;
+    avatar: string;
+    discriminator: number;
+    public_flags: number;
+    flags: number;
+    accent_color: number;
+    global_name: null;
+    avatar_decoration_data: null;
+    banner_color: '#09816b';
+}
 
 export async function GET(event: RequestEvent): Promise<Response> {
     const code = event.url.searchParams.get('code');
@@ -27,29 +45,21 @@ export async function GET(event: RequestEvent): Promise<Response> {
         const discordUser: DiscordUser = await discordUserResponse.json();
 
         const db = await getDb();
-        const lucia = await getLucia();
 
-        let user = await getUserByAuth(db, {
-            discordId: BigInt(discordUser.id),
-        });
-
-        // if user doesn't exist, create one
-        if (!user) {
-            user = await createUser(db, {
+        const user = await getOrCreateUser(
+            db,
+            {
+                discordId: BigInt(discordUser.id),
+            },
+            {
                 discordId: BigInt(discordUser.id),
                 username: discordUser.username,
                 // TODO: Upload this to our own platform
                 profileImage: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${discordUser.avatar.startsWith('a_') ? 'gif' : 'png'}`,
-            });
-        }
+            }
+        );
 
-        // Set session & cookies
-        const session = await lucia.createSession(user.id, {});
-        const sessionCookie = lucia.createSessionCookie(session.id);
-        event.cookies.set(sessionCookie.name, sessionCookie.value, {
-            path: '.',
-            ...sessionCookie.attributes,
-        });
+        setSessionCookies(user, event.cookies);
 
         // Redirect to '/'
         // TODO: Let the user continue to their target destination
@@ -71,17 +81,4 @@ export async function GET(event: RequestEvent): Promise<Response> {
             status: 500,
         });
     }
-}
-
-interface DiscordUser {
-    id: string;
-    username: string;
-    avatar: string; // 'a_71326fe1599c1756c0c84facb3887012'
-    discriminator: number;
-    public_flags: number;
-    flags: number;
-    accent_color: number;
-    global_name: null;
-    avatar_decoration_data: null;
-    banner_color: '#09816b';
 }

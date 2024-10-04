@@ -1,8 +1,19 @@
-import { createUser, getUserByAuth } from '$lib/server/services/users';
+import { getOrCreateUser } from '$lib/server/services/users';
 import { getDb } from '$lib/server';
-import { github, getLucia } from '$lib/server/auth';
+import { github, setSessionCookies } from '$lib/server/auth';
 import { OAuth2RequestError } from 'arctic';
 import type { RequestEvent } from '@sveltejs/kit';
+
+/**
+ * Response received from the `https://api.github.com/user` endpoint.
+ *
+ * @see <https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28>
+ */
+interface GitHubUser {
+    id: number;
+    login: string;
+    avatar_url: string;
+}
 
 export async function GET(event: RequestEvent): Promise<Response> {
     const code = event.url.searchParams.get('code');
@@ -27,29 +38,21 @@ export async function GET(event: RequestEvent): Promise<Response> {
         const githubUser: GitHubUser = await githubUserResponse.json();
 
         const db = await getDb();
-        const lucia = await getLucia();
 
-        let user = await getUserByAuth(db, {
-            githubId: githubUser.id,
-        });
-
-        // if user doesn't exist, create one
-        if (!user) {
-            user = await createUser(db, {
+        const user = await getOrCreateUser(
+            db,
+            {
+                githubId: githubUser.id,
+            },
+            {
                 githubId: githubUser.id,
                 username: githubUser.login,
                 // TODO: Upload this to our own platform
                 profileImage: githubUser.avatar_url,
-            });
-        }
+            }
+        );
 
-        // Set session & cookies
-        const session = await lucia.createSession(user.id, {});
-        const sessionCookie = lucia.createSessionCookie(session.id);
-        event.cookies.set(sessionCookie.name, sessionCookie.value, {
-            path: '.',
-            ...sessionCookie.attributes,
-        });
+        setSessionCookies(user, event.cookies);
 
         // TODO: Let the user continue to their target destination
         return new Response(null, {
@@ -70,10 +73,4 @@ export async function GET(event: RequestEvent): Promise<Response> {
             status: 500,
         });
     }
-}
-
-interface GitHubUser {
-    id: number;
-    login: string;
-    avatar_url: string;
 }

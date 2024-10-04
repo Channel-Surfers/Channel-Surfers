@@ -6,7 +6,7 @@ import { getDb } from '..';
 import { getUserById } from '../services/users';
 import { Lucia, type Session } from 'lucia';
 import { sessionTable } from '../db/sessions.sql';
-import { userTable } from '../db/users.sql';
+import { userTable, type User } from '../db/users.sql';
 
 import type { Cookies } from '@sveltejs/kit';
 import type { SiteRole } from '../db/types.sql';
@@ -61,6 +61,17 @@ export const signOut = async (session: Session | null, cookies: Cookies) => {
         ...sessionCookie.attributes,
     });
     return true;
+};
+
+export const setSessionCookies = async (user: User, cookies: Cookies) => {
+    const lucia = await getLucia();
+    // Set session & cookies
+    const session = await lucia.createSession(user.id, {});
+    const sessionCookie = lucia.createSessionCookie(session.id);
+    cookies.set(sessionCookie.name, sessionCookie.value, {
+        path: '.',
+        ...sessionCookie.attributes,
+    });
 };
 
 export const updateLocals = async ({
