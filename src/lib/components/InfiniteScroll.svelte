@@ -1,12 +1,11 @@
 <script lang="ts">
-    import type { PostData, uuid } from '$lib/types';
+    import type { PostData } from '$lib/types';
     import { onMount } from 'svelte';
     import Post from './Post.svelte';
     import { toast } from 'svelte-sonner';
     import { Button } from '$lib/shadcn/components/ui/button';
 
     export let channel_name: string;
-    export let user_id: uuid;
 
     let page: number = 0;
     let buffer: PostData[] = Array(2)
@@ -27,6 +26,7 @@
         try {
             const search = new URLSearchParams({
                 page: `${page}`,
+                channel_name,
             });
             const res = await fetch(`/api/posts?${search}`);
             await new Promise((res) => setTimeout(() => res(0), 2000));
