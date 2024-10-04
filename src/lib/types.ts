@@ -21,5 +21,5 @@ export interface PostData {
 export interface UserChannelData {
     username: string;
     channel: string;
-    avatar: string | undefined;
+    avatar?: string;
 }
