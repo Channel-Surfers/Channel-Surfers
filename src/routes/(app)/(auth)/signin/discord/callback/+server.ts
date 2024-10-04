@@ -59,7 +59,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
             }
         );
 
-        setSessionCookies(user, event.cookies);
+        await setSessionCookies(user, event.cookies);
 
         // Redirect to '/'
         // TODO: Let the user continue to their target destination

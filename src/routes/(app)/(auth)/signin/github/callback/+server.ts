@@ -52,7 +52,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
             }
         );
 
-        setSessionCookies(user, event.cookies);
+        await setSessionCookies(user, event.cookies);
 
         // TODO: Let the user continue to their target destination
         return new Response(null, {
