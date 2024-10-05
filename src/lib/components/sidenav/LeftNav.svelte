@@ -2,6 +2,8 @@
     import type { Channel } from '$lib/server/db/channels.sql';
     import ScrollArea from '$lib/shadcn/components/ui/scroll-area/scroll-area.svelte';
     import Separator from '$lib/shadcn/components/ui/separator/separator.svelte';
+    import { Home } from 'lucide-svelte';
+    import Route from './Route.svelte';
 
     // type signature here is temporary
     export let channels: (Channel & { publicInfo: { displayName: string } | null })[] = [];
@@ -9,7 +11,7 @@
 
 <div class="flex h-full flex-col justify-between">
     <div class="flex grow flex-col">
-        <a href="/">Home</a>
+        <Route title={'Home'} icon={Home} href="/"/>
         <Separator />
         <h1 class="font-bold text-slate-500">My Channels</h1>
         <ScrollArea class="grow">

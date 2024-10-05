@@ -1,5 +1,5 @@
 <script lang="ts">
-    import LeftNav from '$lib/components/LeftNav.svelte';
+    import LeftNav from '$lib/components/sidenav/LeftNav.svelte';
     import * as Card from '$lib/shadcn/components/ui/card';
     import '../../app.css';
     import { ModeWatcher } from 'mode-watcher';
