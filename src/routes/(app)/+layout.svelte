@@ -8,6 +8,7 @@
     import Button from '$lib/shadcn/components/ui/button/button.svelte';
     import ChannelInfo from '$lib/components/islands/ChannelInfo.svelte';
     import type { Channel } from '$lib/server/db/channels.sql';
+    import ProfileIcon from '$lib/components/user/ProfileIcon.svelte';
 
     export let data: LayoutServerData;
 
@@ -56,6 +57,8 @@
                 <h1 class="text-xl">Welcome!</h1>
 
                 <p class="py-4">Sign in to start posting today!</p>
+              
+                <ProfileIcon user={data.user} />
 
                 <div>
                     <Button>Sign in</Button>

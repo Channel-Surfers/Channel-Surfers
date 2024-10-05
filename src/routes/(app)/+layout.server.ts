@@ -3,8 +3,9 @@ import { getChannels } from '$lib/server/services/channels';
 import { getPostStatistics } from '$lib/server/services/content';
 import { Effect } from 'effect';
 import type { LayoutServerLoad } from './$types';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
-export const load: LayoutServerLoad = async ({ route }) => {
+export const load: LayoutServerLoad = async ({ route, locals }: ServerLoadEvent) => {
     console.log('RUNNIN', route.id);
     const db = await getDb();
     const getIslandData = async () => {
@@ -35,5 +36,5 @@ export const load: LayoutServerLoad = async ({ route }) => {
     return {
         island: await getIslandData(),
         myChannels: await Effect.runPromise(getChannels(db)),
+        user: locals.user,
     };
-};

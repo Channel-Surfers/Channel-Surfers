@@ -9,7 +9,6 @@
 <svelte:head>
     <title>Channel Surfers</title>
 </svelte:head>
-
 <div class="flex flex-col">
     <Post
         post={{
@@ -21,6 +20,5 @@
             downvotes: 318,
         }}
     />
-
     <Post />
 </div>
