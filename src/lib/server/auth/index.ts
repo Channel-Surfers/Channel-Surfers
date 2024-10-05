@@ -14,7 +14,7 @@ import type { SiteRole } from '../db/types.sql';
 import {
     DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET,
-    ORIGIN,
+    BASE_URL,
     GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET,
 } from '$env/static/private';
@@ -155,29 +155,29 @@ export interface AuthUser {
 }
 
 /**
- * Get the origin from the `ORIGIN` environment variable and transform it into
+ * Get the base_url from the `BASE_URL` environment variable and transform it into
  * the desired form
  */
 const determineOrigin = () => {
-    let origin = ORIGIN ?? 'localhost:5173';
-    if (origin.endsWith('/')) {
-        origin = origin.substring(0, ORIGIN.length - 1);
+    let base_url = BASE_URL ?? 'localhost:5173';
+    if (base_url.endsWith('/')) {
+        base_url = base_url.substring(0, BASE_URL.length - 1);
     }
 
-    if (!origin.startsWith('http')) {
-        origin = `http${dev ? '' : 's'}://${origin}`;
+    if (!base_url.startsWith('http')) {
+        base_url = `http${dev ? '' : 's'}://${base_url}`;
     }
-    return origin;
+    return base_url;
 };
 
-const origin = determineOrigin();
+const base_url = determineOrigin();
 
 export const discord = new Discord(
     DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET,
-    `${origin}/signin/discord/callback`
+    `${base_url}/signin/discord/callback`
 );
 
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
-    redirectURI: `${origin}/signin/github/callback`,
+    redirectURI: `${base_url}/signin/github/callback`,
 });
