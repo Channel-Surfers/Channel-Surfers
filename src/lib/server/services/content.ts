@@ -1,4 +1,4 @@
-import { aliasedTable, and, count, countDistinct, eq, gte, sql } from 'drizzle-orm';
+import { aliasedTable, and, count, countDistinct, eq, gte, sql, desc } from 'drizzle-orm';
 import type { DB } from '..';
 import { postTable } from '../db/posts.sql';
 import { channelTable } from '../db/channels.sql';
@@ -12,7 +12,8 @@ import { commentTable } from '../db/comments.sql';
 
 interface GenericPostFilter {
     requesterId?: uuid;
-    sort?: 'views' | 'votes' | 'date';
+    sort: 'views' | 'votes' | 'date';
+    filter: 'subscribed' | 'all';
     reverseSort?: boolean;
     tags?: string[];
 }
@@ -38,29 +39,36 @@ export interface HomePostFilter extends GenericPostFilter {
 
 export type PostFilter = ChannelPostFilter | UserPostFilter | HomePostFilter;
 
-export const getPosts = async (db: DB, filter: PostFilter): Promise<PostData[]> => {
+const PAGE_SIZE = 10;
+
+export const getPosts = async (db: DB, page: number, filter: PostFilter): Promise<PostData[]> => {
+    const upvotes = db
+        .select()
+        .from(postVoteTable)
+        .where(eq(postVoteTable.vote, 'UP'))
+        .as('upvotes');
+    const downvotes = db
+        .select()
+        .from(postVoteTable)
+        .where(eq(postVoteTable.vote, 'DOWN'))
+        .as('downvotes');
+
     switch (filter.type) {
         case 'home': {
-            const upvotes = db
-                .select()
-                .from(postVoteTable)
-                .where(eq(postVoteTable.vote, 'UP'))
-                .as('upvotes');
-            const downvotes = db
-                .select()
-                .from(postVoteTable)
-                .where(eq(postVoteTable.vote, 'DOWN'))
-                .as('downvotes');
-
-            const data = await db
+            let q = db
                 .select({
                     id: postTable.id,
                     title: postTable.title,
                     videoId: postTable.videoId,
+                    createdOn: postTable.createdOn,
                     user: {
-                        username: userTable.username,
+                        id: userTable.id,
+                        name: userTable.username,
                         avatar: userTable.profileImage,
-                        channel: channelTable.name,
+                    },
+                    channel: {
+                        id: userTable.id,
+                        name: channelTable.name,
                     },
                     tags: array_agg(channelTagsTable.name),
                     upvotes: count(upvotes.userId),
@@ -68,30 +76,52 @@ export const getPosts = async (db: DB, filter: PostFilter): Promise<PostData[]> 
                     comments: count(commentTable.id),
                 })
                 .from(postTable)
-                .leftJoin(userTable, eq(userTable.id, postTable.createdBy))
-                .leftJoin(channelTable, eq(channelTable.id, postTable.channelId))
+                .innerJoin(userTable, eq(userTable.id, postTable.createdBy))
+                .innerJoin(channelTable, eq(channelTable.id, postTable.channelId))
                 .leftJoin(postTagTable, eq(postTagTable.postId, postTable.id))
                 .leftJoin(channelTagsTable, eq(channelTagsTable.id, postTagTable.tagId))
                 .leftJoin(upvotes, eq(upvotes.postId, postTable.id))
                 .leftJoin(downvotes, eq(downvotes.postId, postTable.id))
                 .leftJoin(commentTable, eq(commentTable.postId, postTable.id))
+                .limit(PAGE_SIZE)
+                .offset(page * PAGE_SIZE)
                 .groupBy(
                     postTable.id,
+                    postTable.createdOn,
+                    userTable.id,
                     userTable.username,
                     userTable.profileImage,
-                    channelTable.name
-                );
-            return data.map((p) => ({
-                ...p,
-                user: {
-                    username: p.user.username!,
-                    avatar: p.user.avatar!,
-                    channel: p.user.channel!,
+                    channelTable.id,
+                    channelTable.name,
+                )
+                .$dynamic();
+            switch (filter.sort) {
+                case 'date': {
+                    q = q.orderBy(desc(postTable.createdOn));
+                }; break;
+                case 'votes': {
+                    q = q.orderBy(desc(sql<number>`cast(count(${upvotes.userId}) - count(${downvotes.userId}) as int)`));
+                }; break;
+            }
+            return (await q).map((p) => ({
+                id: p.id,
+                title: p.title,
+                videoId: p.videoId,
+                createdOn: p.createdOn,
+                tags: p.tags,
+                upvotes: p.upvotes,
+                downvotes: p.downvotes,
+                comments: p.comments,
+                poster: {
+                    user: {
+                        ...p.user,
+                        avatar: p.user.avatar || undefined,
+                    },
+                    channel: {
+                        ...p.channel,
+                        private: false,
+                    },
                 },
-                // tags: p.tags,
-                // upvotes: 0,
-                // downvotes: 0,
-                // comments: 0
             }));
         }
         default: {

@@ -10,8 +10,6 @@
 
 <!-- Enable dark-mode detection and switching -->
 <ModeWatcher />
-<DisplayMode />
-<ProfileIcon user={data.user} />
 <Toaster richColors />
 <slot />
 

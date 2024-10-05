@@ -1,16 +1,16 @@
 <script lang="ts">
     import * as Avatar from '$lib/shadcn/components/ui/avatar/index';
     import { Skeleton } from '$lib/shadcn/components/ui/skeleton/index';
-    import type { UserChannelData } from '$lib/types';
+    import type { PosterData } from '$lib/types';
 
-    export let user: UserChannelData | undefined;
+    export let user: PosterData | undefined;
 </script>
 
 <div class="flex items-center space-x-4">
     {#if user}
         <Avatar.Root class="h-12 w-12">
-            <Avatar.Image src={user.avatar || ''} alt={user.username} />
-            <Avatar.Fallback>{user.username[0]?.toUpperCase() || '?'}</Avatar.Fallback>
+            <Avatar.Image src={user.user.avatar || ''} alt={user.user.name} />
+            <Avatar.Fallback>{user.user.name[0]?.toUpperCase() || '?'}</Avatar.Fallback>
         </Avatar.Root>
     {:else}
         <Skeleton class="h-12 w-16 rounded-full" />
@@ -19,18 +19,20 @@
         {#if user}
             <p class="h-4 w-full">
                 <a
-                    href="/c/{user.channel}"
+                    href="/c/{user.channel.private
+                        ? `private/${user.channel.id}`
+                        : user.channel.name}"
                     class="decoration-slate-500 underline-offset-2 hover:underline"
                 >
-                    c/{user.channel}
+                    c/{user.channel.name}
                 </a>
             </p>
             <p class="w-4/5 text-muted-foreground">
                 <a
-                    href="/u/{user.username}"
+                    href="/u/{user.user.name}"
                     class="decoration-slate-700 underline-offset-2 hover:underline"
                 >
-                    u/{user.username}
+                    u/{user.user.name}
                 </a>
             </p>
         {:else}
