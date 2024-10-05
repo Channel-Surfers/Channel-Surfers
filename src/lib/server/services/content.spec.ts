@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, test } from 'vitest';
 import { createTestingDb, mustGenerate } from '$lib/testing/utils';
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
@@ -91,8 +91,8 @@ const generateStatContext = async (db: DB) => {
     };
 };
 
-describe('channels suite', () => {
-    it.concurrent('site statistics is calculated correctly', async ({ expect }) => {
+describe.concurrent('channels suite', () => {
+    test('site statistics is calculated correctly', async ({ expect }) => {
         const { db, generated } = await createTestingDb(generateStatContext);
 
         const { votes } = mustGenerate(generated);

@@ -1,6 +1,6 @@
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { and, count, countDistinct, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { userTable, type NewUser, type User } from '../db/users.sql';
 import { postTable } from '../db/posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';

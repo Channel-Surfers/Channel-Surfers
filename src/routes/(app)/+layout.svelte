@@ -7,14 +7,15 @@
     import HomeInfo from '$lib/components/islands/HomeInfo.svelte';
     import Button from '$lib/shadcn/components/ui/button/button.svelte';
     import ChannelInfo from '$lib/components/islands/ChannelInfo.svelte';
-    import type { Channel } from '$lib/server/db/channels.sql';
     import ProfileIcon from '$lib/components/user/ProfileIcon.svelte';
     import Score from '$lib/components/Score.svelte';
 
     export let data: LayoutServerData;
 
-    const dummyChannel: Channel = {
+    const dummyChannel = {
         id: '',
+        icon: null,
+        bannerImage: null,
         name: 'awww',
         description: 'A place to appreciate cuteness',
         guidelines:
@@ -22,6 +23,7 @@
         createdBy: '',
         createdOn: new Date(),
         updatedOn: new Date(),
+        subscriptionsCount: 2,
     };
 
     $: ({ myChannels } = data);
@@ -33,7 +35,7 @@
 
 <div class="flex max-h-screen min-h-screen flex-row justify-between">
     <!-- Left navigation -->
-    <div class="w-1/4 p-4">
+    <div class="w-1/6 p-4">
         <LeftNav
             channels={myChannels.map((channel) => ({
                 ...channel,
@@ -46,7 +48,7 @@
     <slot />
 
     <!-- Right islands -->
-    <div class="max-w-1/4 flex w-1/4 flex-col space-y-4 pr-4 pt-4">
+    <div class="max-w-1/6 flex w-1/6 flex-col space-y-4 pr-4 pt-4">
         {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
