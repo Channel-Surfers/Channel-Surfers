@@ -15,7 +15,7 @@ jobs:
         env:
             # This is a fake connection string that is placed just for the compiler to stop whining
             POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
-            ORIGIN: 'localhost:5173'
+            BASE_URL: 'localhost:5173'
             PUBLIC_PREVIEW_HOST: 'https://example.com/'
             PUBLIC_LIBRARY_ID: 000000
             DISCORD_CLIENT_ID: ''
