@@ -9,6 +9,7 @@
     import ChannelInfo from '$lib/components/islands/ChannelInfo.svelte';
     import type { Channel } from '$lib/server/db/channels.sql';
     import ProfileIcon from '$lib/components/user/ProfileIcon.svelte';
+    import Score from '$lib/components/Score.svelte';
 
     export let data: LayoutServerData;
 
@@ -52,13 +53,17 @@
 
         <ChannelInfo channel={dummyChannel} />
 
-        {#if data.user}
+        {#if data.user && data.userStats}
             <Card.Root>
                 <Card.Content>
                     <div class="flex flex-row items-center justify-between">
                         <ProfileIcon user={data.user} />
                         <h1>u/{data.user.username}</h1>
                     </div>
+                    Score: <Score
+                        upvotes={data.userStats.numberOfUpvotes}
+                        downvotes={data.userStats.numberOfDownvotes}
+                    />
                 </Card.Content>
             </Card.Root>
         {:else}
