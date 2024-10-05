@@ -13,6 +13,8 @@ export const channelTable = pgTable('channel', {
     createdBy: uuid('created_by')
         .notNull()
         .references(() => userTable.id),
+    bannerImage: text('banner_image'),
+    icon: text('icon'),
     createdOn: timestamp('created_on').notNull().defaultNow(),
     updatedOn: timestamp('updated_on').notNull().defaultNow(),
 });
