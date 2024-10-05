@@ -9,6 +9,9 @@
     import ChannelInfo from '$lib/components/islands/ChannelInfo.svelte';
     import ProfileIcon from '$lib/components/user/ProfileIcon.svelte';
     import Score from '$lib/components/Score.svelte';
+    import UserInfo from '$lib/components/islands/UserInfo.svelte';
+    import type { User } from '$lib/server/db/users.sql';
+    import PlaylistInfo from '$lib/components/islands/PlaylistInfo.svelte';
 
     export let data: LayoutServerData;
 
@@ -26,7 +29,21 @@
         subscriptionsCount: 2,
     };
 
-    $: ({ myChannels } = data);
+    $: dummyUser = data.user
+        ? { ...(data.user as User), userStats: { numberOfUpvotes: 200, numberOfDownvotes: 100 } }
+        : null;
+    $: dummyPlaylist = data.user
+        ? {
+              creator: data.user as User,
+              id: 'DUMMY',
+              name: 'DummyPlaylist',
+              description: 'Playlist that goes dummy',
+              userId: data.user.id,
+              public: true,
+          }
+        : null;
+
+    $: ({ myChannels, mySubscriptions } = data);
 </script>
 
 <!-- Enable dark-mode detection and switching -->
@@ -36,12 +53,17 @@
 <div class="flex max-h-screen min-h-screen flex-row justify-between">
     <!-- Left navigation -->
     <div class="w-1/6 p-4">
-        <LeftNav
-            channels={myChannels.map((channel) => ({
-                ...channel,
-                publicInfo: { displayName: channel.name },
-            }))}
-        />
+        {#if data.user}
+            <LeftNav
+                channels={myChannels.map((channel) => ({
+                    ...channel,
+                    publicInfo: { displayName: channel.name },
+                }))}
+                subscriptions={mySubscriptions}
+            />
+        {:else}
+            <LeftNav />
+        {/if}
     </div>
 
     <!-- Main content (infinite scroll) -->
@@ -55,6 +77,10 @@
         {/if}
 
         <ChannelInfo channel={dummyChannel} />
+
+        <UserInfo userInfo={dummyUser} />
+
+        <PlaylistInfo playlistInfo={dummyPlaylist} />
 
         {#if data.user && data.userStats}
             <Card.Root>

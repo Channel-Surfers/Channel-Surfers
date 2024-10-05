@@ -6,45 +6,69 @@
     import Route from './Route.svelte';
     import * as Accordion from '$lib/shadcn/components/ui/accordion';
     import type { getUserSubscriptions } from '$lib/server/services/content';
+    import type { Playlist } from '$lib/server/db/playlists.sql';
 
     // type signature here is temporary
-    export let channels: (Channel & { publicInfo: { displayName: string } | null })[] = [];
-    export let subscriptions: Awaited<ReturnType<typeof getUserSubscriptions>> = [];
+    export let channels: (Channel & { publicInfo: { displayName: string } | null })[] | null = null;
+    export let subscriptions: Awaited<ReturnType<typeof getUserSubscriptions>> | null = null;
+    export let playlists: Playlist[] | null = null;
 </script>
 
 <div class="flex h-full flex-col justify-between">
     <div class="flex grow flex-col">
         <Route title={'Home'} icon={Home} href="/" />
         <Route title={'Popular'} icon={Flame} href="/h/popular" />
-        <Separator class="my-2" />
-        <Accordion.Root class="h-full" multiple value={['my_channels', 'my_subscriptions']}>
+        <Separator class="mt-2" />
+        <Accordion.Root class="h-full" multiple>
             <Accordion.Item value="my_channels">
-                <Accordion.Trigger>Channels</Accordion.Trigger>
+                <Accordion.Trigger class="pl-2">Channels</Accordion.Trigger>
                 <Accordion.Content>
                     <ScrollArea class="grow">
-                        {#each channels as channel}
-                            {#if channel.publicInfo}
-                                <Route
-                                    href={`/c/${channel.publicInfo.displayName}`}
-                                    title={channel.publicInfo.displayName}
-                                />
-                            {:else}
-                                <a href={`/c/private/${channel.id}`}>{channel.name}</a>
-                            {/if}
-                        {/each}
+                        {#if channels}
+                            {#each channels as channel}
+                                {#if channel.publicInfo}
+                                    <Route
+                                        href={`/c/${channel.publicInfo.displayName}`}
+                                        title={channel.publicInfo.displayName}
+                                    />
+                                {:else}
+                                    <a href={`/c/private/${channel.id}`}>{channel.name}</a>
+                                {/if}
+                            {/each}
+                        {:else}
+                            <p>Login to create a channel</p>
+                        {/if}
                     </ScrollArea>
                 </Accordion.Content>
             </Accordion.Item>
             <Accordion.Item value="my_subscriptions">
-                <Accordion.Trigger>Subscriptions</Accordion.Trigger>
+                <Accordion.Trigger class="pl-2">Subscriptions</Accordion.Trigger>
                 <Accordion.Content>
                     <ScrollArea class="grow">
-                        {#each subscriptions as sub}
-                            <Route
-                                href={`/c/${sub.channelDisplayName}`}
-                                title={sub.channelDisplayName}
-                            />
-                        {/each}
+                        {#if subscriptions}
+                            {#each subscriptions as sub}
+                                <Route
+                                    href={`/c/${sub.channelDisplayName}`}
+                                    title={sub.channelDisplayName}
+                                />
+                            {/each}
+                        {:else}
+                            <p>Login to subscribe to a channel</p>
+                        {/if}
+                    </ScrollArea>
+                </Accordion.Content>
+            </Accordion.Item>
+            <Accordion.Item value="my_playlists">
+                <Accordion.Trigger class="pl-2">Playlists</Accordion.Trigger>
+                <Accordion.Content>
+                    <ScrollArea class="grow">
+                        {#if playlists}
+                            {#each playlists as pl}
+                                <Route href={`/p/${pl.id}`} title={pl.name ?? pl.id} />
+                            {/each}
+                        {:else}
+                            <p>Login to view playlists</p>
+                        {/if}
                     </ScrollArea>
                 </Accordion.Content>
             </Accordion.Item>

@@ -1,5 +1,5 @@
 import { getDb } from '$lib/server';
-import { getChannels, getUserSubscriptions } from '$lib/server/services/channels';
+import { getChannelsByOwner, getUserSubscriptions } from '$lib/server/services/channels';
 import { getPostStatistics } from '$lib/server/services/content';
 import { getUserStats } from '$lib/server/services/users';
 import type { LayoutServerLoad } from './$types';
@@ -39,9 +39,9 @@ export const load: LayoutServerLoad = async ({ route, locals }) => {
 
     return {
         island: await getIslandData(),
-        myChannels: await getChannels(db),
         user: locals.user,
         mySubscriptions: locals.user ? await getUserSubscriptions(db, locals.user.id) : null,
+        myChannels: locals.user ? await getChannelsByOwner(db, locals.user.id) : null,
         userStats: locals.user ? await getUserStats(db, locals.user.id) : null,
     };
 };
