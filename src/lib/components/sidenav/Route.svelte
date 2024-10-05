@@ -9,11 +9,11 @@
 </script>
 
 {#if $page.url.href.includes(href)}
-    <a {href} class="w-full flex flex-row items-center space-x-2 bg-accent rounded-md p-2">
-        <svelte:component this={icon} /><span class="font-bold text-xl">{title}</span>
+    <a {href} class="flex w-full flex-row items-center space-x-2 rounded-md bg-accent p-2">
+        <svelte:component this={icon} /><span class="text-xl font-bold">{title}</span>
     </a>
 {:else}
-    <a {href} class="w-full flex flex-row items-center space-x-2 bg-secondary rounded-md p-2">
-        <svelte:component this={icon} /><span class="font-bold text-xl">{title}</span>
+    <a {href} class="flex w-full flex-row items-center space-x-2 rounded-md">
+        <svelte:component this={icon} /><span class="text-xl font-bold">{title}</span>
     </a>
 {/if}

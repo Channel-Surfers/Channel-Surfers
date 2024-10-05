@@ -47,8 +47,9 @@
 
     <!-- Right islands -->
     <div class="max-w-1/4 flex w-1/4 flex-col space-y-4 pr-4 pt-4">
-        {#if data.island.type === 'home'}
+        {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
+            <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
         {/if}
 
         <ChannelInfo channel={dummyChannel} />
