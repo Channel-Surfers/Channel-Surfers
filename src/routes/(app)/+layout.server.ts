@@ -1,11 +1,9 @@
 import { getDb } from '$lib/server';
 import { getChannels } from '$lib/server/services/channels';
 import { getPostStatistics } from '$lib/server/services/content';
-import { Effect } from 'effect';
 import type { LayoutServerLoad } from './$types';
-import type { ServerLoadEvent } from '@sveltejs/kit';
 
-export const load: LayoutServerLoad = async ({ route, locals }: ServerLoadEvent) => {
+export const load: LayoutServerLoad = async ({ route, locals }) => {
     console.log('RUNNIN', route.id);
     const db = await getDb();
     const getIslandData = async () => {
@@ -13,6 +11,9 @@ export const load: LayoutServerLoad = async ({ route, locals }: ServerLoadEvent)
             case '/(app)': {
                 // home page data
                 return { type: 'home', data: await getPostStatistics(db) } as const;
+            }
+            case '/(app)/(auth)/signin': {
+                return { type: 'hide' } as const;
             }
             //case '/(app)/c': {
             //    // return channel data
@@ -31,10 +32,12 @@ export const load: LayoutServerLoad = async ({ route, locals }: ServerLoadEvent)
             //    break;
             //}
         }
+        return { type: 'err' };
     };
 
     return {
         island: await getIslandData(),
-        myChannels: await Effect.runPromise(getChannels(db)),
+        myChannels: await getChannels(db),
         user: locals.user,
     };
+};

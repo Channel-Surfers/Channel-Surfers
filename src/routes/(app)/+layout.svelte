@@ -52,19 +52,31 @@
 
         <ChannelInfo channel={dummyChannel} />
 
-        <Card.Root>
-            <Card.Content>
-                <h1 class="text-xl">Welcome!</h1>
-
-                <p class="py-4">Sign in to start posting today!</p>
-              
-                <ProfileIcon user={data.user} />
-
-                <div>
-                    <Button>Sign in</Button>
-                </div>
-            </Card.Content>
-        </Card.Root>
+        {#if data.user}
+            <Card.Root>
+                <Card.Content>
+                    <div class="flex flex-row items-center justify-between">
+                        <ProfileIcon user={data.user} />
+                        <h1>u/{data.user.username}</h1>
+                    </div>
+                </Card.Content>
+            </Card.Root>
+        {:else}
+            <Card.Root class="">
+                <Card.Header>
+                    <Card.Title>Sign In</Card.Title>
+                    <Card.Description
+                        >Sign up or sign in with one of the following platforms</Card.Description
+                    >
+                </Card.Header>
+                <Card.Content class="flex flex-col gap-2">
+                    <Button href="/signin/discord" variant="secondary" class="w-full"
+                        >Discord</Button
+                    >
+                    <Button href="/signin/github" variant="secondary" class="w-full">GitHub</Button>
+                </Card.Content>
+            </Card.Root>
+        {/if}
     </div>
 </div>
 
