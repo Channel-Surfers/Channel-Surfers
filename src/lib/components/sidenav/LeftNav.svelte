@@ -40,7 +40,7 @@
                                 {/each}
                             {/if}
                         {:else}
-                            <p>Login to create a channel</p>
+                            <p class="pl-2">Login to create a channel</p>
                         {/if}
                     </ScrollArea>
                 </Accordion.Content>
@@ -61,7 +61,7 @@
                                 {/each}
                             {/if}
                         {:else}
-                            <p>Login to subscribe to a channel</p>
+                            <p class="pl-2">Login to subscribe to a channel</p>
                         {/if}
                     </ScrollArea>
                 </Accordion.Content>
@@ -79,7 +79,7 @@
                                 {/each}
                             {/if}
                         {:else}
-                            <p>Login to view playlists</p>
+                            <p class="pl-2">Login to view playlists</p>
                         {/if}
                     </ScrollArea>
                 </Accordion.Content>
