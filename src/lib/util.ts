@@ -1,4 +1,4 @@
-export const sleep = async (delay_ms: number) => await new Promise((res) => setTimeout(() => res(0), delay_ms));
+export const sleep = (delay_ms: number): Promise<void> => new Promise((res) => setTimeout(() => res(), delay_ms));
 
 let intersectionObserver: IntersectionObserver | undefined;
 const getIntersectionObserver = (): IntersectionObserver => {
@@ -22,4 +22,17 @@ export const viewport = (element: Element) => {
             intersectionObserver.unobserve(element);
         }
     }
+}
+
+/**
+ * Check if a value matches a tuple and assert for typescript that it is an enum:
+ * 
+ * ```ts
+ * if(is(['foo', 'bar'], s)) {
+ *     // s is of type 'foo' | 'bar'.
+ * }
+ * ```
+ */
+export const is = <const T extends string[]>(t: T, v: unknown): v is T[number] => {
+    return typeof v === 'string' && t.includes(v);
 }

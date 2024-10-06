@@ -46,7 +46,7 @@
         : '';
 </script>
 
-<Card.Root class="m-auto my-4 flex h-48 w-[750px] flex-row p-2">
+<Card.Root class="m-auto my-3 flex h-48 w-[750px] flex-row p-2">
     <div
         class="relative h-full w-2/5"
         on:mouseenter={() => (hovering = true)}

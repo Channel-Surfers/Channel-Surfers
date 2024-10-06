@@ -2,6 +2,7 @@ import { channelTable, type Channel } from '../db/channels.sql';
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
 import { eq } from 'drizzle-orm';
+import { publicChannelTable } from '../db/public.channels.sql';
 
 /**
  * Return a list of channels
@@ -11,10 +12,10 @@ import { eq } from 'drizzle-orm';
 export const getChannels = async (db: DB, opts?: { pageSize: number; page: number }) => {
     const dbResponse = opts
         ? db
-              .select()
-              .from(channelTable)
-              .limit(opts.pageSize)
-              .offset(opts.pageSize * (opts.page - 1))
+            .select()
+            .from(channelTable)
+            .limit(opts.pageSize)
+            .offset(opts.pageSize * (opts.page - 1))
         : db.select().from(channelTable);
 
     return dbResponse;
@@ -37,4 +38,13 @@ export const getChannelById = async (db: DB, id: string): Promise<Channel> => {
 
 export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channel[]> => {
     return await db.select().from(channelTable).where(eq(channelTable.createdBy, userId));
+};
+
+export const getPublicChannelByName = async (db: DB, name: string): Promise<Channel | null> => {
+    const [ret] = await db.select()
+        .from(publicChannelTable)
+        .innerJoin(channelTable, eq(channelTable.id, publicChannelTable.channelId))
+        .where(eq(publicChannelTable.name, name));
+    if (!ret) return null;
+    return ret.channel;
 };
