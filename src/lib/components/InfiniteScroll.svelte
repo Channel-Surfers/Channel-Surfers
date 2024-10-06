@@ -1,15 +1,29 @@
 <script lang="ts">
-    import type { PostData } from '$lib/types';
-    import { sleep, viewport } from '$lib/util';
+    import type { PostData, uuid } from '$lib/types';
+    import { viewport } from '$lib/util';
     import { PAGE_SIZE } from '$lib';
     import { onMount } from 'svelte';
     import Post from './Post.svelte';
     import { toast } from 'svelte-sonner';
     import { Button } from '$lib/shadcn/components/ui/button';
-    import { dev } from '$app/environment';
     import type { HomePostFilter } from '$lib/server/services/content';
 
-    export let channel_name: string;
+    export let data:
+        | { source: 'home' }
+        | { source: 'channel'; channel_name: string }
+        | { source: 'private_channel'; channel_id: uuid }
+        | { source: 'user'; username: string };
+
+    const url =
+        data.source === 'home'
+            ? '/api/posts'
+            : data.source === 'channel'
+              ? `/api/c/${data.channel_name}/posts`
+              : data.source === 'private_channel'
+                ? `/api/c/private/${data.channel_id}/posts`
+                : data.source === 'user'
+                  ? `/api/u/${data.username}/posts`
+                  : 0; // unreachable
 
     let page: number = 0;
     let buffer: PostData[] = [];
@@ -27,14 +41,11 @@
                 page: `${page++}`,
                 ...params,
             } as any);
-            const res = await fetch(`/api/posts?${search}`);
+            const res = await fetch(`${url}?${search}`);
 
             if (res.status !== 200) {
                 throw new Error(await res.text());
             }
-
-            // Add artificial delay so we can see what it looks like when loading
-            // if (dev) await sleep(1000);
 
             const new_posts = await res.json();
             buffer = buffer.concat(new_posts);

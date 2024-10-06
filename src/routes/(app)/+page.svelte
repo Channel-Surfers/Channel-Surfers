@@ -29,6 +29,6 @@
     </div>
 
     <div class="h-[100vh] w-2/3 border-2 border-black">
-        <InfiniteScroll />
+        <InfiniteScroll data={{ source: 'home' }} />
     </div>
 </div>

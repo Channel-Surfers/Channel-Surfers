@@ -46,7 +46,7 @@
         : '';
 </script>
 
-<Card.Root class="m-auto my-3 flex h-48 w-[750px] flex-row p-2">
+<Card.Root class="m-auto my-3 flex h-48 w-[800px] flex-row p-2">
     <div
         class="relative h-full w-2/5"
         on:mouseenter={() => (hovering = true)}
@@ -68,7 +68,7 @@
             <img {src} alt="" class="h-full w-full rounded-lg object-cover" />
         {/if}
     </div>
-    <div class="img flex h-full grow flex-col justify-between">
+    <div class="flex h-full w-2/5 grow flex-col justify-between">
         <Card.Header class="p-2 px-6">
             <Card.Title class="space-y-1">
                 <div class="mb-4">
