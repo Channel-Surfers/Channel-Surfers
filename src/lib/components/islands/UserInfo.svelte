@@ -2,12 +2,11 @@
     import * as Card from '$lib/shadcn/components/ui/card';
     import * as Avatar from '$lib/shadcn/components/ui/avatar/index';
     import type { User } from '$lib/server/db/users.sql';
-    import type { getUserStats } from '$lib/server/services/users';
+    import type { UserStats } from '$lib/server/services/users';
     import Skeleton from '$lib/shadcn/components/ui/skeleton/skeleton.svelte';
     import Button from '$lib/shadcn/components/ui/button/button.svelte';
 
-    export let userInfo: (User & { userStats: Awaited<ReturnType<typeof getUserStats>> }) | null =
-        null;
+    export let userInfo: (User & { userStats: UserStats }) | null = null;
     export let isFollowing: boolean = false;
 </script>
 

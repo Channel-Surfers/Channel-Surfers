@@ -81,11 +81,29 @@ describe.concurrent('channels suite', () => {
         ]);
     });
 
-    test.concurrent('subscriptions are counted correctly', async ({ expect }) => {
+    test.concurrent(
+        "user's subscriptions can be fetched when there aren't any",
+        async ({ expect }) => {
+            const { db, generated } = await createTestingDb(generateUserAndChannel);
+            const { creator } = mustGenerate(generated);
+            const subscribedChannels = await getUserSubscriptions(db, creator.id);
+            expect(subscribedChannels).toStrictEqual([]);
+        }
+    );
+
+    test.concurrent('many subscriptions are counted correctly', async ({ expect }) => {
         const { db, generated } = await createTestingDb(generateChannelAndSubs);
         const { createdChannel, subscriptionCount } = mustGenerate(generated);
 
         const channelInfo = await getChannelInfo(db, createdChannel.id);
         expect(channelInfo.subscriptionsCount).toStrictEqual(subscriptionCount);
+    });
+
+    test.concurrent('zero subscriptions are counted correctly', async ({ expect }) => {
+        const { db, generated } = await createTestingDb(generateUserAndChannel);
+        const { createdChannel } = mustGenerate(generated);
+
+        const channelInfo = await getChannelInfo(db, createdChannel.id);
+        expect(channelInfo.subscriptionsCount).toStrictEqual(0);
     });
 });

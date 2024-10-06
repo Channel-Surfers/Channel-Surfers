@@ -53,7 +53,7 @@
 <div class="flex max-h-screen min-h-screen flex-row justify-between">
     <!-- Left navigation -->
     <div class="w-1/6 p-4">
-        {#if data.user}
+        {#if data.user && myChannels}
             <LeftNav
                 channels={myChannels.map((channel) => ({
                     ...channel,
@@ -92,6 +92,7 @@
                     Score: <Score
                         upvotes={data.userStats.numberOfUpvotes}
                         downvotes={data.userStats.numberOfDownvotes}
+                        side={'right'}
                     />
                 </Card.Content>
             </Card.Root>

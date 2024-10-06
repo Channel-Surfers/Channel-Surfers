@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { getChannelInfo } from '$lib/server/services/content';
+    import type { ChannelInfo } from '$lib/server/services/channels';
     import * as Avatar from '$lib/shadcn/components/ui/avatar/index';
     import Button from '$lib/shadcn/components/ui/button/button.svelte';
     import * as Card from '$lib/shadcn/components/ui/card';
     import ScrollArea from '$lib/shadcn/components/ui/scroll-area/scroll-area.svelte';
     import Separator from '$lib/shadcn/components/ui/separator/separator.svelte';
 
-    export let channel: Awaited<ReturnType<typeof getChannelInfo>>;
+    export let channel: ChannelInfo;
     export let isPrivate: boolean = false;
     export let isSubscribed: boolean = false;
 
@@ -27,17 +27,10 @@
             </div>
             {#if isPrivate}
                 <Button>Leave</Button>
+            {:else if isSubscribed}
+                <Button type="submit" variant="destructive">Unsubscribe</Button>
             {:else}
-                <form action="/api/subscriptions" method="POST">
-                    <input name="channelId" class="hidden" value={channel.id} />
-                    {#if isSubscribed}
-                        <input name="choice" class="hidden" value="unsub" />
-                        <Button type="submit" variant="destructive">Unsubscribe</Button>
-                    {:else}
-                        <input name="choice" class="hidden" value="sub" />
-                        <Button type="submit">Subscribe</Button>
-                    {/if}
-                </form>
+                <Button type="submit">Subscribe</Button>
             {/if}
         </div>
     </Card.Header>

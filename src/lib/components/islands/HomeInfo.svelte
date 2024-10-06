@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { getPostStatistics } from '$lib/server/services/content';
+    import type { PostStatistics } from '$lib/server/services/content';
     import * as Card from '$lib/shadcn/components/ui/card';
     import Score from '../Score.svelte';
 
-    export let stats: Awaited<ReturnType<typeof getPostStatistics>>;
+    export let stats: PostStatistics;
 </script>
 
 <Card.Root>
@@ -13,6 +13,10 @@
             channels amassing {stats.numberOfUpvotes} upvotes and {stats.numberOfDownvotes} downvotes.
         </p>
 
-        Site Score: <Score upvotes={stats.numberOfUpvotes} downvotes={stats.numberOfDownvotes} />
+        Site Score: <Score
+            upvotes={stats.numberOfUpvotes}
+            downvotes={stats.numberOfDownvotes}
+            side={'bottom'}
+        />
     </Card.Content>
 </Card.Root>

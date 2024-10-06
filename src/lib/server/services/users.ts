@@ -78,3 +78,4 @@ export const getUserStats = async (db: DB, userId: string) => {
     ]);
     return { numberOfUpvotes, numberOfDownvotes };
 };
+export type UserStats = Awaited<ReturnType<typeof getUserStats>>;

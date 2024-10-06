@@ -50,6 +50,7 @@ export const getUserSubscriptions = async (db: DB, userId: string) => {
         .innerJoin(subscriptionTable, eq(channelTable.id, subscriptionTable.channelId))
         .where(eq(subscriptionTable.userId, userId));
 };
+export type UserSubscription = Awaited<ReturnType<typeof getUserSubscriptions>>[0];
 
 /**
  * Get information about a channel
@@ -89,6 +90,7 @@ export const getChannelInfo = async (
         );
     return ret;
 };
+export type ChannelInfo = Awaited<ReturnType<typeof getChannelInfo>>;
 
 /**
  * Get channels that a user owns

@@ -41,3 +41,4 @@ export const getPostStatistics = async (db: DB) => {
         numberOfDownvotes,
     };
 };
+export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
