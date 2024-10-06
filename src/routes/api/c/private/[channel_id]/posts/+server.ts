@@ -18,8 +18,6 @@ export const GET: RequestHandler = async (event) => {
 
     const reverseSort = (event.url.searchParams.get('reverseSort') || 'false') === 'true';
 
-    const tags = event.url.searchParams.get('tags')?.split(',') ?? [];
-
     const posts = await getPosts(db, page, {
         requesterId: event.locals.user?.id,
         type: 'channel',
@@ -27,7 +25,6 @@ export const GET: RequestHandler = async (event) => {
         sort,
         reverseSort,
         filter,
-        tags,
     });
     return json(posts);
 };

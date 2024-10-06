@@ -1,4 +1,4 @@
-import { count, countDistinct, eq, sql, desc, asc, isNull } from 'drizzle-orm';
+import { count, countDistinct, eq, sql, desc, asc, isNull, not, inArray } from 'drizzle-orm';
 import type { DB } from '..';
 import { postTable } from '../db/posts.sql';
 import { channelTable } from '../db/channels.sql';
@@ -10,13 +10,14 @@ import { channelTagsTable } from '../db/tags.channels.sql';
 import { commentTable } from '../db/comments.sql';
 import { publicChannelTable } from '../db/public.channels.sql';
 import { PAGE_SIZE } from '$lib';
+import { array_agg, dedupe_nonull_array } from './utils';
+import { userBlockTable } from '../db/blocks.users.sql';
 
 interface GenericPostFilter {
     requesterId?: uuid;
     sort: 'votes' | 'date';
     filter: 'subscribed' | 'all';
     reverseSort?: boolean;
-    tags?: string[];
 }
 
 export interface ChannelPostFilter extends GenericPostFilter {
@@ -65,9 +66,9 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
                 name: channelTable.name,
                 private: isNull(publicChannelTable.channelId),
             },
-            tags: sql<
-                string[]
-            >`array(select distinct * from unnest(array_remove(array_agg(${channelTagsTable.name}), NULL)))`,
+            tags: dedupe_nonull_array(array_agg(channelTagsTable.name)),
+            // The upvote/downvote counting will be better once we get lateral joins.  See: https://github.com/drizzle-team/drizzle-orm/pull/1079
+            // The query will end up being something like `SELECT ... FROM post JOIN LATERAL (SELECT COUNT(*) FROM post_vote WHERE post_id = post.id AND vote = 'UP') ON TRUE`
             upvotes: countDistinct(upvotes.userId),
             downvotes: countDistinct(downvotes.userId),
             comments: count(commentTable.id),
@@ -92,45 +93,53 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
             channelTable.name
         )
         .$dynamic();
+
     const dirFn = filter.reverseSort ? asc : desc;
     switch (filter.sort) {
         case 'date':
-            {
-                q = q.orderBy(dirFn(postTable.createdOn));
-            }
+            q = q.orderBy(dirFn(postTable.createdOn));
             break;
         case 'votes':
-            {
-                q = q.orderBy(
-                    dirFn(
-                        sql<number>`cast(count(distinct ${upvotes.userId}) - count(distinct ${downvotes.userId}) as int)`
-                    )
-                );
-            }
+            q = q.orderBy(
+                dirFn(
+                    sql<number>`cast(count(distinct ${upvotes.userId}) - count(distinct ${downvotes.userId}) as int)`
+                )
+            );
             break;
         default: {
             throw new Error(`invalid filter sort: ${filter.sort}`);
         }
     }
 
+    if (filter.requesterId) {
+        q = q.where(
+            not(
+                inArray(
+                    userTable.id,
+                    db
+                        .select({ id: userBlockTable.blockedUserId })
+                        .from(userBlockTable)
+                        .where(eq(userBlockTable.userId, filter.requesterId))
+                )
+            )
+        );
+    }
+
     switch (filter.type) {
         case 'home':
-            {
-            }
             break;
         case 'channel':
-            {
-                q = q.where(eq(channelTable.id, filter.channelId));
-            }
+            q = q.where(eq(channelTable.id, filter.channelId));
             break;
         case 'user':
-            {
-                q = q.where(eq(userTable.username, filter.username));
-            }
+            q = q.where(eq(userTable.username, filter.username));
             break;
     }
+
     q = q.limit(PAGE_SIZE).offset(page * PAGE_SIZE);
+
     console.log(q.toSQL());
+
     return (await q).map((p) => ({
         id: p.id,
         title: p.title,

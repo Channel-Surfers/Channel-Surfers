@@ -19,8 +19,6 @@ export const GET: RequestHandler = async (event) => {
 
     const reverseSort = (event.url.searchParams.get('reverseSort') || 'false') === 'true';
 
-    const tags = event.url.searchParams.get('tags')?.split(',') ?? [];
-
     const channel = await getPublicChannelByName(db, event.params.channel_name);
     if (channel == null) return error(404);
 
@@ -31,7 +29,6 @@ export const GET: RequestHandler = async (event) => {
         reverseSort,
         sort,
         filter,
-        tags,
     });
     return json(posts);
 };
