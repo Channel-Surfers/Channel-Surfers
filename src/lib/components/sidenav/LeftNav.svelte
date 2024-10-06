@@ -73,10 +73,11 @@
                         {#if playlists}
                             {#if playlists.length === 0}
                                 <p class="pl-2">You have no playlists</p>
-                            {:else}{/if}
-                            {#each playlists as pl}
-                                <Route href={`/p/${pl.id}`} title={pl.name ?? pl.id} />
-                            {/each}
+                            {:else}
+                                {#each playlists as pl}
+                                    <Route href={`/p/${pl.id}`} title={pl.name ?? pl.id} />
+                                {/each}
+                            {/if}
                         {:else}
                             <p>Login to view playlists</p>
                         {/if}
