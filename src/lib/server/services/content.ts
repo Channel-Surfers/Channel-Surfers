@@ -1,4 +1,12 @@
-import { aliasedTable, and, count, countDistinct, eq, gte, sql, desc, asc, isNotNull, isNull } from 'drizzle-orm';
+import {
+    count,
+    countDistinct,
+    eq,
+    sql,
+    desc,
+    asc,
+    isNull,
+} from 'drizzle-orm';
 import type { DB } from '..';
 import { postTable } from '../db/posts.sql';
 import { channelTable } from '../db/channels.sql';
@@ -65,7 +73,9 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
                 name: channelTable.name,
                 private: isNull(publicChannelTable.channelId),
             },
-            tags: sql<string[]>`array(select distinct * from unnest(array_remove(array_agg(${channelTagsTable.name}), NULL)))`,
+            tags: sql<
+                string[]
+            >`array(select distinct * from unnest(array_remove(array_agg(${channelTagsTable.name}), NULL)))`,
             upvotes: countDistinct(upvotes.userId),
             downvotes: countDistinct(downvotes.userId),
             comments: count(commentTable.id),
@@ -87,52 +97,66 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
             userTable.username,
             userTable.profileImage,
             channelTable.id,
-            channelTable.name,
+            channelTable.name
         )
         .$dynamic();
     const dirFn = filter.reverseSort ? asc : desc;
     switch (filter.sort) {
-        case 'date': {
-            q = q.orderBy(dirFn(postTable.createdOn));
-        }; break;
-        case 'votes': {
-            q = q.orderBy(dirFn(sql<number>`cast(count(distinct ${upvotes.userId}) - count(distinct ${downvotes.userId}) as int)`));
-        }; break;
+        case 'date':
+            {
+                q = q.orderBy(dirFn(postTable.createdOn));
+            }
+            break;
+        case 'votes':
+            {
+                q = q.orderBy(
+                    dirFn(
+                        sql<number>`cast(count(distinct ${upvotes.userId}) - count(distinct ${downvotes.userId}) as int)`
+                    )
+                );
+            }
+            break;
         default: {
             throw new Error(`invalid filter sort: ${filter.sort}`);
         }
     }
 
     switch (filter.type) {
-        case 'home': {
-        }; break;
-        case 'channel': {
-            q = q.where(eq(channelTable.id, filter.channelId));
-        }; break;
-        case 'user': {
-            q = q.where(eq(userTable.username, filter.username));
-        }; break;
+        case 'home':
+            {
+            }
+            break;
+        case 'channel':
+            {
+                q = q.where(eq(channelTable.id, filter.channelId));
+            }
+            break;
+        case 'user':
+            {
+                q = q.where(eq(userTable.username, filter.username));
+            }
+            break;
     }
     q = q.limit(PAGE_SIZE).offset(page * PAGE_SIZE);
     console.log(q.toSQL());
-    return (await q)
-        .map((p) => ({
-            id: p.id,
-            title: p.title,
-            videoId: p.videoId,
-            createdOn: p.createdOn,
-            tags: p.tags,
-            upvotes: p.upvotes,
-            downvotes: p.downvotes,
-            comments: p.comments,
-            poster: {
-                user: {
-                    ...p.user,
-                    avatar: p.user.avatar || undefined,
-                },
-                channel: {
-                    ...p.channel,
-                },
+    return (await q).map((p) => ({
+        id: p.id,
+        title: p.title,
+        videoId: p.videoId,
+        createdOn: p.createdOn,
+        tags: p.tags,
+        upvotes: p.upvotes,
+        downvotes: p.downvotes,
+        comments: p.comments,
+        poster: {
+            user: {
+                ...p.user,
+                avatar: p.user.avatar || undefined,
             },
-        }));
+            channel: {
+                ...p.channel,
+                private: !!p.channel.private,
+            },
+        },
+    }));
 };

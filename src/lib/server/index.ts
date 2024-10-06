@@ -19,26 +19,22 @@ export async function getDb(): Promise<DB> {
 
 const rand = (n: number, o = 0): number => o + Math.floor(Math.random() * (n - o));
 
-const words = 'duis a vulputate lacus maecenas lorem massa finibus ac ultricies eu rhoncus viverra felis integer porttitor magna nunc sed pretium mauris tempus donec lectus nibh fermentum eget ex aliquet vestibulum augue faucibus tortor consectetur feugiat diam metus dignissim ipsum quis imperdiet non fusce varius elit suscipit mi consequat at nam efficitur nisi nec mattis sodales vivamus dapibus id porta ut enim convallis cras pharetra'.split(' ');
+const words =
+    'duis a vulputate lacus maecenas lorem massa finibus ac ultricies eu rhoncus viverra felis integer porttitor magna nunc sed pretium mauris tempus donec lectus nibh fermentum eget ex aliquet vestibulum augue faucibus tortor consectetur feugiat diam metus dignissim ipsum quis imperdiet non fusce varius elit suscipit mi consequat at nam efficitur nisi nec mattis sodales vivamus dapibus id porta ut enim convallis cras pharetra'.split(
+        ' '
+    );
 const lip = (n: number, j: string = ' '): string => {
     return pick_n(words, n).join(j);
 };
 
 const pick_n = (arr: string[], n: number) => {
     const a = [...arr];
-    return Array(n).fill(0).map(() => a.splice(rand(a.length), 1)[0]);
-}
-
-const rand_username = (extra_chars: string = ''): string => {
-    return lip(rand(3, 2), '_');
-    // const n = rand(20, 10);
-    // const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' + extra_chars;
-    // let s = '';
-    // for (let i = 0; i < n; ++i) {
-    //     s += chars.charAt(rand(chars.length));
-    // }
-    // return s;
+    return Array(n)
+        .fill(0)
+        .map(() => a.splice(rand(a.length), 1)[0]);
 };
+
+const rand_username = () => lip(rand(3, 2), '_');
 
 const init_db = async (db: DB) => {
     console.log('running init');
@@ -46,33 +42,54 @@ const init_db = async (db: DB) => {
         console.log('already run');
         return;
     }
-    const v = Array(200).fill(0).map(() => ({
-        username: rand_username(),
-    }));
+    const v = Array(200)
+        .fill(0)
+        .map(() => ({
+            username: rand_username(),
+        }));
 
     let users: schema.User[] = [];
     while (v.length) {
-        users = users.concat(await db.insert(schema.userTable).values(v.splice(0, Math.min(100, v.length))).returning());
+        users = users.concat(
+            await db
+                .insert(schema.userTable)
+                .values(v.splice(0, Math.min(100, v.length)))
+                .returning()
+        );
     }
 
-    const channels = await db.insert(schema.channelTable).values(users.slice(0, 20).map(u => ({
-        name: rand_username(),
-        createdBy: u.id,
-    }))).returning();
+    const channels = await db
+        .insert(schema.channelTable)
+        .values(
+            users.slice(0, 20).map((u) => ({
+                name: rand_username(),
+                createdBy: u.id,
+            }))
+        )
+        .returning();
 
-    await db.insert(schema.publicChannelTable).values(channels.map(c => ({
-        name: c.name,
-        channelId: c.id,
-    })));
+    await db.insert(schema.publicChannelTable).values(
+        channels.map((c) => ({
+            name: c.name,
+            channelId: c.id,
+        }))
+    );
 
     const tags: { [id: string]: schema.ChannelTag[] } = {};
     for (const channel of channels) {
         const t = pick_n(words, 5);
-        tags[channel.id] = await db.insert(schema.channelTagsTable).values(Array(5).fill(0).map((_, i) => ({
-            channelId: channel.id,
-            name: t[i],
-            color: `#${rand(255).toString(16)}${rand(255).toString(16)}${rand(255).toString(16)}`,
-        }))).returning();
+        tags[channel.id] = await db
+            .insert(schema.channelTagsTable)
+            .values(
+                Array(5)
+                    .fill(0)
+                    .map((_, i) => ({
+                        channelId: channel.id,
+                        name: t[i],
+                        color: `#${rand(255).toString(16)}${rand(255).toString(16)}${rand(255).toString(16)}`,
+                    }))
+            )
+            .returning();
     }
 
     const video_ids = [
@@ -83,22 +100,31 @@ const init_db = async (db: DB) => {
         'ba0aa315-365c-4f90-b72a-3ddacee81381',
         '0164c7a6-2b48-4c96-8e02-34907666ec77',
     ];
-    const posts = await db.insert(schema.postTable).values(Array(100).fill(0).map(() => ({
-        title: lip(rand(10, 2)),
-        channelId: channels[rand(channels.length)].id,
-        createdBy: users[rand(users.length)].id,
-        videoId: video_ids[rand(video_ids.length)],
-    }))).returning();
+    const posts = await db
+        .insert(schema.postTable)
+        .values(
+            Array(100)
+                .fill(0)
+                .map(() => ({
+                    title: lip(rand(10, 2)),
+                    channelId: channels[rand(channels.length)].id,
+                    createdBy: users[rand(users.length)].id,
+                    videoId: video_ids[rand(video_ids.length)],
+                }))
+        )
+        .returning();
 
     for (const post of posts) {
         const t = [...tags[post.channelId]];
-        const fill = Array(rand(5, 1)).fill(0).map(() => {
-            const [tag] = t.splice(rand(t.length), 1);
-            return {
-                postId: post.id,
-                tagId: tag.id,
-            };
-        })
+        const fill = Array(rand(5, 1))
+            .fill(0)
+            .map(() => {
+                const [tag] = t.splice(rand(t.length), 1);
+                return {
+                    postId: post.id,
+                    tagId: tag.id,
+                };
+            });
         if (fill.length) {
             await db.insert(schema.postTagTable).values(fill).returning();
         }
@@ -114,13 +140,13 @@ const init_db = async (db: DB) => {
             vote_v.push({
                 postId: post.id,
                 userId: user.id,
-                vote: Math.random() > .25 ? 'UP' as const : 'DOWN' as const,
+                vote: Math.random() > 0.25 ? ('UP' as const) : ('DOWN' as const),
             });
         }
         await db.insert(schema.postVoteTable).values(vote_v);
     }
     console.log('generated data');
-}
+};
 
 export async function createDb(connectionString: string): Promise<DB> {
     console.log('creating db');
@@ -140,4 +166,3 @@ export async function createDb(connectionString: string): Promise<DB> {
  * Represents constant access database for use in server functions.
  * Perhaps a better pattern can be found for this connection than simply exporting it as const
  */
-

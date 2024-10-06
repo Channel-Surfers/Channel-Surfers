@@ -12,10 +12,10 @@ import { publicChannelTable } from '../db/public.channels.sql';
 export const getChannels = async (db: DB, opts?: { pageSize: number; page: number }) => {
     const dbResponse = opts
         ? db
-            .select()
-            .from(channelTable)
-            .limit(opts.pageSize)
-            .offset(opts.pageSize * (opts.page - 1))
+              .select()
+              .from(channelTable)
+              .limit(opts.pageSize)
+              .offset(opts.pageSize * (opts.page - 1))
         : db.select().from(channelTable);
 
     return dbResponse;
@@ -41,7 +41,8 @@ export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channe
 };
 
 export const getPublicChannelByName = async (db: DB, name: string): Promise<Channel | null> => {
-    const [ret] = await db.select()
+    const [ret] = await db
+        .select()
         .from(publicChannelTable)
         .innerJoin(channelTable, eq(channelTable.id, publicChannelTable.channelId))
         .where(eq(publicChannelTable.name, name));

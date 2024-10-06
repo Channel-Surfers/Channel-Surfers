@@ -2,7 +2,6 @@
     import { onMount } from 'svelte';
     import { PAGE_SIZE } from '$lib';
     import { toast } from 'svelte-sonner';
-    import type { HomePostFilter } from '$lib/server/services/content';
     import type { PostData, uuid } from '$lib/types';
     import { viewport } from '$lib/util';
 
@@ -56,17 +55,13 @@
         state = 'loading';
         try {
             console.log('get_posts', { sort, filter });
-            const params: HomePostFilter = {
+            const search = new URLSearchParams({
+                page: `${page++}`,
                 type: 'home',
                 sort: sort.value as 'votes' | 'date',
                 filter: 'all',
-                reverseSort,
-            };
-
-            const search = new URLSearchParams({
-                page: `${page++}`,
-                ...params,
-            } as any);
+                reverseSort: reverseSort + '', // default behaviour, but ts is ts
+            });
             const res = await fetch(`${url}?${search}`);
 
             if (res.status !== 200) {

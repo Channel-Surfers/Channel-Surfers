@@ -18,18 +18,18 @@ export interface PostData {
 }
 
 export interface PosterData {
-    user: UserData,
-    channel: ChannelData,
-};
+    user: UserData;
+    channel: ChannelData;
+}
 
 export interface UserData {
-    id: uuid,
-    name: string,
-    avatar?: string,
-};
+    id: uuid;
+    name: string;
+    avatar?: string;
+}
 
 export interface ChannelData {
-    id: uuid,
-    name: string,
-    private: boolean,
-};
+    id: uuid;
+    name: string;
+    private: boolean;
+}

@@ -9,7 +9,8 @@ export const GET: RequestHandler = async (event) => {
     const db = await getDb();
 
     const filter = event.url.searchParams.get('filter') || 'all';
-    if (!is(['all', 'subscribed'], filter)) return error(400, `filter must be either 'all' or 'subscribed'`);
+    if (!is(['all', 'subscribed'], filter))
+        return error(400, `filter must be either 'all' or 'subscribed'`);
 
     if (filter === 'subscribed' && !event.locals.user) return error(401);
 
