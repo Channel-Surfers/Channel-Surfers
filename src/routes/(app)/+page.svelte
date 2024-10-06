@@ -28,7 +28,7 @@
         </p>
     </div>
 
-    <div class="h-[100vh] w-2/3 border-2 border-black">
-        <InfiniteScroll data={{ source: 'home' }} />
+    <div class="h-[100vh] w-2/3">
+        <InfiniteScroll data={{ source: 'home', signed_in: true }} />
     </div>
 </div>

@@ -47,6 +47,8 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         .where(eq(postVoteTable.vote, 'DOWN'))
         .as('downvotes');
 
+    console.log('getPosts', filter);
+
     let q = db
         .select({
             id: postTable.id,
