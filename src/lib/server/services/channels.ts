@@ -20,10 +20,10 @@ export const getChannels = (db: DB, opts?: { pageSize: number; page: number }) =
             try: () =>
                 opts
                     ? db
-                          .select()
-                          .from(channelTable)
-                          .limit(opts.pageSize)
-                          .offset(opts.pageSize * (opts.page - 1))
+                        .select()
+                        .from(channelTable)
+                        .limit(opts.pageSize)
+                        .offset(opts.pageSize * (opts.page - 1))
                     : db.select().from(channelTable),
             catch: (error: unknown) =>
                 new DbError({ message: `Unknown database error occurred: ${error}` }),
@@ -70,13 +70,12 @@ export const createChannel = async (db: DB, channelData: NewChannel): Promise<Ch
     return channel;
 };
 
-export const publishChannel = async (db: DB, theChannel: Channel): Promise<PublicChannel> => {
-    const name = theChannel.name;
-    const channelId = theChannel.id;
+export const publishChannel = async (db: DB, channel: Channel): Promise<PublicChannel> => {
 
-    const publishChannel: NewPublicChannel = { name, channelId };
+    const [publicChannel] = await db.insert(publicChannelTable).values({
+        name: channel.name,
+        channelId: channel.id,
+    }).returning();
 
-    const [channel] = await db.insert(publicChannelTable).values(publishChannel).returning();
-
-    return channel;
+    return publicChannel;
 };
