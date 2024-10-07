@@ -4,7 +4,6 @@ import { ResourceNotFoundError } from './utils/errors';
 import { eq } from 'drizzle-orm';
 import {
     publicChannelTable,
-    type NewPublicChannel,
     type PublicChannel,
 } from '../db/public.channels.sql';
 
@@ -40,7 +39,6 @@ export const getChannelById = async (db: DB, id: string): Promise<Channel> => {
     return ret;
 };
 
-
 export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {
     const [channel] = await db.insert(channelTable).values(channelData).returning();
 
@@ -48,11 +46,13 @@ export const createChannel = async (db: DB, channelData: NewChannel): Promise<Ch
 };
 
 export const publishChannel = async (db: DB, channel: Channel): Promise<PublicChannel> => {
-
-    const [publicChannel] = await db.insert(publicChannelTable).values({
-        name: channel.name,
-        channelId: channel.id,
-    }).returning();
+    const [publicChannel] = await db
+        .insert(publicChannelTable)
+        .values({
+            name: channel.name,
+            channelId: channel.id,
+        })
+        .returning();
 
     return publicChannel;
 };
