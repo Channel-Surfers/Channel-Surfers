@@ -1,9 +1,16 @@
 import { describe, it } from 'vitest';
-import { getChannelById, getChannels, getChannelsByOwner } from './channels';
+import {
+    getChannelById,
+    getChannels,
+    getChannelsByOwner,
+    createChannel,
+    publishChannel,
+} from './channels';
 import { createTestingDb, mustGenerate } from '$lib/testing/utils';
 import { channelTable } from '../db/channels.sql';
 import { userTable } from '../db/users.sql';
 import type { DB } from '..';
+import type { PublicChannel } from '../db/public.channels.sql';
 
 const generateUserAndChannel = async (db: DB) => {
     const creator = (await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning())[0];
@@ -14,6 +21,12 @@ const generateUserAndChannel = async (db: DB) => {
             .returning()
     )[0];
     return { creator, createdChannel };
+};
+
+const generateUser = async (db: DB) => {
+    const creator = (await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning())[0];
+
+    return { creator };
 };
 
 describe('channels suite', () => {
@@ -44,5 +57,30 @@ describe('channels suite', () => {
 
         const userChannels = await getChannelsByOwner(db, creator.id);
         expect(userChannels).toStrictEqual([createdChannel]);
+    });
+
+    it.concurrent('creating channels returns successfully', async ({ expect }) => {
+        const { db, generated } = await createTestingDb(generateUser);
+
+        const { creator } = mustGenerate(generated);
+
+        const userChannels = await createChannel(db, {
+            name: "Evan's Channel",
+            createdBy: creator.id,
+            description: 'Funny',
+            guidelines: 'None',
+        });
+        expect(userChannels.name).toStrictEqual("Evan's Channel");
+    });
+
+    it.concurrent('publishing channels returns successfully', async ({ expect }) => {
+        const { db, generated } = await createTestingDb(generateUserAndChannel);
+        mustGenerate(generated);
+
+        const { createdChannel } = mustGenerate(generated);
+
+        const publishedChannel: PublicChannel = await publishChannel(db, createdChannel);
+
+        expect(publishedChannel.name).toStrictEqual(createdChannel.name);
     });
 });

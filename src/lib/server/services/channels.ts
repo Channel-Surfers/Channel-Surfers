@@ -1,8 +1,8 @@
-import { channelTable, type Channel } from '../db/channels.sql';
+import { channelTable, type Channel, type NewChannel } from '../db/channels.sql';
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
 import { eq } from 'drizzle-orm';
-import { publicChannelTable } from '../db/public.channels.sql';
+import { publicChannelTable, type PublicChannel } from '../db/public.channels.sql';
 
 /**
  * Return a list of channels
@@ -34,6 +34,24 @@ export const getChannelById = async (db: DB, id: string): Promise<Channel> => {
     }
 
     return ret;
+};
+
+export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {
+    const [channel] = await db.insert(channelTable).values(channelData).returning();
+
+    return channel;
+};
+
+export const publishChannel = async (db: DB, channel: Channel): Promise<PublicChannel> => {
+    const [publicChannel] = await db
+        .insert(publicChannelTable)
+        .values({
+            name: channel.name,
+            channelId: channel.id,
+        })
+        .returning();
+
+    return publicChannel;
 };
 
 export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channel[]> => {
