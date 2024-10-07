@@ -8,6 +8,7 @@
 
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
+    import UserChannel from '$lib/components/UserChannel.svelte';
 
     export let data;
 
@@ -41,22 +42,29 @@
                 </div> -->
             <h1 class="text-ellipse mt-3 w-full text-pretty">{data.post.title}</h1>
         </Card.Title>
+        <UserChannel
+            user={{
+                username: data.user?.username || '',
+                avatar: data.user?.profileImage || undefined,
+                channel: data.channel.name,
+            }}
+        />
     </Card.Header>
     <Card.Content>
         <AspectRatio ratio={16 / 9}>
             <Player title={data.post.title} videoId={data.post.videoId} />
         </AspectRatio>
-        {#if data.post.description}
-            <h1>{data.post.description}</h1>
-        {/if}
-    </Card.Content>
-    <Card.Footer>
         <!-- Tags -->
-        <div class="mt-2 flex gap-1.5 p-2 px-6">
+        <div class="flex max-w-full gap-1.5 overflow-scroll p-2">
             {#each data.tags as tag}
-                <Badge>{tag.name}</Badge>
+                <Badge style="background: {tag.color}">
+                    {tag.name}
+                </Badge>
             {/each}
         </div>
+        {#if data.post.description}
+            <p class="my-4">{data.post.description}</p>
+        {/if}
         <!-- Buttons/Stats -->
         <div class="flex flex-row items-center">
             <Toggle
@@ -79,5 +87,5 @@
                 <ArrowDown />
             </Toggle>
         </div>
-    </Card.Footer>
+    </Card.Content>
 </Card.Root>

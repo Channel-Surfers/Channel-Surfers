@@ -31,7 +31,8 @@ export const getPost = async (db: DB, post_id: uuid) => {
     const tags = await db
         .select({ name: channelTagsTable.name, color: channelTagsTable.color })
         .from(postTagTable)
-        .innerJoin(channelTagsTable, eq(channelTagsTable.id, postTagTable.tagId));
+        .innerJoin(channelTagsTable, eq(channelTagsTable.id, postTagTable.tagId))
+        .where(eq(postTagTable.postId, post_id));
 
     return {
         post,
