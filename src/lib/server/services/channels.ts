@@ -2,10 +2,7 @@ import { channelTable, type Channel, type NewChannel } from '../db/channels.sql'
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
 import { eq } from 'drizzle-orm';
-import {
-    publicChannelTable,
-    type PublicChannel,
-} from '../db/public.channels.sql';
+import { publicChannelTable, type PublicChannel } from '../db/public.channels.sql';
 
 /**
  * Return a list of channels
