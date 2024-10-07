@@ -7,6 +7,7 @@ export type uuid = string;
  * Data required for the Post component
  */
 export interface PostData {
+    id: uuid;
     title: string;
     videoId: uuid;
     createdOn: Date;
