@@ -59,7 +59,7 @@
                 page: `${page++}`,
                 type: 'home',
                 sort: sort.value as 'votes' | 'date',
-                filter: 'all',
+                filter: filter.value as 'all' | 'subscribed',
                 reverseSort: reverseSort + '', // default behaviour, but ts is ts
             });
             const res = await fetch(`${url}?${search}`);
@@ -110,8 +110,8 @@
                 <Select.Value placeholder="Filter" />
             </Select.Trigger>
             <Select.Content>
-                <Select.Item value="date" label="All">All</Select.Item>
-                <Select.Item value="votes" label="Top" disabled={!data.signed_in}
+                <Select.Item value="all" label="All">All</Select.Item>
+                <Select.Item value="subscribed" label="Subscribed" disabled={!data.signed_in}
                     >Subscribed</Select.Item
                 >
             </Select.Content>

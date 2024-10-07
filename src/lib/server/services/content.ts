@@ -1,4 +1,4 @@
-import { count, countDistinct, eq, sql, desc, asc, isNull, not, inArray } from 'drizzle-orm';
+import { count, countDistinct, eq, sql, desc, asc, isNull, not, inArray, and } from 'drizzle-orm';
 import type { DB } from '..';
 import { postTable } from '../db/posts.sql';
 import { channelTable } from '../db/channels.sql';
@@ -12,6 +12,7 @@ import { publicChannelTable } from '../db/public.channels.sql';
 import { PAGE_SIZE } from '$lib';
 import { array_agg, dedupe_nonull_array } from './utils';
 import { userBlockTable } from '../db/blocks.users.sql';
+import { subscriptionTable } from '../db/subscriptions.sql';
 
 interface GenericPostFilter {
     requesterId?: uuid;
@@ -95,6 +96,16 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         .$dynamic();
 
     const dirFn = filter.reverseSort ? asc : desc;
+    switch (filter.filter) {
+        case 'all':
+            break;
+        case 'subscribed':
+            if (!filter.requesterId) break;
+            break;
+        default:
+            throw new Error(`invalid filter: ${filter.sort}`);
+    }
+
     switch (filter.sort) {
         case 'date':
             q = q.orderBy(dirFn(postTable.createdOn));
@@ -106,13 +117,12 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
                 )
             );
             break;
-        default: {
+        default:
             throw new Error(`invalid filter sort: ${filter.sort}`);
-        }
     }
 
     if (filter.requesterId) {
-        q = q.where(
+        const cond = [
             not(
                 inArray(
                     userTable.id,
@@ -121,8 +131,17 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
                         .from(userBlockTable)
                         .where(eq(userBlockTable.userId, filter.requesterId))
                 )
-            )
-        );
+            ),
+        ];
+
+        if (filter.filter === 'subscribed') {
+            const subscribed = db
+                .select({ channelId: subscriptionTable.channelId })
+                .from(subscriptionTable)
+                .where(eq(subscriptionTable.userId, filter.requesterId));
+            cond.push(inArray(postTable.channelId, subscribed));
+        }
+        q = q.where(and(...cond));
     }
 
     switch (filter.type) {
