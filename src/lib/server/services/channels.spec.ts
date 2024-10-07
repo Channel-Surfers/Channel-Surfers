@@ -6,7 +6,6 @@ import {
     createChannel,
     publishChannel,
 } from './channels';
-import { Effect } from 'effect';
 import { createTestingDb, mustGenerate } from '$lib/testing/utils';
 import { channelTable } from '../db/channels.sql';
 import { userTable } from '../db/users.sql';
@@ -36,7 +35,7 @@ describe('channels suite', () => {
 
         const { createdChannel } = mustGenerate(generated);
 
-        const channels = await Effect.runPromise(getChannels(db));
+        const channels = await getChannels(db);
         expect(channels.length).toStrictEqual(1);
         expect(channels[0].name).toStrictEqual(createdChannel.name);
     });
@@ -46,7 +45,7 @@ describe('channels suite', () => {
 
         const { createdChannel } = mustGenerate(generated);
 
-        const channel = await Effect.runPromise(getChannelById(db, createdChannel.id));
+        const channel = await getChannelById(db, createdChannel.id);
         expect(channel?.name).toStrictEqual(createdChannel.name);
     });
 
@@ -56,7 +55,7 @@ describe('channels suite', () => {
 
         const { creator, createdChannel } = mustGenerate(generated);
 
-        const userChannels = await Effect.runPromise(getChannelsByOwner(db, creator.id));
+        const userChannels = await getChannelsByOwner(db, creator.id);
         expect(userChannels).toStrictEqual([createdChannel]);
     });
 
