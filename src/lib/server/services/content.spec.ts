@@ -4,9 +4,8 @@ import type { DB } from '..';
 import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
 import { postTable } from '../db/posts.sql';
-import { getPosts, getPostStatistics } from './content';
+import { getPosts } from './content';
 import { postVoteTable } from '../db/votes.posts.sql';
-import type { PostData } from '$lib/types';
 
 const generateStatContext = async (db: DB) => {
     const [creator] = await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning();
@@ -21,8 +20,6 @@ const generateStatContext = async (db: DB) => {
             { channelId: channel.id, createdBy: creator.id, title: 'Awesome post 2', videoId: '' },
         ])
         .returning();
-
-        console.log({ post1, post2 });
 
     const post1Upvoters = await db
         .insert(userTable)
@@ -108,8 +105,8 @@ describe.concurrent('posts suite', () => {
 
         let p1, p2;
         if (
-            gen.votes.upvotes1.length - gen.votes.downvotes1.length
-            > gen.votes.upvotes2.length - gen.votes.downvotes2.length
+            gen.votes.upvotes1.length - gen.votes.downvotes1.length >
+            gen.votes.upvotes2.length - gen.votes.downvotes2.length
         ) {
             [p1, p2] = [a, b];
         } else {
