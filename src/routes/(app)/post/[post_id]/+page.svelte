@@ -1,0 +1,83 @@
+<script lang="ts">
+    import Player from '$lib/components/Player.svelte';
+    import Score from '$lib/components/Score.svelte';
+    import { AspectRatio } from '$lib/shadcn/components/ui/aspect-ratio';
+    import { Badge } from '$lib/shadcn/components/ui/badge';
+    import * as Card from '$lib/shadcn/components/ui/card';
+    import { Toggle } from '$lib/shadcn/components/ui/toggle';
+
+    import ArrowUp from 'lucide-svelte/icons/arrow-up';
+    import ArrowDown from 'lucide-svelte/icons/arrow-down';
+
+    export let data;
+
+    console.log(data);
+
+    let upvote_pressed = false;
+    let downvote_pressed = false;
+
+    const vote = (dir: 'UP' | 'DOWN') => {
+        let new_state;
+        if (dir === 'UP') {
+            downvote_pressed = false;
+            new_state = !upvote_pressed;
+        } else {
+            upvote_pressed = false;
+            new_state = !downvote_pressed;
+        }
+        console.log('vote', new_state ? dir : null);
+    };
+</script>
+
+<svelte:head>
+    <title>{data.post.title.substring(0, 10)} | Channel Surfers</title>
+</svelte:head>
+
+<Card.Root class="m-auto w-2/3 p-2">
+    <Card.Header class="p-2 px-6">
+        <Card.Title class="space-y-1">
+            <!-- <div class="mb-4">
+                    <UserChannel user={post ? post.user : undefined} />
+                </div> -->
+            <h1 class="text-ellipse mt-3 w-full text-pretty">{data.post.title}</h1>
+        </Card.Title>
+    </Card.Header>
+    <Card.Content>
+        <AspectRatio ratio={16 / 9}>
+            <Player title={data.post.title} videoId={data.post.videoId} />
+        </AspectRatio>
+        {#if data.post.description}
+            <h1>{data.post.description}</h1>
+        {/if}
+    </Card.Content>
+    <Card.Footer>
+        <!-- Tags -->
+        <div class="mt-2 flex gap-1.5 p-2 px-6">
+            {#each data.tags as tag}
+                <Badge>{tag.name}</Badge>
+            {/each}
+        </div>
+        <!-- Buttons/Stats -->
+        <div class="flex flex-row items-center">
+            <Toggle
+                size="sm"
+                class="hover:text-upvote data-[state=on]:text-upvote"
+                bind:pressed={upvote_pressed}
+                on:click={() => vote('UP')}
+            >
+                <ArrowUp />
+            </Toggle>
+            <span class="w-8 text-center">
+                <Score side="top" upvotes={data.upvotes} downvotes={data.downvotes} />
+            </span>
+            <Toggle
+                size="sm"
+                class="hover:text-downvote data-[state=on]:text-downvote"
+                bind:pressed={downvote_pressed}
+                on:click={() => vote('DOWN')}
+            >
+                <ArrowDown />
+            </Toggle>
+        </div>
+    </Card.Footer>
+</Card.Root>

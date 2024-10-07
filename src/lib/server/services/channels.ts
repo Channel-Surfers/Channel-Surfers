@@ -1,7 +1,11 @@
 import { channelTable, type Channel } from '../db/channels.sql';
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
+import { userRoleTable } from '../db/roles.users.sql';
+import { roleTable } from '../db/roles.sql';
+import type { uuid } from '$lib/types';
+import { publicChannelTable } from '../db/public.channels.sql';
 
 /**
  * Return a list of channels
@@ -37,4 +41,30 @@ export const getChannelById = async (db: DB, id: string): Promise<Channel> => {
 
 export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channel[]> => {
     return await db.select().from(channelTable).where(eq(channelTable.createdBy, userId));
+};
+
+export const canViewChannel = async (db: DB, _userId: uuid, channelId: uuid): Promise<boolean> => {
+    const [ret] = await db.select()
+        .from(publicChannelTable)
+        .where(eq(publicChannelTable.channelId, channelId));
+
+    return !!ret;
+
+    // TODO: Check whether the user can view the private channel
+    //
+    // const [user_perm] = await db.select()
+    // .from(roleTable)
+    // .innerJoin(userRoleTable, eq(userRoleTable.roleId, roleTable.id))
+    // .where(
+    //     and(
+    //         eq(userRoleTable.userId, userId),
+    //         eq(roleTable.channelId, channelId)
+    //        )
+    // );
+
+    // if (!user_perm) {
+
+    // }
+
+    // return user_perm.role.can
 };

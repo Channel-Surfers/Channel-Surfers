@@ -6,6 +6,7 @@
 
     export let upvotes: number;
     export let downvotes: number;
+    export let side: 'top' | 'right' | 'bottom' | 'left' = 'left';
 
     const humanise = (n: number): string => {
         if (n < 1000) {
@@ -24,7 +25,7 @@
     <Tooltip.Trigger class={clazz}>
         <span class="small-caps">{humanise(Math.abs(upvotes - downvotes))}</span>
     </Tooltip.Trigger>
-    <Tooltip.Content side="left">
+    <Tooltip.Content {side}>
         <p class="small-caps flex flex-row items-center text-upvote">
             <ArrowUp />
             {humanise(upvotes)}
