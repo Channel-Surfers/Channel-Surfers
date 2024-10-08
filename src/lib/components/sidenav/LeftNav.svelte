@@ -25,20 +25,18 @@
                 <Accordion.Content>
                     <ScrollArea class="grow">
                         {#if channels}
-                            {#if channels.length === 0}
-                                <p class="pl-2">You have no channels</p>
+                            {#each channels as channel}
+                                {#if channel.publicInfo}
+                                    <Route
+                                        href={`/c/${channel.publicInfo.displayName}`}
+                                        title={channel.publicInfo.displayName}
+                                    />
+                                {:else}
+                                    <a href={`/c/private/${channel.id}`}>{channel.name}</a>
+                                {/if}
                             {:else}
-                                {#each channels as channel}
-                                    {#if channel.publicInfo}
-                                        <Route
-                                            href={`/c/${channel.publicInfo.displayName}`}
-                                            title={channel.publicInfo.displayName}
-                                        />
-                                    {:else}
-                                        <a href={`/c/private/${channel.id}`}>{channel.name}</a>
-                                    {/if}
-                                {/each}
-                            {/if}
+                                <p class="pl-2">You have no channels</p>
+                            {/each}
                         {:else}
                             <p class="pl-2">Login to create a channel</p>
                         {/if}
@@ -50,16 +48,14 @@
                 <Accordion.Content>
                     <ScrollArea class="grow">
                         {#if subscriptions}
-                            {#if subscriptions.length === 0}
-                                <p class="pl-2">You have no subscriptions</p>
+                            {#each subscriptions as sub}
+                                <Route
+                                    href={`/c/${sub.channelDisplayName}`}
+                                    title={sub.channelDisplayName}
+                                />
                             {:else}
-                                {#each subscriptions as sub}
-                                    <Route
-                                        href={`/c/${sub.channelDisplayName}`}
-                                        title={sub.channelDisplayName}
-                                    />
-                                {/each}
-                            {/if}
+                                <p class="pl-2">You have no subscriptions</p>
+                            {/each}
                         {:else}
                             <p class="pl-2">Login to subscribe to a channel</p>
                         {/if}
@@ -71,13 +67,11 @@
                 <Accordion.Content>
                     <ScrollArea class="grow">
                         {#if playlists}
-                            {#if playlists.length === 0}
-                                <p class="pl-2">You have no playlists</p>
+                            {#each playlists as pl}
+                                <Route href={`/p/${pl.id}`} title={pl.name ?? pl.id} />
                             {:else}
-                                {#each playlists as pl}
-                                    <Route href={`/p/${pl.id}`} title={pl.name ?? pl.id} />
-                                {/each}
-                            {/if}
+                                <p class="pl-2">You have no playlists</p>
+                            {/each}
                         {:else}
                             <p class="pl-2">Login to view playlists</p>
                         {/if}
