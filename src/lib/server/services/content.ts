@@ -10,6 +10,7 @@ import {
     inArray,
     and,
     gte,
+    lte,
 } from 'drizzle-orm';
 import { array_agg, dedupe_nonull_array } from './utils';
 import { PAGE_SIZE } from '$lib';
@@ -140,11 +141,11 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
     }
 
     if (filter.after) {
-        conditions.push(gte(postTable.createdOn, filter.after));
+        conditions.push(lte(postTable.createdOn, filter.after));
     }
 
     if (filter.before) {
-        conditions.push(gte(postTable.createdOn, filter.after));
+        conditions.push(gte(postTable.createdOn, filter.before));
     }
 
     if (filter.requesterId) {
