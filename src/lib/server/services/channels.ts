@@ -118,4 +118,3 @@ export const publishChannel = async (db: DB, channel: Channel): Promise<PublicCh
 
     return publicChannel;
 };
-
