@@ -6,6 +6,7 @@
     import { viewport } from '$lib/util';
 
     import Post from './Post.svelte';
+    import { ScrollArea } from '$lib/shadcn/components/ui/scroll-area';
 
     export let init_buffer: PostData[];
 
@@ -41,7 +42,7 @@
     }
 </script>
 
-<div class="flex h-full max-h-full w-full flex-col items-center overflow-auto">
+<ScrollArea class="mx-2 flex h-full max-h-full flex-col items-center">
     {#each buffer as post}
         <Post {post} />
     {/each}
@@ -56,4 +57,4 @@
     {:else if state === 'no-posts'}
         <p class="mt-4 text-lg text-slate-400">No more posts</p>
     {/if}
-</div>
+</ScrollArea>
