@@ -21,6 +21,11 @@ const generateUserAndChannel = async (db: DB) => {
         .insert(channelTable)
         .values({ name: 'Channel-Surfers', createdBy: creator.id })
         .returning();
+    return { creator, createdChannel };
+};
+
+const generateUserAndPublicChannel = async (db: DB) => {
+    const { creator, createdChannel } = await generateUserAndChannel(db);
     const [createdChannelPublicInfo] = await db
         .insert(publicChannelTable)
         .values({ channelId: createdChannel.id, name: createdChannel.name })
@@ -29,7 +34,7 @@ const generateUserAndChannel = async (db: DB) => {
 };
 
 const generateChannelAndSubs = async (db: DB) => {
-    const { creator, createdChannel } = await generateUserAndChannel(db);
+    const { creator, createdChannel } = await generateUserAndPublicChannel(db);
     // create subscriptions for channel and return the count
     const subscribers = await db
         .insert(userTable)
@@ -92,7 +97,7 @@ describe.concurrent('channels suite', () => {
     test.concurrent(
         "user's subscriptions can be fetched when there aren't any",
         async ({ expect }) => {
-            const { db, generated } = await createTestingDb(generateUserAndChannel);
+            const { db, generated } = await createTestingDb(generateUserAndPublicChannel);
             const { creator } = mustGenerate(generated);
             const subscribedChannels = await getUserSubscriptions(db, creator.id);
             expect(subscribedChannels).toStrictEqual([]);
@@ -108,7 +113,7 @@ describe.concurrent('channels suite', () => {
     });
 
     test.concurrent('zero subscriptions are counted correctly', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUserAndChannel);
+        const { db, generated } = await createTestingDb(generateUserAndPublicChannel);
         const { createdChannel } = mustGenerate(generated);
 
         const channelInfo = await getChannelInfo(db, createdChannel.id);
