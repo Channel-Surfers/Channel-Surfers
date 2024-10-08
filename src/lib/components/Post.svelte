@@ -72,7 +72,7 @@
         <Card.Header class="p-2 px-6">
             <Card.Title class="space-y-1">
                 <div class="mb-4">
-                    <UserChannel user={post ? post.poster : undefined} />
+                    <UserChannel poster={post ? post.poster : undefined} />
                 </div>
                 {#if post}
                     <h1 class="text-ellipse mt-3 w-full text-pretty">{post.title}</h1>

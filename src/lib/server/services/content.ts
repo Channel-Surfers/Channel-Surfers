@@ -11,26 +11,29 @@ import {
     and,
     gte,
 } from 'drizzle-orm';
+import { array_agg, dedupe_nonull_array } from './utils';
+import { PAGE_SIZE } from '$lib';
 import type { DB } from '..';
-import { postTable } from '../db/posts.sql';
-import { channelTable } from '../db/channels.sql';
-import { postVoteTable } from '../db/votes.posts.sql';
 import type { PostData, uuid } from '$lib/types';
-import { userTable } from '../db/users.sql';
-import { postTagTable } from '../db/tags.posts.sql';
+
+import { channelTable } from '../db/channels.sql';
 import { channelTagsTable } from '../db/tags.channels.sql';
 import { commentTable } from '../db/comments.sql';
+import { postTable } from '../db/posts.sql';
+import { postTagTable } from '../db/tags.posts.sql';
+import { postVoteTable } from '../db/votes.posts.sql';
 import { publicChannelTable } from '../db/public.channels.sql';
-import { PAGE_SIZE } from '$lib';
-import { array_agg, dedupe_nonull_array } from './utils';
-import { userBlockTable } from '../db/blocks.users.sql';
 import { subscriptionTable } from '../db/subscriptions.sql';
+import { userBlockTable } from '../db/blocks.users.sql';
+import { userTable } from '../db/users.sql';
 
 interface GenericPostFilter {
     requesterId?: uuid;
     sort: 'votes' | 'date';
     filter: 'subscribed' | 'all';
     reverseSort?: boolean;
+    before?: Date;
+    after?: Date;
 }
 
 export interface ChannelPostFilter extends GenericPostFilter {
@@ -107,6 +110,9 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         )
         .$dynamic();
 
+    // List of conditions, eventually joined by `and`.
+    const conditions = [];
+
     const dirFn = filter.reverseSort ? asc : desc;
     switch (filter.filter) {
         case 'all':
@@ -133,8 +139,16 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
             throw new Error(`invalid filter sort: ${filter.sort}`);
     }
 
+    if (filter.after) {
+        conditions.push(gte(postTable.createdOn, filter.after));
+    }
+
+    if (filter.before) {
+        conditions.push(gte(postTable.createdOn, filter.after));
+    }
+
     if (filter.requesterId) {
-        const cond = [
+        conditions.push(
             not(
                 inArray(
                     userTable.id,
@@ -143,31 +157,33 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
                         .from(userBlockTable)
                         .where(eq(userBlockTable.userId, filter.requesterId))
                 )
-            ),
-        ];
+            )
+        );
 
         if (filter.filter === 'subscribed') {
             const subscribed = db
                 .select({ channelId: subscriptionTable.channelId })
                 .from(subscriptionTable)
                 .where(eq(subscriptionTable.userId, filter.requesterId));
-            cond.push(inArray(postTable.channelId, subscribed));
+            conditions.push(inArray(postTable.channelId, subscribed));
         }
-        q = q.where(and(...cond));
     }
 
     switch (filter.type) {
         case 'home':
             break;
         case 'channel':
-            q = q.where(eq(channelTable.id, filter.channelId));
+            conditions.push(eq(channelTable.id, filter.channelId));
             break;
         case 'user':
-            q = q.where(eq(userTable.username, filter.username));
+            conditions.push(eq(userTable.username, filter.username));
             break;
     }
 
-    q = q.limit(PAGE_SIZE).offset(page * PAGE_SIZE);
+    q = q
+        .where(and(...conditions))
+        .limit(PAGE_SIZE)
+        .offset(page * PAGE_SIZE);
 
     console.log(q.toSQL());
 
