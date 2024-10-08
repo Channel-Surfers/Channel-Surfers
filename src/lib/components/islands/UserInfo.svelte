@@ -32,16 +32,11 @@
                 {/if}
             </div>
             {#if userInfo}
-                <form action="/api/follows" method="POST">
-                    <input name="userId" class="hidden" value={userInfo.id} />
-                    {#if isFollowing}
-                        <input name="choice" class="hidden" value="unfollow" />
-                        <Button type="submit" variant="destructive">Unfollow</Button>
-                    {:else}
-                        <input name="choice" class="hidden" value="follow" />
-                        <Button type="submit">Follow</Button>
-                    {/if}
-                </form>
+                {#if isFollowing}
+                    <Button type="submit" variant="destructive">Unfollow</Button>
+                {:else}
+                    <Button type="submit">Follow</Button>
+                {/if}
             {:else}
                 <Button disabled>Follow</Button>
             {/if}

@@ -22,16 +22,11 @@
                 {/if}
             </div>
             {#if playlistInfo}
-                <form action="/api/playlist-save" method="POST">
-                    <input name="userId" class="hidden" value={playlistInfo.id} />
-                    {#if isAdded}
-                        <input name="choice" class="hidden" value="remove" />
-                        <Button type="submit" variant="destructive">Remove</Button>
-                    {:else}
-                        <input name="choice" class="hidden" value="save" />
-                        <Button type="submit">Save</Button>
-                    {/if}
-                </form>
+                {#if isAdded}
+                    <Button type="submit" variant="destructive">Remove</Button>
+                {:else}
+                    <Button type="submit">Save</Button>
+                {/if}
             {:else}
                 <Button disabled>Save</Button>
             {/if}
