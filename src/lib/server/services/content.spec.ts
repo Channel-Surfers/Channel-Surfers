@@ -4,7 +4,7 @@ import type { DB } from '..';
 import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
 import { postTable } from '../db/posts.sql';
-import { getPosts } from './content';
+import { getPosts, getPostStatistics } from './content';
 import { postVoteTable } from '../db/votes.posts.sql';
 
 const generateStatContext = async (db: DB) => {
@@ -128,5 +128,21 @@ describe.concurrent('posts suite', () => {
         expect(p2.poster.user.name).toStrictEqual(gen.creator.username);
         expect(p2.poster.channel.id).toStrictEqual(gen.channel.id);
         expect(p2.poster.channel.name).toStrictEqual(gen.channel.name);
+    });
+});
+
+describe.concurrent('channels suite', () => {
+    test('site statistics is calculated correctly', async ({ expect }) => {
+        const { db, generated } = await createTestingDb(generateStatContext);
+
+        const { votes } = mustGenerate(generated);
+
+        const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
+            await getPostStatistics(db);
+
+        expect(numberOfChannelsWithPosts).toStrictEqual(1);
+        expect(numberOfPosts).toStrictEqual(2);
+        expect(numberOfUpvotes).toStrictEqual(votes.upvotes1.length + votes.upvotes2.length);
+        expect(numberOfDownvotes).toStrictEqual(votes.downvotes1.length + votes.downvotes2.length);
     });
 });

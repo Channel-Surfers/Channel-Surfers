@@ -1,7 +1,8 @@
 import { channelTable, type Channel, type NewChannel } from '../db/channels.sql';
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { eq } from 'drizzle-orm';
+import { countDistinct, eq } from 'drizzle-orm';
+import { subscriptionTable } from '../db/subscriptions.sql';
 import { publicChannelTable, type PublicChannel } from '../db/public.channels.sql';
 
 /**
@@ -36,6 +37,70 @@ export const getChannelById = async (db: DB, id: string): Promise<Channel> => {
     return ret;
 };
 
+/**
+ * Return channels that a user has subscribed to
+ * @param db PostgreSQL db
+ * @param userId identifies a particular user
+ */
+export const getUserSubscriptions = async (db: DB, userId: string) => {
+    return await db
+        .select({ channelId: channelTable.id, channelDisplayName: publicChannelTable.name })
+        .from(channelTable)
+        .innerJoin(publicChannelTable, eq(channelTable.id, publicChannelTable.channelId))
+        .innerJoin(subscriptionTable, eq(channelTable.id, subscriptionTable.channelId))
+        .where(eq(subscriptionTable.userId, userId));
+};
+export type UserSubscription = Awaited<ReturnType<typeof getUserSubscriptions>>[0];
+
+/**
+ * Get information about a channel
+ * @param db PostgreSQL db
+ * @param channelId identifies a particular channel
+ */
+export const getChannelInfo = async (
+    db: DB,
+    channelId: string
+): Promise<Channel & { subscriptionsCount: number }> => {
+    const [ret] = await db
+        .select({
+            id: channelTable.id,
+            icon: channelTable.icon,
+            bannerImage: channelTable.bannerImage,
+            name: channelTable.name,
+            description: channelTable.description,
+            guidelines: channelTable.guidelines,
+            createdBy: channelTable.createdBy,
+            createdOn: channelTable.createdOn,
+            updatedOn: channelTable.updatedOn,
+            subscriptionsCount: countDistinct(subscriptionTable.id),
+        })
+        .from(channelTable)
+        .leftJoin(subscriptionTable, eq(channelTable.id, subscriptionTable.channelId)) // Ensure you're joining on the correct foreign key
+        .where(eq(channelTable.id, channelId))
+        .groupBy(
+            channelTable.id,
+            channelTable.icon,
+            channelTable.bannerImage,
+            channelTable.name,
+            channelTable.description,
+            channelTable.guidelines,
+            channelTable.createdBy,
+            channelTable.createdOn,
+            channelTable.updatedOn
+        );
+    return ret;
+};
+export type ChannelInfo = Awaited<ReturnType<typeof getChannelInfo>>;
+
+/**
+ * Get channels that a user owns
+ * @param db PostgreSQL db
+ * @param userId identifies a particular user
+ */
+export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channel[]> => {
+    return await db.select().from(channelTable).where(eq(channelTable.createdBy, userId));
+};
+
 export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {
     const [channel] = await db.insert(channelTable).values(channelData).returning();
 
@@ -52,10 +117,6 @@ export const publishChannel = async (db: DB, channel: Channel): Promise<PublicCh
         .returning();
 
     return publicChannel;
-};
-
-export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channel[]> => {
-    return await db.select().from(channelTable).where(eq(channelTable.createdBy, userId));
 };
 
 export const getPublicChannelByName = async (db: DB, name: string): Promise<Channel | null> => {
