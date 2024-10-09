@@ -6,7 +6,7 @@
 
     export let upvotes: number;
     export let downvotes: number;
-    export let side: 'top' | 'right' | 'bottom' | 'left' = 'left';
+    export let side: 'top' | 'left' | 'bottom' | 'right' = 'left';
 
     const humanise = (n: number): string => {
         if (n < 1000) {

@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, test } from 'vitest';
 import { createTestingDb, mustGenerate } from '$lib/testing/utils';
 import { userTable } from '../db/users.sql';
 import type { DB } from '..';
@@ -15,8 +15,8 @@ const generateUser = async (db: DB) => {
     return { newUser };
 };
 
-describe('users suite', () => {
-    it.concurrent('getting user by id returns successfully', async ({ expect }) => {
+describe.concurrent('users suite', () => {
+    test.concurrent('getting user by id returns successfully', async ({ expect }) => {
         const { db, generated } = await createTestingDb(generateUser);
 
         const { newUser } = mustGenerate(generated);
@@ -25,7 +25,7 @@ describe('users suite', () => {
         expect(user?.username).toStrictEqual(newUser.username);
     });
 
-    it.concurrent('getOrCreateUser with no user in db', async ({ expect }) => {
+    test.concurrent('getOrCreateUser with no user in db', async ({ expect }) => {
         const { db } = await createTestingDb();
 
         const newUser = {
@@ -36,7 +36,7 @@ describe('users suite', () => {
         expect(user.username).toStrictEqual(newUser.username);
     });
 
-    it.concurrent('getOrCreateUser with user in db', async ({ expect }) => {
+    test.concurrent('getOrCreateUser with user in db', async ({ expect }) => {
         const { db, generated } = await createTestingDb(generateUser);
 
         const { newUser } = mustGenerate(generated);
@@ -51,7 +51,7 @@ describe('users suite', () => {
         expect(user.username).toStrictEqual(newUser.username);
     });
 
-    it.concurrent('getOrCreateUser with different user in db', async ({ expect }) => {
+    test.concurrent('getOrCreateUser with different user in db', async ({ expect }) => {
         const { db, generated } = await createTestingDb(generateUser);
 
         mustGenerate(generated);
