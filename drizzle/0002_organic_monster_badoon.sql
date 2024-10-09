@@ -1,7 +1,7 @@
 ALTER TABLE "post" ADD COLUMN "upvotes" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
 ALTER TABLE "post" ADD COLUMN "downvotes" integer DEFAULT 0 NOT NULL;
 
-CREATE OR REPLACE FUNCTION update_vote_fn()
+CREATE OR REPLACE FUNCTION update_post_vote_fn()
 RETURNS TRIGGER 
 LANGUAGE PLPGSQL
 AS
@@ -28,7 +28,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION insert_vote_fn()
+CREATE OR REPLACE FUNCTION insert_post_vote_fn()
 RETURNS TRIGGER
 LANGUAGE PLPGSQL
 AS
@@ -47,7 +47,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION delete_vote_fn()
+CREATE OR REPLACE FUNCTION delete_post_vote_fn()
 RETURNS TRIGGER 
 LANGUAGE PLPGSQL
 AS
@@ -66,20 +66,20 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE TRIGGER update_vote
+CREATE TRIGGER update_post_vote
 AFTER UPDATE
 ON post_vote
 FOR EACH ROW
-    EXECUTE FUNCTION update_vote_fn();
+    EXECUTE FUNCTION update_post_vote_fn();
 
-CREATE OR REPLACE TRIGGER insert_vote
+CREATE TRIGGER insert_post_vote
 AFTER INSERT
 ON post_vote
 FOR EACH ROW
-    EXECUTE FUNCTION insert_vote_fn();
+    EXECUTE FUNCTION insert_post_vote_fn();
 
-CREATE OR REPLACE TRIGGER delete_vote
+CREATE TRIGGER delete_post_vote
 AFTER DELETE
 ON post_vote
 FOR EACH ROW
-    EXECUTE FUNCTION delete_vote_fn();
+    EXECUTE FUNCTION delete_post_vote_fn();
