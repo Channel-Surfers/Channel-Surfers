@@ -25,7 +25,9 @@ export const POST: RequestHandler = async (event) => {
         ret_vote = null;
     }
 
-    const { post: { upvotes, downvotes } } = (await getPost(db, event.params.post_id))!;
+    const {
+        post: { upvotes, downvotes },
+    } = (await getPost(db, event.params.post_id))!;
 
     return json({
         upvotes,
@@ -33,4 +35,3 @@ export const POST: RequestHandler = async (event) => {
         vote: ret_vote,
     });
 };
-

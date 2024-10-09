@@ -104,7 +104,8 @@ export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channe
 };
 
 export const canViewChannel = async (db: DB, _userId: uuid, channelId: uuid): Promise<boolean> => {
-    const [ret] = await db.select()
+    const [ret] = await db
+        .select()
         .from(publicChannelTable)
         .where(eq(publicChannelTable.channelId, channelId));
 

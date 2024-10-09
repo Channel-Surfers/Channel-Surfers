@@ -12,8 +12,8 @@
 
     export let title: string = 'Post video';
 
-    let className: Props["class"] = undefined
-	export { className as class };
+    let className: Props['class'] = undefined;
+    export { className as class };
 
     $: src =
         `https://iframe.mediadelivery.net/embed/${PUBLIC_LIBRARY_ID}/${videoId}` +
