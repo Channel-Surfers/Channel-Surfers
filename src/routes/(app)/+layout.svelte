@@ -53,7 +53,7 @@
 
 <div class="flex max-h-screen min-h-screen flex-row justify-between">
     <!-- Left navigation -->
-    <div class="w-1/6 p-4">
+    <div class="w-1/6 min-w-96 p-4">
         {#if data.user && myChannels}
             <LeftNav
                 channels={myChannels.map((channel) => ({
@@ -68,10 +68,12 @@
     </div>
 
     <!-- Main content (infinite scroll) -->
-    <slot />
+    <div class="grow">
+        <slot />
+    </div>
 
     <!-- Right islands -->
-    <div class="max-w-1/6 flex w-1/6 flex-col space-y-4 pr-4 pt-4">
+    <div class="flex w-1/6 min-w-96 flex-col space-y-4 pr-4 pt-4">
         {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->

@@ -28,6 +28,46 @@ import { subscriptionTable } from '../db/subscriptions.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
 import { userTable } from '../db/users.sql';
 
+export const getPost = async (db: DB, post_id: uuid) => {
+    const [a] = await db
+        .select()
+        .from(postTable)
+        .innerJoin(channelTable, eq(channelTable.id, postTable.channelId))
+        .innerJoin(userTable, eq(userTable.id, postTable.createdBy))
+        .where(eq(postTable.id, post_id));
+
+    if (!a) return null;
+
+    const { user, post, channel } = a;
+
+    const tags = await db
+        .select({ name: channelTagsTable.name, color: channelTagsTable.color })
+        .from(postTagTable)
+        .innerJoin(channelTagsTable, eq(channelTagsTable.id, postTagTable.tagId))
+        .where(eq(postTagTable.postId, post_id));
+
+    return {
+        post,
+        user,
+        channel,
+        tags,
+        private_channel: false,
+    };
+};
+
+export const getUserPostVote = async (
+    db: DB,
+    userId: uuid,
+    postId: uuid
+): Promise<'UP' | 'DOWN' | null> => {
+    const [vote] = await db
+        .select({ vote: postVoteTable.vote })
+        .from(postVoteTable)
+        .where(and(eq(postVoteTable.postId, postId), eq(postVoteTable.userId, userId)));
+
+    return vote?.vote || null;
+};
+
 interface GenericPostFilter {
     requesterId?: uuid;
     sort: 'votes' | 'date';
@@ -227,3 +267,24 @@ export const getPostStatistics = async (db: DB) => {
     };
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
+
+export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {
+    const [ret] = await db
+        .delete(postVoteTable)
+        .where(and(eq(postVoteTable.postId, postId), eq(postVoteTable.userId, userId)))
+        .returning();
+
+    return ret !== undefined;
+};
+
+export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP' | 'DOWN') => {
+    const [ret] = await db
+        .insert(postVoteTable)
+        .values({ postId, userId, vote })
+        .onConflictDoUpdate({
+            target: [postVoteTable.postId, postVoteTable.userId],
+            set: { vote: vote },
+        })
+        .returning();
+    return ret;
+};
