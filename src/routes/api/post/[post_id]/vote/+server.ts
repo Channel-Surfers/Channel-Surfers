@@ -13,7 +13,7 @@ export const POST: RequestHandler = async (event) => {
     const post = await getPost(db, event.params.post_id);
     if (!post) return error(404);
 
-    if (!await canViewChannel(db, event.locals.user.id, post.channel.id)) return error(401);
+    if (!(await canViewChannel(db, event.locals.user.id, post.channel.id))) return error(401);
 
     const voteStr = await event.request.text();
     if (!is(['UP', 'DOWN', 'null'], voteStr)) {
