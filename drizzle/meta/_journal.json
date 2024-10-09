@@ -8,6 +8,20 @@
       "when": 1727555035367,
       "tag": "0000_new_skullbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1728074903086,
+      "tag": "0001_vengeful_sabra",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1728441966149,
+      "tag": "0002_organic_monster_badoon",
+      "breakpoints": true
     }
   ]
 }

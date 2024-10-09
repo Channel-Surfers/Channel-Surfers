@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { bigint, integer, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { siteRoleEnum } from './types.sql';
 
 /**
@@ -14,6 +14,9 @@ export const userTable = pgTable('user', {
     role: siteRoleEnum('role').notNull().default('USER'),
     createdOn: timestamp('created_on').notNull().defaultNow(),
     updatedOn: timestamp('updated_on').notNull().defaultNow(),
+
+    discordId: bigint('discord_id', { mode: 'bigint' }).unique(undefined, { nulls: 'distinct' }),
+    githubId: integer('github_id').unique(undefined, { nulls: 'distinct' }),
 });
 
 /**

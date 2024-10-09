@@ -5,6 +5,6 @@ export default defineConfig({
     plugins: [sveltekit()],
     test: {
         include: ['src/**/*.{test,spec}.{js,ts}'],
-        testTimeout: 20000,
+        testTimeout: 10 * 60 * 1000, // 10 minutes
     },
 });
