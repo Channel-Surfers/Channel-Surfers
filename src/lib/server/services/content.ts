@@ -39,16 +39,6 @@ export const getPost = async (db: DB, post_id: uuid) => {
 
     const { user, post, channel } = a;
 
-    const [{ upvotes }] = await db
-        .select({ upvotes: count() })
-        .from(postVoteTable)
-        .where(and(eq(postVoteTable.postId, post.id), eq(postVoteTable.vote, 'UP')))
-
-    const [{ downvotes }] = await db
-        .select({ downvotes: count() })
-        .from(postVoteTable)
-        .where(and(eq(postVoteTable.postId, post.id), eq(postVoteTable.vote, 'DOWN')))
-
     const tags = await db
         .select({ name: channelTagsTable.name, color: channelTagsTable.color })
         .from(postTagTable)
@@ -59,8 +49,6 @@ export const getPost = async (db: DB, post_id: uuid) => {
         post,
         user,
         channel,
-        upvotes,
-        downvotes,
         tags,
         private_channel: false,
     };
@@ -274,3 +262,25 @@ export const getPostStatistics = async (db: DB) => {
     };
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
+
+export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {
+    const [ret] = await db.delete(postVoteTable)
+        .where(and(
+            eq(postVoteTable.postId, postId),
+            eq(postVoteTable.userId, userId),
+        ))
+        .returning();
+
+    return ret !== undefined;
+}
+
+export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP' | 'DOWN') => {
+    const [ret] = await db.insert(postVoteTable)
+        .values({ postId, userId, vote, })
+        .onConflictDoUpdate({
+            target: [postVoteTable.postId, postVoteTable.userId],
+            set: { vote: vote },
+        })
+        .returning();
+    return ret;
+}
