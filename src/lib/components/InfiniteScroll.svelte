@@ -53,8 +53,10 @@
             <Post />
         </div>
     {:else if state === 'error'}
-        <Button on:click={get_next_posts} class="mt-4" variant="outline">Try Again</Button>
+        <div class="mb-8 flex w-full justify-center">
+            <Button on:click={get_next_posts} class="mt-4" variant="outline">Try Again</Button>
+        </div>
     {:else if state === 'no-posts'}
-        <p class="mt-4 text-lg text-slate-400">No more posts</p>
+        <p class="mb-8 mt-4 w-full text-center text-lg text-slate-400">No more posts</p>
     {/if}
 </ScrollArea>

@@ -54,19 +54,6 @@ export interface HomePostFilter extends GenericPostFilter {
 export type PostFilter = ChannelPostFilter | UserPostFilter | HomePostFilter;
 
 export const getPosts = async (db: DB, page: number, filter: PostFilter): Promise<PostData[]> => {
-    const upvotes = db
-        .select()
-        .from(postVoteTable)
-        .where(eq(postVoteTable.vote, 'UP'))
-        .as('upvotes');
-    const downvotes = db
-        .select()
-        .from(postVoteTable)
-        .where(eq(postVoteTable.vote, 'DOWN'))
-        .as('downvotes');
-
-    console.log('getPosts', filter);
-
     let q = db
         .select({
             id: postTable.id,
@@ -84,10 +71,8 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
                 private: isNull(publicChannelTable.channelId),
             },
             tags: dedupe_nonull_array(array_agg(channelTagsTable.name)),
-            // The upvote/downvote counting will be better once we get lateral joins.  See: https://github.com/drizzle-team/drizzle-orm/pull/1079
-            // The query will end up being something like `SELECT ... FROM post JOIN LATERAL (SELECT COUNT(*) FROM post_vote WHERE post_id = post.id AND vote = 'UP') ON TRUE`
-            upvotes: countDistinct(upvotes.userId),
-            downvotes: countDistinct(downvotes.userId),
+            upvotes: postTable.upvotes,
+            downvotes: postTable.downvotes,
             comments: count(commentTable.id),
         })
         .from(postTable)
@@ -96,8 +81,6 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         .leftJoin(publicChannelTable, eq(publicChannelTable.channelId, channelTable.id))
         .leftJoin(postTagTable, eq(postTagTable.postId, postTable.id))
         .leftJoin(channelTagsTable, eq(channelTagsTable.id, postTagTable.tagId))
-        .leftJoin(upvotes, eq(upvotes.postId, postTable.id))
-        .leftJoin(downvotes, eq(downvotes.postId, postTable.id))
         .leftJoin(commentTable, eq(commentTable.postId, postTable.id))
         .groupBy(
             postTable.id,
@@ -130,11 +113,7 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
             q = q.orderBy(dirFn(postTable.createdOn));
             break;
         case 'votes':
-            q = q.orderBy(
-                dirFn(
-                    sql<number>`cast(count(distinct ${upvotes.userId}) - count(distinct ${downvotes.userId}) as int)`
-                )
-            );
+            q = q.orderBy(dirFn(sql<number>`${postTable.upvotes} - ${postTable.downvotes}`));
             break;
         default:
             throw new Error(`invalid filter sort: ${filter.sort}`);
