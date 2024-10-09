@@ -47,16 +47,16 @@
         }
     };
 
-	const md_plugins = [gfmPlugin()];
+    const md_plugins = [gfmPlugin()];
 </script>
 
 <svelte:head>
     <title>{data.post.title.substring(0, 20)} | Channel Surfers</title>
 </svelte:head>
 
-<ScrollArea class="flex grow flex-col px-4 w-2/3">
+<ScrollArea class="flex h-full w-full flex-col px-4">
     <Card.Root class="mx-auto my-4 px-2 pt-2">
-        <Card.Header class="py-2 px-6">
+        <Card.Header class="px-6 py-2">
             <Card.Title class="flex flex-row">
                 <h1 class="text-ellipse mt-3 w-full text-pretty">{data.post.title}</h1>
                 <DropdownMenu.Root>
@@ -87,7 +87,7 @@
                 {/each}
             </div>
             <!-- Buttons/Stats -->
-            <div class="flex flex-row items-center items-center justify-between my-4">
+            <div class="my-4 flex flex-row items-center items-center justify-between">
                 <div class="w-2/5">
                     <UserChannel
                         poster={{
@@ -114,7 +114,11 @@
                         <ArrowUp />
                     </Toggle>
                     <span class="w-8 text-center">
-                        <Score side="top" upvotes={data.post.upvotes} downvotes={data.post.downvotes} />
+                        <Score
+                            side="top"
+                            upvotes={data.post.upvotes}
+                            downvotes={data.post.downvotes}
+                        />
                     </span>
                     <Toggle
                         size="sm"
