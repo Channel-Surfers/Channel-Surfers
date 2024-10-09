@@ -1,8 +1,9 @@
 <script lang="ts">
+    import '../../app.css';
+    import { Toaster } from '$lib/shadcn/components/ui/sonner';
+    import { ModeWatcher } from 'mode-watcher';
     import LeftNav from '$lib/components/sidenav/LeftNav.svelte';
     import * as Card from '$lib/shadcn/components/ui/card';
-    import '../../app.css';
-    import { ModeWatcher } from 'mode-watcher';
     import type { LayoutServerData } from './$types';
     import HomeInfo from '$lib/components/islands/HomeInfo.svelte';
     import Button from '$lib/shadcn/components/ui/button/button.svelte';
@@ -48,7 +49,7 @@
 
 <!-- Enable dark-mode detection and switching -->
 <ModeWatcher />
-<!--<DisplayMode />-->
+<Toaster richColors />
 
 <div class="flex max-h-screen min-h-screen flex-row justify-between">
     <!-- Left navigation -->

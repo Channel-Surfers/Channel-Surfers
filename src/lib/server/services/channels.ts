@@ -118,3 +118,13 @@ export const publishChannel = async (db: DB, channel: Channel): Promise<PublicCh
 
     return publicChannel;
 };
+
+export const getPublicChannelByName = async (db: DB, name: string): Promise<Channel | null> => {
+    const [ret] = await db
+        .select()
+        .from(publicChannelTable)
+        .innerJoin(channelTable, eq(channelTable.id, publicChannelTable.channelId))
+        .where(eq(publicChannelTable.name, name));
+    if (!ret) return null;
+    return ret.channel;
+};

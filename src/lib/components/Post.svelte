@@ -46,7 +46,7 @@
         : '';
 </script>
 
-<Card.Root class="m-auto my-4 flex h-48 w-[750px] flex-row p-2">
+<Card.Root class="m-auto my-3 flex h-48 w-[800px] flex-row p-2">
     <div
         class="relative h-full w-2/5"
         on:mouseenter={() => (hovering = true)}
@@ -68,11 +68,11 @@
             <img {src} alt="" class="h-full w-full rounded-lg object-cover" />
         {/if}
     </div>
-    <div class="img flex h-full grow flex-col justify-between">
+    <div class="flex h-full w-2/5 grow flex-col justify-between">
         <Card.Header class="p-2 px-6">
             <Card.Title class="space-y-1">
                 <div class="mb-4">
-                    <UserChannel user={post ? post.user : undefined} />
+                    <UserChannel poster={post ? post.poster : undefined} />
                 </div>
                 {#if post}
                     <h1 class="text-ellipse mt-3 w-full text-pretty">{post.title}</h1>
@@ -84,8 +84,8 @@
         </Card.Header>
         <Card.Footer class="mt-2 flex gap-1.5 p-2 px-6">
             {#if post}
-                {#if post.badges}
-                    {#each post.badges as badge}
+                {#if post.tags}
+                    {#each post.tags as badge}
                         <Badge>{badge}</Badge>
                     {/each}
                 {/if}
