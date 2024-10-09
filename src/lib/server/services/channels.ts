@@ -1,11 +1,13 @@
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { countDistinct, eq } from 'drizzle-orm';
+import { countDistinct, eq, and } from 'drizzle-orm';
 import type { uuid } from '$lib/types';
 
 import { subscriptionTable } from '../db/subscriptions.sql';
 import { publicChannelTable, type PublicChannel } from '../db/public.channels.sql';
 import { channelTable, type Channel, type NewChannel } from '../db/channels.sql';
+import { roleTable } from '../db/roles.sql';
+import { userRoleTable } from '../db/roles.users.sql';
 
 /**
  * Return a list of channels
@@ -103,31 +105,25 @@ export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channe
     return await db.select().from(channelTable).where(eq(channelTable.createdBy, userId));
 };
 
-export const canViewChannel = async (db: DB, _userId: uuid, channelId: uuid): Promise<boolean> => {
+export const canViewChannel = async (db: DB, userId: uuid, channelId: uuid): Promise<boolean> => {
     const [ret] = await db
         .select()
         .from(publicChannelTable)
         .where(eq(publicChannelTable.channelId, channelId));
 
-    return !!ret;
+    if (ret) return true;
 
-    // TODO: Check whether the user can view the private channel
-    //
-    // const [user_perm] = await db.select()
-    // .from(roleTable)
-    // .innerJoin(userRoleTable, eq(userRoleTable.roleId, roleTable.id))
-    // .where(
-    //     and(
-    //         eq(userRoleTable.userId, userId),
-    //         eq(roleTable.channelId, channelId)
-    //        )
-    // );
+    const [user_perm] = await db.select()
+    .from(roleTable)
+    .innerJoin(userRoleTable, eq(userRoleTable.roleId, roleTable.id))
+    .where(
+        and(
+            eq(userRoleTable.userId, userId),
+            eq(roleTable.channelId, channelId)
+        )
+    );
 
-    // if (!user_perm) {
-
-    // }
-
-    // return user_perm.role.can
+    return !!user_perm;
 };
 
 export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {

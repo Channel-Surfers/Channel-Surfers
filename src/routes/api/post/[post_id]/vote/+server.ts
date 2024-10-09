@@ -3,10 +3,17 @@ import type { RequestHandler } from './$types';
 import { getDb } from '$lib/server';
 import { addPostVote, deletePostVote, getPost } from '$lib/server/services/content';
 import { is } from '$lib/util';
+import { canViewChannel } from '$lib/server/services/channels';
 
 export const POST: RequestHandler = async (event) => {
     if (!event.locals.user) return error(401);
-    // TODO: Check if user can see post (not in private channel or user has access to channel)
+
+    const db = await getDb();
+
+    const post = await getPost(db, event.params.post_id);
+    if (!post) return error(404);
+
+    if (!await canViewChannel(db, event.locals.user.id, post.channel.id)) return error(401);
 
     const voteStr = await event.request.text();
     if (!is(['UP', 'DOWN', 'null'], voteStr)) {
@@ -16,7 +23,6 @@ export const POST: RequestHandler = async (event) => {
     const vote = voteStr === 'null' ? null : voteStr;
 
     let ret_vote: 'UP' | 'DOWN' | null;
-    const db = await getDb();
     if (vote) {
         const ret = await addPostVote(db, event.params.post_id, event.locals.user.id, vote);
         ret_vote = ret.vote;

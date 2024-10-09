@@ -108,6 +108,7 @@
                     <Toggle
                         size="sm"
                         class="hover:text-upvote data-[state=on]:text-upvote"
+                        disabled={!data.signed_in}
                         pressed={user_vote === 'UP'}
                         on:click={() => vote('UP')}
                     >
@@ -123,6 +124,7 @@
                     <Toggle
                         size="sm"
                         class="hover:text-downvote data-[state=on]:text-downvote"
+                        disabled={!data.signed_in}
                         pressed={user_vote === 'DOWN'}
                         on:click={() => vote('DOWN')}
                     >

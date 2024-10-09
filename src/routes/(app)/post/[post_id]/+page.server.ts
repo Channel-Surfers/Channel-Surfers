@@ -26,6 +26,7 @@ export const load: PageServerLoad = async (event) => {
 
     return {
         user_vote,
+        signed_in: !!event.locals.user,
         ...data,
     };
 };
