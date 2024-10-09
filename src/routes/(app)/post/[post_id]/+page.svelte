@@ -42,13 +42,6 @@
                 </div> -->
             <h1 class="text-ellipse mt-3 w-full text-pretty">{data.post.title}</h1>
         </Card.Title>
-        <UserChannel
-            user={{
-                username: data.user?.username || '',
-                avatar: data.user?.profileImage || undefined,
-                channel: data.channel.name,
-            }}
-        />
     </Card.Header>
     <Card.Content>
         <AspectRatio ratio={16 / 9}>
@@ -66,26 +59,37 @@
             <p class="my-4">{data.post.description}</p>
         {/if}
         <!-- Buttons/Stats -->
-        <div class="flex flex-row items-center">
-            <Toggle
-                size="sm"
-                class="hover:text-upvote data-[state=on]:text-upvote"
-                bind:pressed={upvote_pressed}
-                on:click={() => vote('UP')}
-            >
-                <ArrowUp />
-            </Toggle>
-            <span class="w-8 text-center">
-                <Score side="top" upvotes={data.upvotes} downvotes={data.downvotes} />
-            </span>
-            <Toggle
-                size="sm"
-                class="hover:text-downvote data-[state=on]:text-downvote"
-                bind:pressed={downvote_pressed}
-                on:click={() => vote('DOWN')}
-            >
-                <ArrowDown />
-            </Toggle>
+        <div class="flex flex-row items-center items-center justify-between">
+            <div class="w-2/5">
+                <UserChannel
+                    user={{
+                        username: data.user?.username || '',
+                        avatar: data.user?.profileImage || undefined,
+                        channel: data.channel.name,
+                    }}
+                />
+            </div>
+            <div class="flex flex-row items-center">
+                <Toggle
+                    size="sm"
+                    class="hover:text-upvote data-[state=on]:text-upvote"
+                    bind:pressed={upvote_pressed}
+                    on:click={() => vote('UP')}
+                >
+                    <ArrowUp />
+                </Toggle>
+                <span class="w-8 text-center">
+                    <Score side="top" upvotes={data.upvotes} downvotes={data.downvotes} />
+                </span>
+                <Toggle
+                    size="sm"
+                    class="hover:text-downvote data-[state=on]:text-downvote"
+                    bind:pressed={downvote_pressed}
+                    on:click={() => vote('DOWN')}
+                >
+                    <ArrowDown />
+                </Toggle>
+            </div>
         </div>
     </Card.Content>
 </Card.Root>
