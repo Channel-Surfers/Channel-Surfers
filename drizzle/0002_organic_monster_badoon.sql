@@ -1,6 +1,17 @@
 ALTER TABLE "post" ADD COLUMN "upvotes" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
 ALTER TABLE "post" ADD COLUMN "downvotes" integer DEFAULT 0 NOT NULL;
 
+UPDATE post
+    SET upvotes = (
+        SELECT count(*) FROM post_vote
+            WHERE post_id = post.id AND vote = 'UP'
+    );
+UPDATE post
+    SET downvotes = (
+        SELECT count(*) FROM post_vote
+            WHERE post_id = post.id AND vote = 'DOWN'
+    );
+
 CREATE OR REPLACE FUNCTION update_post_vote_fn()
 RETURNS TRIGGER 
 LANGUAGE PLPGSQL
