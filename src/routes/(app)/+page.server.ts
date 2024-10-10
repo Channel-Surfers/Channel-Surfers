@@ -1,7 +1,10 @@
-import { getDb } from '$lib/server';
+import { getDb, type DB } from '$lib/server';
+import { postReportTable } from '$lib/server/db/reports.posts.sql.js';
 import { getChannels } from '$lib/server/services/channels';
 import { getPosts } from '$lib/server/services/content';
 import type { PageServerLoad } from './$types';
+import { DbError } from '$lib/server/services/utils/errors.js';
+
 
 export const load: PageServerLoad = async () => {
     const db = await getDb();
@@ -13,4 +16,15 @@ export const load: PageServerLoad = async () => {
         }),
         channels: await getChannels(db),
     };
-};
+
+}
+
+export const actions = {
+    report: async(db: getDB) => {
+        db.insert(postReportTable).values
+    }
+}
+
+
+
+

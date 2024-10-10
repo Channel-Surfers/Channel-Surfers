@@ -2,12 +2,14 @@
     import { PUBLIC_PREVIEW_HOST } from '$env/static/public';
 
     import * as Card from '$lib/shadcn/components/ui/card';
-    import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu'; 
+    import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
     import * as Dialog from '$lib/shadcn/components/ui/dialog';
     import * as Select from '$lib/shadcn/components/ui/select';
-    import { Badge } from '$lib/shadcn/components/ui/badge';
-    import { Button, buttonVariants} from '$lib/shadcn/components/ui/button';
     
+    import { Label } from '$lib/shadcn/components/ui/label';
+    import { Input } from '$lib/shadcn/components/ui/input';
+    import { Badge } from '$lib/shadcn/components/ui/badge';
+    import { Button } from '$lib/shadcn/components/ui/button';
     import { Skeleton } from '$lib/shadcn/components/ui/skeleton';
     import { Toggle } from '$lib/shadcn/components/ui/toggle';
 
@@ -15,7 +17,6 @@
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import Play from 'lucide-svelte/icons/play';
     import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical';
-    
 
     import Score from './Score.svelte';
     import UserChannel from './UserChannel.svelte';
@@ -23,8 +24,6 @@
 
     import type { PostData } from '$lib/types';
     import { createEventDispatcher } from 'svelte';
-    import { RuleTester } from 'eslint';
-    import { getAndIncrement } from 'effect/MutableRef';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -32,6 +31,8 @@
 
     let upvote_pressed = false;
     let downvote_pressed = false;
+    let open = false;
+    let report_description = ""
 
     const vote = (dir: 'up' | 'down') => {
         let new_state;
@@ -47,8 +48,8 @@
     };
 
     const report_reason = [
-        {value: "post violates community rules", label: "post violates community rules"}, 
-        {value: "post violates site rules", label: "post violates site rules"}
+        { value: 'Post violates community rules', label: 'Post violates community rules' },
+        { value: 'Post violates site rules', label: 'Post violates site rules' },
     ];
 
     let hovering = false;
@@ -108,34 +109,62 @@
         </Card.Footer>
     </div>
     <div class="flex flex-col items-center justify-between justify-self-end">
-        <Dialog.Root>
-        <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild let:builder>
-                <Button builders={[builder]} variant="ghost" size="icon" disabled={!post}>
-                    <div class:animate-pulse={!post}>
-                        <EllipsisVertical class="h-5 w-5" />
-                    </div>
-                </Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content class="w-56">
-                <DropdownMenu.Group>
-                    <DropdownMenu.Item>
-                        Share
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator />
-                            <Dialog.Trigger>
-                                Report
-                            </Dialog.Trigger>
-                            <Dialog.Content class="sm:max-w-[425px]">
-                                <Dialog.Header>
-                                    <Dialog.Title>Report Form</Dialog.Title>
-                                    <Dialog.Description>This action cannot be undone</Dialog.Description>
-                                </Dialog.Header>
-                            </Dialog.Content>
-                </DropdownMenu.Group>
-            </DropdownMenu.Content>
-        </DropdownMenu.Root>
-    </Dialog.Root>
+        <Dialog.Root bind:open>
+            <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild let:builder>
+                    <Button builders={[builder]} variant="ghost" size="icon" disabled={!post}>
+                        <div class:animate-pulse={!post}>
+                            <EllipsisVertical class="h-5 w-5" />
+                        </div>
+                    </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content class="w-56">
+                    <DropdownMenu.Group>
+                        <DropdownMenu.Item>Share</DropdownMenu.Item>
+                        <DropdownMenu.Separator />
+                        <Dialog.Trigger>Report</Dialog.Trigger>
+                        <Dialog.Content class="sm:max-w-[425px]">
+                            <Dialog.Header>
+                                <Dialog.Title>Report Form</Dialog.Title>
+                                <Dialog.Description>This action cannot be undone</Dialog.Description
+                                >
+                            </Dialog.Header>
+                            <form method="POST" action="?/report">
+                            <div class="grid gap-2 py-2">
+                                <Select.Root portal={null}>
+                                    <Select.Trigger class="w-[300px]">
+                                   <Select.Value
+                                            placeholder="What is the reason for the report?"
+                                        />
+                                    </Select.Trigger>
+                                    <Select.Content>
+                                        <Select.Group>
+                                            <Select.Label></Select.Label>
+                                            {#each report_reason as report}
+                                                <Select.Item
+                                                    bind:value={report.value}
+                                                    label={report.label}>{report.label}</Select.Item
+                                                >
+                                            {/each}
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            </div>
+                            <div class="grid gap-2 py-2">
+                                <Label for="Report details" class="text-left">Report Details</Label>
+                                <Input id="Report details" bind:value={report_description} class="col-span-3" />
+                            </div>
+                            <Dialog.Footer>
+                                <button class="Submit Report" on:click={() => (open = false)}>
+                                    Submit Report
+                                </button>
+                            </Dialog.Footer>
+                        </form>
+                        </Dialog.Content>
+                    </DropdownMenu.Group>
+                </DropdownMenu.Content>
+            </DropdownMenu.Root>
+        </Dialog.Root>
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
