@@ -278,6 +278,7 @@ export const createCommunityReport = async (db: DB, newPostCommunityReport: NewP
 
 export const createSiteReport = async (db: DB, newPostSiteReport: NewPostSiteReport): Promise<PostSiteReport> => {
     const [ret] = await db.insert(postReportTable).values(newPostSiteReport).returning();
+}
 
 export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {
     const [ret] = await db
