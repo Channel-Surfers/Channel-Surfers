@@ -161,13 +161,12 @@
                                             <Select.Group>
                                                 <Select.Label></Select.Label>
                                                 <Select.Item
-                                                    value="Post violates community guidlines"
-                                                    label="Post violates community guidlines"
-                                                />
+                                                    value="community"
+                                                >Post violates community guidlines.</Select.Item>
                                                 <Select.Item
-                                                    value="Post violates site guidlines"
-                                                    label="Post violates site guidelines"
-                                                />
+                                                    value="site"
+                                                    >Post violates site guidelines.</Select.Item>
+                                                
                                             </Select.Group>
                                         </Select.Content>
                                     </Select.Root>

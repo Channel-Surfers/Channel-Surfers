@@ -20,21 +20,4 @@ export const load: PageServerLoad = async () => {
         }),
         channels: await getChannels(db),
     };
-
 }
-
-export const actions:Actions = {
-    report: async(event) => {
-        const db = await getDb();
-        const data = await event.request.formData();
-        const reason = data.get('reason')
-        const details = data.get('details')
-        console.log(data)
-        console.log(reason)
-        console.log(details)
-    }
-}
-
-
-
-
