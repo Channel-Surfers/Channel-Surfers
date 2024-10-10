@@ -75,7 +75,9 @@
                     <UserChannel poster={post ? post.poster : undefined} />
                 </div>
                 {#if post}
-                    <h1 class="text-ellipse mt-3 w-full text-pretty">{post.title}</h1>
+                    <a href="/post/{post.id}">
+                        <h1 class="text-ellipse mt-3 w-full text-pretty">{post.title}</h1>
+                    </a>
                 {:else}
                     <Skeleton class="mt-3 h-5 w-full" />
                     <Skeleton class="h-5 w-2/3" />
