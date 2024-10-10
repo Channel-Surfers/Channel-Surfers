@@ -270,17 +270,26 @@ export const getPostStatistics = async (db: DB) => {
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
 
-export const createCommunityReport = async (db: DB, newPostCommunityReport: NewPostReport): Promise<PostReport> => {
-    const [ret] = await db.insert(channelPostReportTable).values(newPostCommunityReport).returning();
+export const createCommunityReport = async (
+    db: DB,
+    newPostCommunityReport: NewPostReport
+): Promise<PostReport> => {
+    const [ret] = await db
+        .insert(channelPostReportTable)
+        .values(newPostCommunityReport)
+        .returning();
 
     return ret;
 };
 
-export const createSiteReport = async (db: DB, newPostSiteReport: NewPostReport): Promise<PostReport> => {
+export const createSiteReport = async (
+    db: DB,
+    newPostSiteReport: NewPostReport
+): Promise<PostReport> => {
     const [ret] = await db.insert(postReportTable).values(newPostSiteReport).returning();
 
     return ret;
-}
+};
 
 export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {
     const [ret] = await db

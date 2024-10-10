@@ -49,28 +49,26 @@
 
     const reportData = {
         reason: undefined,
-        details: "",
+        details: '',
     };
 
     const submitReport = async () => {
-       
         console.log(reportData);
         const res = await fetch(`/api/post/${post!.id}/report`, {
             method: 'POST',
             body: JSON.stringify(reportData),
-            headers:{
-                'content-type':'application/json'
-            }
-        }
-    );
+            headers: {
+                'content-type': 'application/json',
+            },
+        });
 
-        if (res.ok)  {
+        if (res.ok) {
             toast.success('Report submitted sucessfully!');
             open = false;
-        }else {
+        } else {
             toast.error('Unexpected error while submitting report.');
-        } 
-    }
+        }
+    };
 
     let hovering = false;
     $: src = post
@@ -151,46 +149,40 @@
                                 <Dialog.Description>This action cannot be undone</Dialog.Description
                                 >
                             </Dialog.Header>
-                                <div class="grid gap-2 py-2">
-                                    <Select.Root bind:selected={reportData.reason} portal={null}>
-                                        <Select.Trigger class="w-[300px]">
-                                            <Select.Value
-                                                placeholder="What is the reason for the report?"
-                                            />
-                                        </Select.Trigger>
-                                        <Select.Content>
-                                            <Select.Group>
-                                                <Select.Label></Select.Label>
-                                                <Select.Item
-                                                    value="community"
-                                                >Post violates community guidlines.</Select.Item>
-                                                <Select.Item
-                                                    value="site"
-                                                    >Post violates site guidelines.</Select.Item>
-                                                
-                                            </Select.Group>
-                                        </Select.Content>
-                                    </Select.Root>
-                                </div>
-                                <div class="grid gap-2 py-2">
-                                    <Label for="Report details" class="text-left"
-                                        >Report Details</Label
-                                    >
-                                    <Input
-                                        id="Report details"
-                                        name="details"
-                                        bind:value={reportData.details}
-                                        class="col-span-3"
-                                    />
-                                </div>
-                                <Dialog.Footer>
-                                    <button
-                                        class="Submit Report"
-                                        on:click={submitReport}
-                                    >
-                                        Submit Report
-                                    </button>
-                                </Dialog.Footer>
+                            <div class="grid gap-2 py-2">
+                                <Select.Root bind:selected={reportData.reason} portal={null}>
+                                    <Select.Trigger class="w-[300px]">
+                                        <Select.Value
+                                            placeholder="What is the reason for the report?"
+                                        />
+                                    </Select.Trigger>
+                                    <Select.Content>
+                                        <Select.Group>
+                                            <Select.Label></Select.Label>
+                                            <Select.Item value="community"
+                                                >Post violates community guidlines.</Select.Item
+                                            >
+                                            <Select.Item value="site"
+                                                >Post violates site guidelines.</Select.Item
+                                            >
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            </div>
+                            <div class="grid gap-2 py-2">
+                                <Label for="Report details" class="text-left">Report Details</Label>
+                                <Input
+                                    id="Report details"
+                                    name="details"
+                                    bind:value={reportData.details}
+                                    class="col-span-3"
+                                />
+                            </div>
+                            <Dialog.Footer>
+                                <button class="Submit Report" on:click={submitReport}>
+                                    Submit Report
+                                </button>
+                            </Dialog.Footer>
                         </Dialog.Content>
                     </DropdownMenu.Group>
                 </DropdownMenu.Content>

@@ -13,4 +13,4 @@ export const load: PageServerLoad = async () => {
         }),
         channels: await getChannels(db),
     };
-}
+};

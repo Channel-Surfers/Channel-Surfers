@@ -9,15 +9,15 @@ export const POST: RequestHandler = async (event) => {
     const db = await getDb();
     await createCommunityReport(db, {
         description: data.details,
-        postId: event.params.post_id
+        postId: event.params.post_id,
     });
     if (data.reason.value == 'site') {
         await createSiteReport(db, {
             description: data.details,
-            postId: event.params.post_id
+            postId: event.params.post_id,
         });
     }
-    return new Response(null,{
-        status:201
+    return new Response(null, {
+        status: 201,
     });
-}
+};
