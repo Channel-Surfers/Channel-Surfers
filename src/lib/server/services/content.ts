@@ -15,7 +15,7 @@ import {
 import { array_agg, dedupe_nonull_array } from './utils';
 import { PAGE_SIZE } from '$lib';
 import type { DB } from '..';
-import type { PostData, uuid } from '$lib/types';
+import type { CommentData, PostData, uuid } from '$lib/types';
 
 import { channelTable } from '../db/channels.sql';
 import { channelTagsTable } from '../db/tags.channels.sql';
@@ -27,6 +27,10 @@ import { publicChannelTable } from '../db/public.channels.sql';
 import { subscriptionTable } from '../db/subscriptions.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
 import { userTable } from '../db/users.sql';
+import { getUserById } from './users'
+//import { post } from '$lib/components/Post.svelte';
+import { isNotEmptyString } from 'testcontainers/build/common';
+import { comment } from 'postcss';
 
 interface GenericPostFilter {
     requesterId?: uuid;
@@ -227,3 +231,59 @@ export const getPostStatistics = async (db: DB) => {
     };
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
+ 
+export const getCommentTree = async (db: DB, post_id: string): Promise<CommentData> => {
+
+    const firstLevelComments = await db
+        .select()
+        .from(postTable)
+        .where(and(eq(postTable.id, post_id), isNull(commentTable.replyTo)))
+        .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
+        .orderBy(commentTable.createdOn)
+        .limit(PAGE_SIZE)
+    
+    console.log(firstLevelComments.length + " top-level comment" + ((firstLevelComments.length != 1) ? "s" : "") + " on this post.")
+    const firstLevelCommentsIds = firstLevelComments.map(p=>p.comment.id)
+
+    const secondLevelComments = await db
+        .select()
+        .from(postTable)
+        .where(and(eq(postTable.id, post_id), inArray(commentTable.replyTo, firstLevelCommentsIds)))
+        .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
+        .orderBy(commentTable.createdOn)
+        .limit(PAGE_SIZE/2)
+
+    console.log(secondLevelComments.length + " second-level comment" + ((secondLevelComments.length != 1) ? "s" : "") + " on this post.")
+
+    // Now convert into commentData Components
+    const commentDataItems = []
+
+    // First loop over first tier comments
+    for (let i = 0; i < firstLevelComments.length; i ++){
+        const currComment = firstLevelComments[i].comment
+        const commenterUserData = await getUserById(db, currComment.creatorId)
+        const currentCommentData: CommentData = {
+            user: currComment.creatorId,
+            content: currComment.content, 
+            downvotes: 0, 
+            upvotes: 0, 
+            children: []}
+
+        commentDataItems.push(currentCommentData)
+    }
+    console.log(firstLevelComments)
+    console.log(secondLevelComments)
+
+    //console.log(commentDataItems)
+    const cc = firstLevelComments.map(c => ({
+        comment: c,
+        children: secondLevelComments.filter(b => b.comment.replyTo === c.comment.id)
+
+    }))
+
+    console.log(JSON.stringify(cc, null, 4))
+
+    // Now every item in postsArray has a post + comment that share id + postId   meaning 
+    throw "oops"
+
+}
