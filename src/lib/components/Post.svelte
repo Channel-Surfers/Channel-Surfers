@@ -2,7 +2,12 @@
     import { PUBLIC_PREVIEW_HOST } from '$env/static/public';
 
     import * as Card from '$lib/shadcn/components/ui/card';
-    import * as Popover from '$lib/shadcn/components/ui/popover';
+    import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
+    import * as Dialog from '$lib/shadcn/components/ui/dialog';
+    import * as Select from '$lib/shadcn/components/ui/select';
+
+    import { Label } from '$lib/shadcn/components/ui/label';
+    import { Input } from '$lib/shadcn/components/ui/input';
     import { Badge } from '$lib/shadcn/components/ui/badge';
     import { Button } from '$lib/shadcn/components/ui/button';
     import { Skeleton } from '$lib/shadcn/components/ui/skeleton';
@@ -10,8 +15,8 @@
 
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
-    import Share2 from 'lucide-svelte/icons/share-2';
     import Play from 'lucide-svelte/icons/play';
+    import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical';
 
     import Score from './Score.svelte';
     import UserChannel from './UserChannel.svelte';
@@ -19,6 +24,7 @@
 
     import type { PostData } from '$lib/types';
     import { createEventDispatcher } from 'svelte';
+    import { toast } from 'svelte-sonner';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -26,6 +32,7 @@
 
     let upvote_pressed = false;
     let downvote_pressed = false;
+    let open = false;
 
     const vote = (dir: 'up' | 'down') => {
         let new_state;
@@ -38,6 +45,29 @@
         }
         const voteChangeValue: 'up' | 'down' | 'none' = new_state ? dir : 'none';
         dispatch('voteChange', voteChangeValue);
+    };
+
+    const reportData = {
+        reason: undefined,
+        details: '',
+    };
+
+    const submitReport = async () => {
+        console.log(reportData);
+        const res = await fetch(`/api/post/${post!.id}/report`, {
+            method: 'POST',
+            body: JSON.stringify(reportData),
+            headers: {
+                'content-type': 'application/json',
+            },
+        });
+
+        if (res.ok) {
+            toast.success('Report submitted sucessfully!');
+            open = false;
+        } else {
+            toast.error('Unexpected error while submitting report.');
+        }
     };
 
     let hovering = false;
@@ -99,18 +129,65 @@
         </Card.Footer>
     </div>
     <div class="flex flex-col items-center justify-between justify-self-end">
-        <Popover.Root>
-            <Popover.Trigger asChild let:builder>
-                <Button builders={[builder]} variant="ghost" size="icon" disabled={!post}>
-                    <div class:animate-pulse={!post}>
-                        <Share2 class="h-5 w-5" />
-                    </div>
-                </Button>
-            </Popover.Trigger>
-            <Popover.Content>
-                <h1>Not yet implemented!</h1>
-            </Popover.Content>
-        </Popover.Root>
+        <Dialog.Root bind:open>
+            <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild let:builder>
+                    <Button builders={[builder]} variant="ghost" size="icon" disabled={!post}>
+                        <div class:animate-pulse={!post}>
+                            <EllipsisVertical class="h-5 w-5" />
+                        </div>
+                    </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content class="w-56">
+                    <DropdownMenu.Group>
+                        <DropdownMenu.Item>Share</DropdownMenu.Item>
+                        <DropdownMenu.Separator />
+                        <Dialog.Trigger>Report</Dialog.Trigger>
+                        <Dialog.Content class="sm:max-w-[425px]">
+                            <Dialog.Header>
+                                <Dialog.Title>Report Form</Dialog.Title>
+                                <Dialog.Description>This action cannot be undone</Dialog.Description
+                                >
+                            </Dialog.Header>
+                            <div class="grid gap-2 py-2">
+                                <Select.Root bind:selected={reportData.reason} portal={null}>
+                                    <Select.Trigger class="w-[300px]">
+                                        <Select.Value
+                                            placeholder="What is the reason for the report?"
+                                        />
+                                    </Select.Trigger>
+                                    <Select.Content>
+                                        <Select.Group>
+                                            <Select.Label></Select.Label>
+                                            <Select.Item value="community"
+                                                >Post violates community guidlines.</Select.Item
+                                            >
+                                            <Select.Item value="site"
+                                                >Post violates site guidelines.</Select.Item
+                                            >
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            </div>
+                            <div class="grid gap-2 py-2">
+                                <Label for="Report details" class="text-left">Report Details</Label>
+                                <Input
+                                    id="Report details"
+                                    name="details"
+                                    bind:value={reportData.details}
+                                    class="col-span-3"
+                                />
+                            </div>
+                            <Dialog.Footer>
+                                <button class="Submit Report" on:click={submitReport}>
+                                    Submit Report
+                                </button>
+                            </Dialog.Footer>
+                        </Dialog.Content>
+                    </DropdownMenu.Group>
+                </DropdownMenu.Content>
+            </DropdownMenu.Root>
+        </Dialog.Root>
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
