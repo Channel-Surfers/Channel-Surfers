@@ -5,7 +5,7 @@
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
     import * as Dialog from '$lib/shadcn/components/ui/dialog';
     import * as Select from '$lib/shadcn/components/ui/select';
-    
+
     import { Label } from '$lib/shadcn/components/ui/label';
     import { Input } from '$lib/shadcn/components/ui/input';
     import { Badge } from '$lib/shadcn/components/ui/badge';
@@ -24,6 +24,8 @@
 
     import type { PostData } from '$lib/types';
     import { createEventDispatcher } from 'svelte';
+    import { report } from 'process';
+    import { toast } from 'svelte-sonner';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -32,7 +34,7 @@
     let upvote_pressed = false;
     let downvote_pressed = false;
     let open = false;
-    let report_description = ""
+    let report_description = '';
 
     const vote = (dir: 'up' | 'down') => {
         let new_state;
@@ -47,10 +49,29 @@
         dispatch('voteChange', voteChangeValue);
     };
 
-    const report_reason = [
-        { value: 'Post violates community rules', label: 'Post violates community rules' },
-        { value: 'Post violates site rules', label: 'Post violates site rules' },
-    ];
+    const reportData = {
+        reason: undefined,
+        details: "",
+    };
+
+    const submitReport = async () => {
+       
+        console.log(reportData);
+        const res = await fetch(`/api/post/${post!.id}/report`, {
+            method: 'POST',
+            body: JSON.stringify(reportData),
+            headers:{
+                'content-type':'application/json'
+            }
+        });
+
+        if (res.ok)  {
+            toast.success('Report submitted sucessfully!');
+            open = false;
+        }else {
+            toast.error('Unexpected error while submitting report.');
+        } 
+    }
 
     let hovering = false;
     $: src = post
@@ -129,37 +150,47 @@
                                 <Dialog.Description>This action cannot be undone</Dialog.Description
                                 >
                             </Dialog.Header>
-                            <form method="POST" action="?/report">
-                            <div class="grid gap-2 py-2">
-                                <Select.Root portal={null}>
-                                    <Select.Trigger class="w-[300px]">
-                                   <Select.Value
-                                            placeholder="What is the reason for the report?"
-                                        />
-                                    </Select.Trigger>
-                                    <Select.Content>
-                                        <Select.Group>
-                                            <Select.Label></Select.Label>
-                                            {#each report_reason as report}
+                                <div class="grid gap-2 py-2">
+                                    <Select.Root bind:selected={reportData.reason} portal={null}>
+                                        <Select.Trigger class="w-[300px]">
+                                            <Select.Value
+                                                placeholder="What is the reason for the report?"
+                                            />
+                                        </Select.Trigger>
+                                        <Select.Content>
+                                            <Select.Group>
+                                                <Select.Label></Select.Label>
                                                 <Select.Item
-                                                    bind:value={report.value}
-                                                    label={report.label}>{report.label}</Select.Item
-                                                >
-                                            {/each}
-                                        </Select.Group>
-                                    </Select.Content>
-                                </Select.Root>
-                            </div>
-                            <div class="grid gap-2 py-2">
-                                <Label for="Report details" class="text-left">Report Details</Label>
-                                <Input id="Report details" bind:value={report_description} class="col-span-3" />
-                            </div>
-                            <Dialog.Footer>
-                                <button class="Submit Report" on:click={() => (open = false)}>
-                                    Submit Report
-                                </button>
-                            </Dialog.Footer>
-                        </form>
+                                                    value="Post violates community guidlines"
+                                                    label="Post violates community guidlines"
+                                                />
+                                                <Select.Item
+                                                    value="Post violates site guidlines"
+                                                    label="Post violates site guidelines"
+                                                />
+                                            </Select.Group>
+                                        </Select.Content>
+                                    </Select.Root>
+                                </div>
+                                <div class="grid gap-2 py-2">
+                                    <Label for="Report details" class="text-left"
+                                        >Report Details</Label
+                                    >
+                                    <Input
+                                        id="Report details"
+                                        name="details"
+                                        bind:value={reportData.details}
+                                        class="col-span-3"
+                                    />
+                                </div>
+                                <Dialog.Footer>
+                                    <button
+                                        class="Submit Report"
+                                        on:click={submitReport}
+                                    >
+                                        Submit Report
+                                    </button>
+                                </Dialog.Footer>
                         </Dialog.Content>
                     </DropdownMenu.Group>
                 </DropdownMenu.Content>
