@@ -28,7 +28,7 @@ import { subscriptionTable } from '../db/subscriptions.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
 import { userTable } from '../db/users.sql';
 import { channelPostReportTable } from '../db/reports.channels.posts.sql';
-import { postReportTable } from '../db/reports.posts.sql';
+import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
 
 export const getPost = async (db: DB, post_id: uuid) => {
     const [a] = await db
@@ -270,14 +270,16 @@ export const getPostStatistics = async (db: DB) => {
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
 
-export const createCommunityReport = async (db: DB, newPostCommunityReport: NewPostCommunityReport): Promise<PostCommunityReport> => {
+export const createCommunityReport = async (db: DB, newPostCommunityReport: NewPostReport): Promise<PostReport> => {
     const [ret] = await db.insert(channelPostReportTable).values(newPostCommunityReport).returning();
 
     return ret;
 };
 
-export const createSiteReport = async (db: DB, newPostSiteReport: NewPostSiteReport): Promise<PostSiteReport> => {
+export const createSiteReport = async (db: DB, newPostSiteReport: NewPostReport): Promise<PostReport> => {
     const [ret] = await db.insert(postReportTable).values(newPostSiteReport).returning();
+
+    return ret;
 }
 
 export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {
