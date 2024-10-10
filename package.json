@@ -50,6 +50,7 @@
     "type": "module",
     "dependencies": {
         "@lucia-auth/adapter-drizzle": "^1.1.0",
+        "@sinclair/typebox": "^0.33.15",
         "@sveltejs/adapter-node": "^5.2.4",
         "arctic": "^1.9.2",
         "bits-ui": "^0.21.16",

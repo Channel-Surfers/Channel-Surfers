@@ -13,6 +13,7 @@
     import UserInfo from '$lib/components/islands/UserInfo.svelte';
     import type { User } from '$lib/server/db/users.sql';
     import PlaylistInfo from '$lib/components/islands/PlaylistInfo.svelte';
+    import type { AuthUser } from '$lib/server/auth';
 
     export let data: LayoutServerData;
 
@@ -30,9 +31,6 @@
         subscriptionsCount: 2,
     };
 
-    $: dummyUser = data.user
-        ? { ...(data.user as User), userStats: { numberOfUpvotes: 200, numberOfDownvotes: 100 } }
-        : null;
     $: dummyPlaylist = data.user
         ? {
               creator: data.user as User,
@@ -77,11 +75,15 @@
         {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
+        {:else if data.island.type === 'user' && data.island.data}
+            <UserInfo
+                isFollowing={data.island.data.isFollowing}
+                userInfo={data.island.data.userData}
+                user={data.user}
+            />
         {/if}
 
         <ChannelInfo channel={dummyChannel} />
-
-        <UserInfo userInfo={dummyUser} />
 
         <PlaylistInfo playlistInfo={dummyPlaylist} />
 

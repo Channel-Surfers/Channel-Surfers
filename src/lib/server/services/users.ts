@@ -1,9 +1,10 @@
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { and, count, eq } from 'drizzle-orm';
+import { and, count, countDistinct, eq } from 'drizzle-orm';
 import { userTable, type NewUser, type User } from '../db/users.sql';
 import { postTable } from '../db/posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
+import { followTable } from '../db/follows.sql';
 
 export const getUserById = async (db: DB, id: string): Promise<User> => {
     const [ret] = await db.select().from(userTable).where(eq(userTable.id, id));
@@ -71,11 +72,31 @@ export const getUserStats = async (db: DB, userId: string) => {
         .from(postTable)
         .leftJoin(postVoteTable, eq(postTable.id, postVoteTable.postId))
         .where(and(eq(postTable.createdBy, userId), eq(postVoteTable.vote, 'DOWN')));
+    const numberOfFollowersQuery = db
+        .select({ numberOfFollowers: countDistinct(followTable.followerId) })
+        .from(userTable)
+        .leftJoin(followTable, eq(userTable.id, followTable.userId))
+        .where(eq(userTable.id, userId));
 
-    const [[{ numberOfUpvotes }], [{ numberOfDownvotes }]] = await Promise.all([
-        numberOfUpvotesQuery,
-        numberOfDownvotesQuery,
-    ]);
-    return { numberOfUpvotes, numberOfDownvotes };
+    const [[{ numberOfUpvotes }], [{ numberOfDownvotes }], [{ numberOfFollowers }]] =
+        await Promise.all([numberOfUpvotesQuery, numberOfDownvotesQuery, numberOfFollowersQuery]);
+    return { numberOfUpvotes, numberOfDownvotes, numberOfFollowers };
 };
 export type UserStats = Awaited<ReturnType<typeof getUserStats>>;
+
+/**
+ * Given a username, find a user with the matching username
+ */
+export const getUserInfoByUsername = async (db: DB, username: string) => {
+    const [user] = await db.select().from(userTable).where(eq(userTable.username, username));
+    return { ...user, ...(await getUserStats(db, user.id)) };
+};
+export type UserInfoByName = Awaited<ReturnType<typeof getUserInfoByUsername>>;
+
+export const userIsFollowing = async (db: DB, userId: string, followerId: string) => {
+    const follows = await db
+        .select()
+        .from(followTable)
+        .where(and(eq(followTable.userId, userId), eq(followTable.followerId, followerId)));
+    return follows.length == 1;
+};
