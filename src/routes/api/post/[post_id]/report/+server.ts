@@ -3,7 +3,6 @@ import type { RequestHandler } from './$types';
 import { getDb } from '$lib/server';
 import { createCommunityReport, createSiteReport } from '$lib/server/services/content';
 
-
 export const POST: RequestHandler = async (event) => {
     if (!event.locals.user) return error(401);
     const data = await event.request.json();

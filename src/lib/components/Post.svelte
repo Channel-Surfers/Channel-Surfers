@@ -24,7 +24,6 @@
 
     import type { PostData } from '$lib/types';
     import { createEventDispatcher } from 'svelte';
-    import { report } from 'process';
     import { toast } from 'svelte-sonner';
 
     export let post: PostData | undefined = undefined;
@@ -34,7 +33,6 @@
     let upvote_pressed = false;
     let downvote_pressed = false;
     let open = false;
-    let report_description = '';
 
     const vote = (dir: 'up' | 'down') => {
         let new_state;
@@ -63,7 +61,8 @@
             headers:{
                 'content-type':'application/json'
             }
-        });
+        }
+    );
 
         if (res.ok)  {
             toast.success('Report submitted sucessfully!');
