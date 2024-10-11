@@ -27,7 +27,7 @@ import { publicChannelTable } from '../db/public.channels.sql';
 import { subscriptionTable } from '../db/subscriptions.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
 import { userTable } from '../db/users.sql';
-import { channelPostReportTable, type ChannelPostReport } from '../db/reports.channels.posts.sql';
+import { channelPostReportTable, type ChannelPostReport, type NewChannelPostReport } from '../db/reports.channels.posts.sql';
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
 
 export const getPost = async (db: DB, post_id: uuid) => {
@@ -272,7 +272,7 @@ export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
 
 export const createChannelReport = async (
     db: DB,
-    newChannelPostReport: ChannelPostReport
+    newChannelPostReport: NewChannelPostReport
 ): Promise<PostReport> => {
     const [ret] = await db.insert(channelPostReportTable).values(newChannelPostReport).returning();
 

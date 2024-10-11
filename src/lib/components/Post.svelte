@@ -25,6 +25,7 @@
     import { createEventDispatcher } from 'svelte';
     import { toast } from 'svelte-sonner';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
+    import { Flag } from 'lucide-svelte';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -142,7 +143,7 @@
                     <DropdownMenu.Group>
                         <DropdownMenu.Item>Share</DropdownMenu.Item>
                         <DropdownMenu.Separator />
-                        <Dialog.Trigger>Report</Dialog.Trigger>
+                        <Dialog.Trigger class="text-red-600"><Flag fill="currentColor" class="mr-2 h-4 w-4" />Report</Dialog.Trigger>
                         <Dialog.Content class="sm:max-w-[425px]">
                             <Dialog.Header>
                                 <Dialog.Title>Report Form</Dialog.Title>
