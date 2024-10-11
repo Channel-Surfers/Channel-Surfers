@@ -37,12 +37,10 @@ export interface ChannelData {
     private: boolean;
 }
 
-export interface CommentData{
+export interface CommentData {
     user: uuid; // may need to be User
     content: string;
     downvotes: number;
     upvotes: number;
     children?: CommentData[];
-    
-
 }

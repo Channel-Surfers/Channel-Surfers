@@ -271,19 +271,23 @@ export const getPostStatistics = async (db: DB) => {
     };
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
- 
-export const getCommentTree = async (db: DB, post_id: string): Promise<CommentData> => {
 
+export const getCommentTree = async (db: DB, post_id: string): Promise<CommentData> => {
     const firstLevelComments = await db
         .select()
         .from(postTable)
         .where(and(eq(postTable.id, post_id), isNull(commentTable.replyTo)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
         .orderBy(commentTable.createdOn)
-        .limit(PAGE_SIZE)
-    
-    console.log(firstLevelComments.length + " top-level comment" + ((firstLevelComments.length != 1) ? "s" : "") + " on this post.")
-    const firstLevelCommentsIds = firstLevelComments.map(p=>p.comment.id)
+        .limit(PAGE_SIZE);
+
+    console.log(
+        firstLevelComments.length +
+            ' top-level comment' +
+            (firstLevelComments.length != 1 ? 's' : '') +
+            ' on this post.'
+    );
+    const firstLevelCommentsIds = firstLevelComments.map((p) => p.comment.id);
 
     const secondLevelComments = await db
         .select()
@@ -291,42 +295,46 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
         .where(and(eq(postTable.id, post_id), inArray(commentTable.replyTo, firstLevelCommentsIds)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
         .orderBy(commentTable.createdOn)
-        .limit(PAGE_SIZE/2)
+        .limit(PAGE_SIZE / 2);
 
-    console.log(secondLevelComments.length + " second-level comment" + ((secondLevelComments.length != 1) ? "s" : "") + " on this post.")
+    console.log(
+        secondLevelComments.length +
+            ' second-level comment' +
+            (secondLevelComments.length != 1 ? 's' : '') +
+            ' on this post.'
+    );
 
     // Now convert into commentData Components
-    const commentDataItems = []
+    const commentDataItems = [];
 
     // First loop over first tier comments
-    for (let i = 0; i < firstLevelComments.length; i ++){
-        const currComment = firstLevelComments[i].comment
+    for (let i = 0; i < firstLevelComments.length; i++) {
+        const currComment = firstLevelComments[i].comment;
         //const commenterUserData = await getUserById(db, currComment.creatorId)
         const currentCommentData: CommentData = {
             user: currComment.creatorId,
-            content: currComment.content, 
-            downvotes: 0, 
-            upvotes: 0, 
-            children: []}
+            content: currComment.content,
+            downvotes: 0,
+            upvotes: 0,
+            children: [],
+        };
 
-        commentDataItems.push(currentCommentData)
+        commentDataItems.push(currentCommentData);
     }
-    console.log(firstLevelComments)
-    console.log(secondLevelComments)
+    console.log(firstLevelComments);
+    console.log(secondLevelComments);
 
     //console.log(commentDataItems)
-    const cc = firstLevelComments.map(c => ({
+    const cc = firstLevelComments.map((c) => ({
         comment: c,
-        children: secondLevelComments.filter(b => b.comment.replyTo === c.comment.id)
+        children: secondLevelComments.filter((b) => b.comment.replyTo === c.comment.id),
+    }));
 
-    }))
+    console.log(JSON.stringify(cc, null, 4));
 
-    console.log(JSON.stringify(cc, null, 4))
-
-    // Now every item in postsArray has a post + comment that share id + postId   meaning 
-    throw "oops"
-
-}
+    // Now every item in postsArray has a post + comment that share id + postId   meaning
+    throw 'oops';
+};
 
 export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {
     const [ret] = await db
