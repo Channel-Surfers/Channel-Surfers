@@ -25,7 +25,7 @@
     import { createEventDispatcher } from 'svelte';
     import { toast } from 'svelte-sonner';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
-    import { Flag } from 'lucide-svelte';
+    import { Flag, Share2 } from 'lucide-svelte';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -76,6 +76,42 @@
         ? `${PUBLIC_PREVIEW_HOST}/${post.videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`
         : '';
 </script>
+
+<Dialog.Root bind:open>
+    <Dialog.Portal>
+        <Dialog.Content>
+            <Dialog.Header>
+                <Dialog.Title>Report Form</Dialog.Title>
+                <Dialog.Description>This action cannot be undone</Dialog.Description>
+            </Dialog.Header>
+            <div class="grid gap-2 py-2">
+                <Select.Root bind:selected={reportData.reason} portal={null}>
+                    <Select.Trigger class="w-[300px]">
+                        <Select.Value placeholder="What is the reason for the report?" />
+                    </Select.Trigger>
+                    <Select.Content>
+                        <Select.Item value="community">
+                            Post violates community guidelines
+                        </Select.Item>
+                        <Select.Item value="site">Post violates site guidelines</Select.Item>
+                    </Select.Content>
+                </Select.Root>
+            </div>
+            <div class="grid gap-2 py-2">
+                <Label for="Report details" class="text-left">Report Details</Label>
+                <Textarea
+                    placeholder="Add details here"
+                    name="details"
+                    bind:value={reportData.details}
+                    class="col-span-3"
+                />
+            </div>
+            <Dialog.Footer>
+                <Button type="submit" on:click={submitReport}>Submit Report</Button>
+            </Dialog.Footer>
+        </Dialog.Content>
+    </Dialog.Portal>
+</Dialog.Root>
 
 <Card.Root class="m-auto my-3 flex h-48 w-[800px] flex-row p-2">
     <div
@@ -130,67 +166,26 @@
         </Card.Footer>
     </div>
     <div class="flex flex-col items-center justify-between justify-self-end">
-        <Dialog.Root bind:open>
-            <DropdownMenu.Root>
-                <DropdownMenu.Trigger asChild let:builder>
-                    <Button builders={[builder]} variant="ghost" size="icon" disabled={!post}>
-                        <div class:animate-pulse={!post}>
-                            <EllipsisVertical class="h-5 w-5" />
-                        </div>
-                    </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content class="w-56">
-                    <DropdownMenu.Group>
-                        <Dialog.Trigger>Share</Dialog.Trigger>
-                        <DropdownMenu.Separator />
-                        <Dialog.Trigger class="text-red-600">
-                            <Flag fill="currentColor" class="mr-2 h-4 w-4" />
-                            Report
-                        </Dialog.Trigger>
-                        <Dialog.Content class="sm:max-w-[425px]">
-                            <Dialog.Header>
-                                <Dialog.Title>Report Form</Dialog.Title>
-                                <Dialog.Description>
-                                    This action cannot be undone
-                                </Dialog.Description>
-                            </Dialog.Header>
-                            <div class="grid gap-2 py-2">
-                                <Select.Root bind:selected={reportData.reason} portal={null}>
-                                    <Select.Trigger class="w-[300px]">
-                                        <Select.Value
-                                            placeholder="What is the reason for the report?"
-                                        />
-                                    </Select.Trigger>
-                                    <Select.Content>
-                                        <Select.Group>
-                                            <Select.Label></Select.Label>
-                                            <Select.Item value="community">
-                                                Post violates community guidelines
-                                            </Select.Item>
-                                            <Select.Item value="site">
-                                                Post violates site guidelines
-                                            </Select.Item>
-                                        </Select.Group>
-                                    </Select.Content>
-                                </Select.Root>
-                            </div>
-                            <div class="grid gap-2 py-2">
-                                <Label for="Report details" class="text-left">Report Details</Label>
-                                <Textarea
-                                    placeholder="Add details here"
-                                    name="details"
-                                    bind:value={reportData.details}
-                                    class="col-span-3"
-                                />
-                            </div>
-                            <Dialog.Footer>
-                                <Button type="submit" on:click={submitReport}>Submit Report</Button>
-                            </Dialog.Footer>
-                        </Dialog.Content>
-                    </DropdownMenu.Group>
-                </DropdownMenu.Content>
-            </DropdownMenu.Root>
-        </Dialog.Root>
+        <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild let:builder>
+                <Button builders={[builder]} variant="ghost" size="icon" disabled={!post}>
+                    <div class:animate-pulse={!post}>
+                        <EllipsisVertical class="h-5 w-5" />
+                    </div>
+                </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content class="w-56">
+                <DropdownMenu.Item>
+                    <Share2 fill="currentColor" class="mr-2 h-4 w-4" />
+                    <span>Share</span>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item class="text-red-600" on:click={() => (open = true)}>
+                    <Flag fill="currentColor" class="mr-2 h-4 w-4" />
+                    <span>Report</span>
+                </DropdownMenu.Item>
+                <DropdownMenu.Group></DropdownMenu.Group>
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
