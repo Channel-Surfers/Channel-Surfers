@@ -1,4 +1,4 @@
-import type { User } from "./server/db/users.sql";
+//import type { User } from "./server/db/users.sql";
 
 /**
  * An alias for a string that hints to the developer that this is a uuid

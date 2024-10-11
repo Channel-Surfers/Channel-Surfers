@@ -27,10 +27,10 @@ import { publicChannelTable } from '../db/public.channels.sql';
 import { subscriptionTable } from '../db/subscriptions.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
 import { userTable } from '../db/users.sql';
-import { getUserById } from './users'
+//import { getUserById } from './users'
 //import { post } from '$lib/components/Post.svelte';
-import { isNotEmptyString } from 'testcontainers/build/common';
-import { comment } from 'postcss';
+//import { isNotEmptyString } from 'testcontainers/build/common';
+//import { comment } from 'postcss';
 
 export const getPost = async (db: DB, post_id: uuid) => {
     const [a] = await db
@@ -301,7 +301,7 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
     // First loop over first tier comments
     for (let i = 0; i < firstLevelComments.length; i ++){
         const currComment = firstLevelComments[i].comment
-        const commenterUserData = await getUserById(db, currComment.creatorId)
+        //const commenterUserData = await getUserById(db, currComment.creatorId)
         const currentCommentData: CommentData = {
             user: currComment.creatorId,
             content: currComment.content, 
