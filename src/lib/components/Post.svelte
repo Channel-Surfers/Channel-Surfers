@@ -143,11 +143,16 @@
                     <DropdownMenu.Group>
                         <Dialog.Trigger>Share</Dialog.Trigger>
                         <DropdownMenu.Separator />
-                        <Dialog.Trigger class="text-red-600"><Flag fill="currentColor" class="mr-2 h-4 w-4" />Report</Dialog.Trigger>
+                        <Dialog.Trigger class="text-red-600">
+                            <Flag fill="currentColor" class="mr-2 h-4 w-4" />
+                            Report
+                        </Dialog.Trigger>
                         <Dialog.Content class="sm:max-w-[425px]">
                             <Dialog.Header>
                                 <Dialog.Title>Report Form</Dialog.Title>
-                                <Dialog.Description>This action cannot be undone</Dialog.Description>
+                                <Dialog.Description>
+                                    This action cannot be undone
+                                </Dialog.Description>
                             </Dialog.Header>
                             <div class="grid gap-2 py-2">
                                 <Select.Root bind:selected={reportData.reason} portal={null}>
@@ -159,8 +164,12 @@
                                     <Select.Content>
                                         <Select.Group>
                                             <Select.Label></Select.Label>
-                                            <Select.Item value="community">Post violates community guidelines</Select.Item>
-                                            <Select.Item value="site">Post violates site guidelines</Select.Item>
+                                            <Select.Item value="community">
+                                                Post violates community guidelines
+                                            </Select.Item>
+                                            <Select.Item value="site">
+                                                Post violates site guidelines
+                                            </Select.Item>
                                         </Select.Group>
                                     </Select.Content>
                                 </Select.Root>
