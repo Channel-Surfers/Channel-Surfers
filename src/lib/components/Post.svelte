@@ -143,7 +143,10 @@
                     <DropdownMenu.Group>
                         <Dialog.Trigger>Share</Dialog.Trigger>
                         <DropdownMenu.Separator />
-                        <Dialog.Trigger class="text-red-600"><Flag fill="currentColor" class="mr-2 h-4 w-4" />Report</Dialog.Trigger>
+                        <Dialog.Trigger class="text-red-600">
+                            <Flag fill="currentColor" class="mr-2 h-4 w-4" />
+                            Report
+                        </Dialog.Trigger>
                         <Dialog.Content class="sm:max-w-[425px]">
                             <Dialog.Header>
                                 <Dialog.Title>Report Form</Dialog.Title>
@@ -176,9 +179,7 @@
                                 />
                             </div>
                             <Dialog.Footer>
-                                <Button type="submit" on:click={submitReport}>
-                                    Submit Report
-                                </Button>
+                                <Button type="submit" on:click={submitReport}>Submit Report</Button>
                             </Dialog.Footer>
                         </Dialog.Content>
                     </DropdownMenu.Group>

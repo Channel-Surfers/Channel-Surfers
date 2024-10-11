@@ -29,7 +29,6 @@ import { userBlockTable } from '../db/blocks.users.sql';
 import { userTable } from '../db/users.sql';
 import {
     channelPostReportTable,
-    type ChannelPostReport,
     type NewChannelPostReport,
 } from '../db/reports.channels.posts.sql';
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
