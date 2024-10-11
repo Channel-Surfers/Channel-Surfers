@@ -179,9 +179,9 @@
                                 />
                             </div>
                             <Dialog.Footer>
-                                <button class="Submit Report" on:click={submitReport}>
+                                <Button type="submit" on:click={submitReport}>
                                     Submit Report
-                                </button>
+                                </Button>
                             </Dialog.Footer>
                         </Dialog.Content>
                     </DropdownMenu.Group>
