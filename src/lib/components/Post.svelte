@@ -29,11 +29,12 @@
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
+    export let signed_in: boolean = false;
     const dispatch = createEventDispatcher();
 
     let upvote_pressed = false;
     let downvote_pressed = false;
-    let open = false;
+    let report_dialog_open = false;
 
     const vote = (dir: 'up' | 'down') => {
         let new_state;
@@ -65,7 +66,7 @@
 
         if (res.ok) {
             toast.success('Report submitted sucessfully!');
-            open = false;
+            report_dialog_open = false;
         } else {
             toast.error('Unexpected error while submitting report.');
         }
@@ -77,7 +78,7 @@
         : '';
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root bind:open={report_dialog_open}>
     <Dialog.Portal>
         <Dialog.Content>
             <Dialog.Header>
@@ -179,7 +180,7 @@
                     <Share2 fill="currentColor" class="mr-2 h-4 w-4" />
                     <span>Share</span>
                 </DropdownMenu.Item>
-                <DropdownMenu.Item class="text-red-600" on:click={() => (open = true)}>
+                <DropdownMenu.Item class="text-red-600" on:click={() => (report_dialog_open = true)} disabled={!signed_in}>
                     <Flag fill="currentColor" class="mr-2 h-4 w-4" />
                     <span>Report</span>
                 </DropdownMenu.Item>
