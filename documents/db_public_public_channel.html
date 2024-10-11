@@ -12,7 +12,7 @@
 </thead>
 <tbody>
 <tr>
-<td>post_id</td>
+<td>channel_id</td>
 <td>uuid</td>
 <td></td>
 <td>false</td>
@@ -50,9 +50,14 @@
 </thead>
 <tbody>
 <tr>
-<td>public_channel_post_id_channel_id_fk</td>
+<td>public_channel_channel_id_channel_id_fk</td>
 <td>FOREIGN KEY</td>
-<td>FOREIGN KEY (post_id) REFERENCES channel(id)</td>
+<td>FOREIGN KEY (channel_id) REFERENCES channel(id)</td>
+</tr>
+<tr>
+<td>public_channel_pkey</td>
+<td>PRIMARY KEY</td>
+<td>PRIMARY KEY (channel_id)</td>
 </tr>
 <tr>
 <td>public_channel_name_unique</td>
@@ -69,6 +74,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>public_channel_pkey</td>
+<td>CREATE UNIQUE INDEX public_channel_pkey ON public.public_channel USING btree (channel_id)</td>
+</tr>
 <tr>
 <td>public_channel_name_unique</td>
 <td>CREATE UNIQUE INDEX public_channel_name_unique ON public.public_channel USING btree (name)</td>
