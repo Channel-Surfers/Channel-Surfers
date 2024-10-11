@@ -7,7 +7,6 @@
     import * as Select from '$lib/shadcn/components/ui/select';
 
     import { Label } from '$lib/shadcn/components/ui/label';
-    import { Input } from '$lib/shadcn/components/ui/input';
     import { Badge } from '$lib/shadcn/components/ui/badge';
     import { Button } from '$lib/shadcn/components/ui/button';
     import { Skeleton } from '$lib/shadcn/components/ui/skeleton';
@@ -25,6 +24,7 @@
     import type { PostData } from '$lib/types';
     import { createEventDispatcher } from 'svelte';
     import { toast } from 'svelte-sonner';
+    import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -167,8 +167,8 @@
                             </div>
                             <div class="grid gap-2 py-2">
                                 <Label for="Report details" class="text-left">Report Details</Label>
-                                <Input
-                                    id="Report details"
+                                <Textarea
+                                    placeholder="Add details here"
                                     name="details"
                                     bind:value={reportData.details}
                                     class="col-span-3"
