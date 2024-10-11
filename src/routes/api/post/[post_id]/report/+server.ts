@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getDb } from '$lib/server';
-import { createChannelReport, createPostReport, } from '$lib/server/services/content';
+import { createChannelReport, createPostReport } from '$lib/server/services/content';
 
 export const POST: RequestHandler = async (event) => {
     if (!event.locals.user) return error(401);

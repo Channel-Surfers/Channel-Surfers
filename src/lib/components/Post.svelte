@@ -141,7 +141,7 @@
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content class="w-56">
                     <DropdownMenu.Group>
-                        <DropdownMenu.Item>Share</DropdownMenu.Item>
+                        <Dialog.Trigger>Share</Dialog.Trigger>
                         <DropdownMenu.Separator />
                         <Dialog.Trigger class="text-red-600"><Flag fill="currentColor" class="mr-2 h-4 w-4" />Report</Dialog.Trigger>
                         <Dialog.Content class="sm:max-w-[425px]">
