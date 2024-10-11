@@ -3,7 +3,6 @@ on:
     push:
         branches:
             - main
-            - fix-docs
 permissions:
     contents: write
 concurrency:
@@ -14,7 +13,7 @@ jobs:
         runs-on: ubuntu-latest
         env:
             # connection string for service container
-            POSTGRES_CONNECTION_STRING: 'postgresql://username:password@host/db_name'
+            POSTGRES_CONNECTION_STRING: 'postgresql://postgres:password@localhost:5432/ci?sslmode=disable'
             BASE_URL: 'localhost:5173'
             PUBLIC_PREVIEW_HOST: 'https://example.com/'
             PUBLIC_LIBRARY_ID: 000000
