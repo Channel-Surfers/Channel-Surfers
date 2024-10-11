@@ -47,7 +47,7 @@
         dispatch('voteChange', voteChangeValue);
     };
 
-    const reportData = {
+    const reportData: { reason: 'community' | 'site' | undefined, details: string}= {
         reason: undefined,
         details: '',
     };
