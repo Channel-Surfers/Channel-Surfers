@@ -8,11 +8,8 @@ export const POST: RequestHandler = async (event) => {
     const data = await event.request.json();
     const db = await getDb();
     await createChannelReport(db, {
-        status: 'INVESTIGATING',
-        id: '',
         description: data.details,
         postId: event.params.post_id,
-        resolution: null
     });
     if (data.reason.value == 'site') {
         await createPostReport(db, {
