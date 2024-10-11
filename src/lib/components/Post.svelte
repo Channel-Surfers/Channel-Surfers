@@ -180,7 +180,11 @@
                     <Share2 fill="currentColor" class="mr-2 h-4 w-4" />
                     <span>Share</span>
                 </DropdownMenu.Item>
-                <DropdownMenu.Item class="text-red-600" on:click={() => (report_dialog_open = true)} disabled={!signed_in}>
+                <DropdownMenu.Item
+                    class="text-red-600"
+                    on:click={() => (report_dialog_open = true)}
+                    disabled={!signed_in}
+                >
                     <Flag fill="currentColor" class="mr-2 h-4 w-4" />
                     <span>Report</span>
                 </DropdownMenu.Item>

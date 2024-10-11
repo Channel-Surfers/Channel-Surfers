@@ -45,7 +45,7 @@
 
 <ScrollArea class="mx-2 flex h-full max-h-full flex-col items-center">
     {#each buffer as post}
-        <Post {post} {signed_in}/>
+        <Post {post} {signed_in} />
     {/each}
     {#if state === 'loading'}
         <Post />
