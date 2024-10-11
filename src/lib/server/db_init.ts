@@ -1,31 +1,15 @@
 import type { DB } from '.';
 import * as schema from './db/schema';
+import { faker } from '@faker-js/faker';
 
 const rand = (n: number, o = 0): number => o + Math.floor(Math.random() * (n - o));
 
-// random section of lipsum text
-const words = (
-    'duis a vulputate lacus maecenas lorem massa finibus ac ultricies eu ' +
-    'rhoncus viverra felis integer porttitor magna nunc sed pretium mauris ' +
-    'tempus donec lectus nibh fermentum eget ex aliquet vestibulum augue ' +
-    'faucibus tortor consectetur feugiat diam metus dignissim ipsum quis ' +
-    'imperdiet non fusce varius elit suscipit mi consequat at nam efficitur ' +
-    'nisi nec mattis sodales vivamus dapibus id porta ut enim convallis ' +
-    'cras pharetra'
-).split(' ');
-
-const lip = (n: number, j: string = ' '): string => {
-    return pick_n(words, n).join(j);
-};
-
-const pick_n = (arr: string[], n: number) => {
+const pick_n = <T>(arr: T[], n: number): T[] => {
     const a = [...arr];
     return Array(n)
         .fill(0)
         .map(() => a.splice(rand(a.length), 1)[0]);
 };
-
-const rand_username = () => lip(rand(3, 2), '_');
 
 export default async (db: DB) => {
     console.log('running init');
@@ -33,18 +17,18 @@ export default async (db: DB) => {
         console.log('db is populated... skipping init');
         return;
     }
-    const v = Array(200)
-        .fill(0)
-        .map(() => ({
-            username: rand_username(),
-        }));
 
-    let users: schema.User[] = [];
-    while (v.length) {
-        users = users.concat(
-            await db
+    const userData = faker.helpers.uniqueArray(faker.word.sample, 8000).map(username => ({
+        username,
+        profileImage: faker.image.avatar(),
+    }))
+
+    const users: schema.User[] = [];
+    while (userData.length) {
+        users.push(
+            ...await db
                 .insert(schema.userTable)
-                .values(v.splice(0, Math.min(100, v.length)))
+                .values(userData.splice(0, 10_000))
                 .returning()
         );
     }
@@ -53,7 +37,7 @@ export default async (db: DB) => {
         .insert(schema.channelTable)
         .values(
             users.slice(0, 20).map((u) => ({
-                name: rand_username(),
+                name: faker.internet.domainWord().substring(0, 25),
                 createdBy: u.id,
             }))
         )
@@ -68,16 +52,14 @@ export default async (db: DB) => {
 
     const tags: { [id: string]: schema.ChannelTag[] } = {};
     for (const channel of channels) {
-        const t = pick_n(words, 5);
         tags[channel.id] = await db
             .insert(schema.channelTagsTable)
             .values(
-                Array(5)
-                    .fill(0)
-                    .map((_, i) => ({
+                faker.helpers.uniqueArray(faker.hacker.noun, 5)
+                    .map(word => ({
                         channelId: channel.id,
-                        name: t[i],
-                        color: `#${rand(255).toString(16)}${rand(255).toString(16)}${rand(255).toString(16)}`,
+                        name: word.substring(0, 16),
+                        color: faker.internet.color(),
                     }))
             )
             .returning();
@@ -94,11 +76,13 @@ export default async (db: DB) => {
     const posts = await db
         .insert(schema.postTable)
         .values(
-            Array(100)
+            Array(300)
                 .fill(0)
                 .map(() => ({
-                    title: lip(rand(10, 2)),
+                    title: faker.word.words({ count: { min: 8, max: 15 } }),
+                    description: faker.lorem.paragraphs({ min: 5, max: 20 }, '\n\n'),
                     channelId: channels[rand(channels.length)].id,
+                    createdAt: faker.date.recent({ days: 20 }),
                     createdBy: users[rand(users.length)].id,
                     videoId: video_ids[rand(video_ids.length)],
                 }))
@@ -106,11 +90,8 @@ export default async (db: DB) => {
         .returning();
 
     for (const post of posts) {
-        const t = [...tags[post.channelId]];
-        const fill = Array(rand(5, 1))
-            .fill(0)
-            .map(() => {
-                const [tag] = t.splice(rand(t.length), 1);
+        const fill = pick_n(tags[post.channelId], rand(5, 1))
+            .map(tag => {
                 return {
                     postId: post.id,
                     tagId: tag.id,
@@ -121,20 +102,29 @@ export default async (db: DB) => {
         }
     }
 
-    console.log('user count:', users.length);
-    console.log('channel count:', channels.length);
-    console.log('posts count:', posts.length);
-
-    for (const user of users) {
-        const vote_v = [];
+    let vote_v = [];
+    for (const i in users) {
+        const user = users[i];
         for (const post of posts) {
             vote_v.push({
                 postId: post.id,
                 userId: user.id,
-                vote: Math.random() > 0.25 ? ('UP' as const) : ('DOWN' as const),
+                vote: Math.random() > .25 ? ('UP' as const) : ('DOWN' as const),
             });
         }
-        await db.insert(schema.postVoteTable).values(vote_v);
     }
+    
+    let votes = 0;
+    while (vote_v.length < votes) {
+        votes += (await db
+            .insert(schema.postVoteTable)
+            .values(vote_v.slice(votes, votes + 10_000))
+            .returning()).length
+    }
+
+    console.log('user count:', users.length);
+    console.log('channel count:', channels.length);
+    console.log('posts count:', posts.length);
+    console.log('votes count:', votes);
     console.log('generated data');
 };
