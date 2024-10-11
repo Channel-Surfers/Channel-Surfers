@@ -18,7 +18,8 @@ export default async (db: DB) => {
         return;
     }
 
-    const userData = faker.helpers.uniqueArray(faker.word.sample, 8000).map(username => ({
+    const userData = faker.helpers.uniqueArray(faker.word.sample, 300)
+    .map(username => ({
         username,
         profileImage: faker.image.avatar(),
     }))
@@ -32,6 +33,7 @@ export default async (db: DB) => {
                 .returning()
         );
     }
+    console.log('user count:', users.length);
 
     const channels = await db
         .insert(schema.channelTable)
@@ -64,6 +66,7 @@ export default async (db: DB) => {
             )
             .returning();
     }
+    console.log('channel count:', channels.length);
 
     const video_ids = [
         'e0245338-7c04-4a6c-b44f-0e279a849cf5',
@@ -76,7 +79,7 @@ export default async (db: DB) => {
     const posts = await db
         .insert(schema.postTable)
         .values(
-            Array(300)
+            Array(100)
                 .fill(0)
                 .map(() => ({
                     title: faker.word.words({ count: { min: 8, max: 15 } }),
@@ -88,6 +91,7 @@ export default async (db: DB) => {
                 }))
         )
         .returning();
+    console.log('posts count:', posts.length);
 
     for (const post of posts) {
         const fill = pick_n(tags[post.channelId], rand(5, 1))
@@ -101,6 +105,7 @@ export default async (db: DB) => {
             await db.insert(schema.postTagTable).values(fill).returning();
         }
     }
+    console.log('posts count:', posts.length);
 
     let vote_v = [];
     for (const i in users) {
@@ -118,13 +123,11 @@ export default async (db: DB) => {
     while (vote_v.length < votes) {
         votes += (await db
             .insert(schema.postVoteTable)
-            .values(vote_v.slice(votes, votes + 10_000))
+            .values(vote_v.splice(0, 1000))
             .returning()).length
     }
 
-    console.log('user count:', users.length);
-    console.log('channel count:', channels.length);
-    console.log('posts count:', posts.length);
     console.log('votes count:', votes);
+    console.log('votes count:', vote_v.length);
     console.log('generated data');
 };
