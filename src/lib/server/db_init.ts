@@ -11,6 +11,34 @@ const pick_n = <T>(arr: T[], n: number): T[] => {
         .map(() => a.splice(rand(a.length), 1)[0]);
 };
 
+const buffer = <T>(fn: (buf: T[]) => Promise<any[]>, max_len: number = 10_000) => {
+    let buf: T[] = [];
+    let count = 0;
+    const o = {
+        push: async (...args: T[]) => {
+            if (args.length > max_len) {
+                while (args.length) {
+                    await o.push(...args.splice(0, max_len));
+                }
+            } else {
+                buf.push(...args);
+            }
+            if (buf.length >= max_len) {
+                count += (await fn(buf)).length;
+                buf = [];
+            }
+        },
+        finish: async () => {
+            if (buf.length) {
+                count += (await fn(buf)).length;
+                buf = [];
+            }
+            return count;
+        },
+    };
+    return o;
+};
+
 export default async (db: DB) => {
     console.log('running init');
     if ((await db.select().from(schema.userTable).limit(1)).length) {
@@ -18,7 +46,7 @@ export default async (db: DB) => {
         return;
     }
 
-    const userData = faker.helpers.uniqueArray(faker.word.sample, 300)
+    const userData = faker.helpers.uniqueArray(faker.word.sample, 2000)
     .map(username => ({
         username,
         profileImage: faker.image.avatar(),
@@ -107,27 +135,19 @@ export default async (db: DB) => {
     }
     console.log('posts count:', posts.length);
 
-    let vote_v = [];
+    const buf = buffer<schema.NewPostVote>(a => db.insert(schema.postVoteTable).values(a).returning());
     for (const i in users) {
         const user = users[i];
         for (const post of posts) {
-            vote_v.push({
+            await buf.push({
                 postId: post.id,
                 userId: user.id,
                 vote: Math.random() > .25 ? ('UP' as const) : ('DOWN' as const),
             });
         }
     }
-    
-    let votes = 0;
-    while (vote_v.length < votes) {
-        votes += (await db
-            .insert(schema.postVoteTable)
-            .values(vote_v.splice(0, 1000))
-            .returning()).length
-    }
+    const votes = await buf.finish();
 
     console.log('votes count:', votes);
-    console.log('votes count:', vote_v.length);
     console.log('generated data');
 };
