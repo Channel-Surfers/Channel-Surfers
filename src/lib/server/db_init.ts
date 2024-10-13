@@ -1,5 +1,5 @@
 import type { uuid } from '$lib/types';
-import { sql, eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import type { DB } from '.';
 import {
     channelTable,
@@ -8,7 +8,6 @@ import {
     followTable,
     postTable,
     postTagTable,
-    postVoteTable,
     publicChannelTable,
     subscriptionTable,
     userBlockTable,
@@ -16,7 +15,6 @@ import {
     type Channel,
     type ChannelTag,
     type NewComment,
-    type NewPostVote,
     type Post,
     type User,
 } from './db/schema';
@@ -35,34 +33,6 @@ const pick_n = <T>(arr: T[], n: number): T[] => {
         .map(() => a.splice(rand(a.length), 1)[0]);
 };
 
-const buffer = <T>(fn: (buf: T[]) => Promise<any[]>, max_len: number = 10_000) => {
-    let buf: T[] = [];
-    let count = 0;
-    const o = {
-        push: async (...args: T[]) => {
-            if (args.length > max_len) {
-                while (args.length) {
-                    await o.push(...args.splice(0, max_len));
-                }
-            } else {
-                buf.push(...args);
-            }
-            if (buf.length >= max_len) {
-                count += (await fn(buf)).length;
-                buf = [];
-            }
-        },
-        finish: async () => {
-            if (buf.length) {
-                count += (await fn(buf)).length;
-                buf = [];
-            }
-            return count;
-        },
-    };
-    return o;
-};
-
 const make_users = async (count: number) => {
     const user_data = faker.helpers.uniqueArray(faker.word.sample, count).map((username) => ({
         username,
@@ -77,31 +47,35 @@ const make_users = async (count: number) => {
 };
 
 const make_follows = async (users: User[]) => {
-    return await db.insert(followTable)
+    return await db
+        .insert(followTable)
         .values(
-            pick_n(users, Math.floor(users.length * .8))
-                .flatMap(u =>
-                    pick_n(users.filter(s => s.id !== u.id), rand(20, 1))
-                        .map(f => ({
-                            followerId: f.id,
-                            userId: u.id,
-                        }))
-                )
+            pick_n(users, Math.floor(users.length * 0.8)).flatMap((u) =>
+                pick_n(
+                    users.filter((s) => s.id !== u.id),
+                    rand(20, 1)
+                ).map((f) => ({
+                    followerId: f.id,
+                    userId: u.id,
+                }))
+            )
         )
         .returning();
 };
 
 const make_user_blocks = async (users: User[]) => {
-    return await db.insert(userBlockTable)
+    return await db
+        .insert(userBlockTable)
         .values(
-            pick_n(users, Math.floor(users.length * .5))
-                .flatMap(u =>
-                    pick_n(users.filter(s => s.id !== u.id), rand(5, 1))
-                        .map(b => ({
-                            blockedUserId: b.id,
-                            userId: u.id,
-                        }))
-                )
+            pick_n(users, Math.floor(users.length * 0.5)).flatMap((u) =>
+                pick_n(
+                    users.filter((s) => s.id !== u.id),
+                    rand(5, 1)
+                ).map((b) => ({
+                    blockedUserId: b.id,
+                    userId: u.id,
+                }))
+            )
         )
         .returning();
 };
@@ -181,23 +155,20 @@ const make_post_votes = async () => {
             );
     `);
 
-    return +(ret[1][0] as any).count;
+    // This type is super funky for some reason, so just cast it
+    return +(ret[1][0] as { count: string }).count;
 };
 
-const make_subscriptions = async (
-    users: User[],
-    channels: Channel[],
-) => {
-    return await db.insert(subscriptionTable)
+const make_subscriptions = async (users: User[], channels: Channel[]) => {
+    return await db
+        .insert(subscriptionTable)
         .values(
-            pick_n(users, Math.floor(users.length * .5))
-                .flatMap(u =>
-                    pick_n(channels, rand(Math.floor(channels.length * .75), 1))
-                        .map(c => ({
-                            channelId: c.id,
-                            userId: u.id,
-                        }))
-                )
+            pick_n(users, Math.floor(users.length * 0.5)).flatMap((u) =>
+                pick_n(channels, rand(Math.floor(channels.length * 0.75), 1)).map((c) => ({
+                    channelId: c.id,
+                    userId: u.id,
+                }))
+            )
         )
         .returning();
 };
@@ -266,17 +237,17 @@ const make_comments = async (posts: Post[], users: User[], count: number) => {
         };
     };
 
-    const comments = await db.insert(commentTable).values(Array(count).fill(0).map(new_comment)).returning();
+    const comments = await db
+        .insert(commentTable)
+        .values(Array(count).fill(0).map(new_comment))
+        .returning();
 
     let last_wave = comments;
     for (let i = 0; i < 5; ++i) {
         last_wave = await db
             .insert(commentTable)
-            .values(
-                pick_n(last_wave, Math.floor(count /= 2))
-                    .map(c => new_comment(c.id))
-            )
-            .returning()
+            .values(pick_n(last_wave, Math.floor((count /= 2))).map((c) => new_comment(c.id)))
+            .returning();
         comments.push(...last_wave);
     }
 
@@ -321,7 +292,8 @@ const make_comment_votes = async () => {
         --     );
     `);
 
-    return +(ret[1][0] as any).count;
+    // This type is super funky for some reason, so just cast it
+    return +(ret[1][0] as { count: string }).count;
 };
 
 export default async (_db: DB) => {
@@ -344,11 +316,17 @@ export default async (_db: DB) => {
 
     last = Date.now();
     const user_blocks = await make_user_blocks(users);
-    console.log(`Inserted ${user_blocks.length.toLocaleString()} user blocks in ${Date.now() - last}ms`);
+    console.log(
+        `Inserted ${user_blocks.length.toLocaleString()} user blocks in ${Date.now() - last}ms`
+    );
 
     last = Date.now();
     const { channels, channel_tags } = await make_channels(users, 40);
-    console.log(`Inserted ${channels.length.toLocaleString()} channels in ${Date.now() - last}ms`);
+    console.log(
+        `Inserted ${channels.length.toLocaleString()} channels with ${Object.values(channel_tags)
+            .reduce((a, b) => a + b.length, 0)
+            .toLocaleString()} tags in ${Date.now() - last}ms`
+    );
 
     last = Date.now();
     const posts = await make_posts(users, channels, channel_tags, 200);
@@ -356,11 +334,15 @@ export default async (_db: DB) => {
 
     last = Date.now();
     const subscriptions = await make_subscriptions(users, channels);
-    console.log(`Inserted ${subscriptions.length.toLocaleString()} subscriptions (avg of ${subscriptions.length / users.length} subs/user) in ${Date.now() - last}ms`);
+    console.log(
+        `Inserted ${subscriptions.length.toLocaleString()} subscriptions (avg of ${subscriptions.length / users.length} subs/user) in ${Date.now() - last}ms`
+    );
 
     last = Date.now();
     const post_vote_count = await make_post_votes();
-    console.log(`Inserted ${post_vote_count.toLocaleString()} post votes in ${Date.now() - last}ms`);
+    console.log(
+        `Inserted ${post_vote_count.toLocaleString()} post votes in ${Date.now() - last}ms`
+    );
 
     last = Date.now();
     const comments = await make_comments(posts, users, 500);
@@ -368,7 +350,9 @@ export default async (_db: DB) => {
 
     last = Date.now();
     const comment_vote_count = await make_comment_votes();
-    console.log(`Inserted ${comment_vote_count.toLocaleString()} comment votes in ${Date.now() - last}ms`);
+    console.log(
+        `Inserted ${comment_vote_count.toLocaleString()} comment votes in ${Date.now() - last}ms`
+    );
 
     console.log(`Init complete in ${Date.now() - start}ms`);
 };
