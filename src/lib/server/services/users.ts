@@ -100,3 +100,8 @@ export const userIsFollowing = async (db: DB, userId: string, followerId: string
         .where(and(eq(followTable.userId, userId), eq(followTable.followerId, followerId)));
     return follows.length == 1;
 };
+
+export const getUserByUsername = async (db: DB, username: string) => {
+    const [user] = await db.select().from(userTable).where(eq(userTable.username, username));
+    return user;
+};

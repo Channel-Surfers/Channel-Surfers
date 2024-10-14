@@ -2,20 +2,33 @@ import { error, json } from '@sveltejs/kit';
 import { Type, type Static } from '@sinclair/typebox';
 import type { RequestHandler } from './$types';
 import { Value } from '@sinclair/typebox/value';
+import { followUser } from '$lib/server/services/interactions';
+import { getDb } from '$lib/server';
+import { getUserByUsername } from '$lib/server/services/users';
 
-const followRequestBody = Type.Object({
-    userId: Type.String(),
-    followerId: Type.String(),
-});
-export type FollowRequestBody = Static<typeof followRequestBody>;
-export const POST: RequestHandler = async ({ request }) => {
-    let followRequest: FollowRequestBody;
+export const POST: RequestHandler = async ({ request, locals, params }) => {
+    if (!locals.user || !locals.session) throw error(403, 'Must be logged in to follow users');
+
+    const db = await getDb();
+
+    // get user by username
+    let user;
     try {
-        followRequest = Value.Parse(followRequestBody, request.body);
+        user = await getUserByUsername(db, params.username);
     } catch (e: unknown) {
-        if (e instanceof Error) {
-            return error(400, json([...Value.Errors(followRequestBody, request.body)]));
-        }
+        if (e instanceof Error) throw error(500, 'An unknown error occurred');
+        else throw e;
     }
-    return json({});
+    if (!followUser) {
+        throw error(404, `User of username ${params.username} could not be found`);
+    }
+    let follow;
+    try {
+    } catch (e: unknown) {
+        follow = await followUser(db, user.id, locals.user.id);
+        if (e instanceof Error) {
+            throw error(500, 'An unknown error occurred');
+        } else throw e;
+    }
+    return json(follow, { status: 201 });
 };
