@@ -9,13 +9,16 @@ import {
     postTable,
     postTagTable,
     publicChannelTable,
+    roleTable,
     subscriptionTable,
     userBlockTable,
+    userRoleTable,
     userTable,
     type Channel,
     type ChannelTag,
     type NewComment,
     type Post,
+    type Role,
     type User,
 } from './db/schema';
 import { faker } from '@faker-js/faker';
@@ -117,6 +120,57 @@ const make_channels = async (users: User[], count: number) => {
     }
 
     return { channels, channel_tags };
+};
+
+const make_roles = async (channels: Channel[]) => {
+    const perms = [
+        'canCreateRoles',
+        'canViewRoles',
+        'canEditRoles',
+        'canDeleteRoles',
+        'canAssignRoles',
+        'canSetMessageOfTheDay',
+        'canEditName',
+        'canSetImage',
+        'canViewUserTable',
+        'canEditTags',
+        'canSetGuidelines',
+        'canTimeoutUsers',
+        'canBanUsers',
+        'canViewBannedUsers',
+        'canUnbanUsers',
+        'canDeletePosts',
+        'canDeleteComments',
+        'canEditPostTags',
+        'canViewReports',
+        'canUpdateReports',
+        'canResolveReports',
+        'canRegisterEvents',
+        'canViewEvents',
+        'canEditEvents',
+        'canUnregisterEvents',
+    ] as const;
+
+    const perm_from_num = (n: number): { [key in (typeof perms)[number]]: boolean } =>
+        perms.reduce((a, b, i) => ({ ...a, [b]: ((n >> i) & 1) === 1 }), {}) as { [key in (typeof perms)[number]]: boolean };
+
+    const roles = channels.flatMap(channel => Array(rand(15, 5)).fill(0).map((_, i) => ({
+        channelId: channel.id,
+        title: faker.person.jobDescriptor(),
+        isOwner: false,
+        ranking: i,
+        ...perm_from_num(rand(2 ** perms.length)),
+    })));
+
+    const d = await db.insert(roleTable)
+        .values(roles)
+        .returning();
+
+    return d.reduce((a, b) => ({ ...a, [b.channelId]: a[b.channelId] ? a[b.channelId].concat([b]) : [b] }), {} as { [role: uuid]: Role[] });
+};
+
+const make_user_roles = async (users: User[], roles: { [role: uuid]: Role[] }) => {
+    return await db.insert(userRoleTable).values(Object.keys(roles).flatMap(cid => pick_n(users, rand(15, 5)).map(u => ({ userId: u.id, roleId: faker.helpers.arrayElement(roles[cid]).id })))).returning();
 };
 
 const make_post_votes = async () => {
@@ -306,6 +360,8 @@ export default async (_db: DB) => {
         return;
     }
 
+    const map_len = <V>(map: { [key: uuid]: V[] }): number => Object.values(map).reduce((a, b) => a + b.length, 0);
+
     let last = Date.now();
     const users = await make_users(2000);
     console.log(`Inserted ${users.length.toLocaleString()} users in ${Date.now() - last}ms`);
@@ -323,9 +379,7 @@ export default async (_db: DB) => {
     last = Date.now();
     const { channels, channel_tags } = await make_channels(users, 40);
     console.log(
-        `Inserted ${channels.length.toLocaleString()} channels with ${Object.values(channel_tags)
-            .reduce((a, b) => a + b.length, 0)
-            .toLocaleString()} tags in ${Date.now() - last}ms`
+        `Inserted ${channels.length.toLocaleString()} channels with ${map_len(channel_tags).toLocaleString()} tags in ${Date.now() - last}ms`
     );
 
     last = Date.now();
@@ -336,6 +390,18 @@ export default async (_db: DB) => {
     const subscriptions = await make_subscriptions(users, channels);
     console.log(
         `Inserted ${subscriptions.length.toLocaleString()} subscriptions (avg of ${subscriptions.length / users.length} subs/user) in ${Date.now() - last}ms`
+    );
+
+    last = Date.now();
+    const roles = await make_roles(channels);
+    console.log(
+        `Inserted ${map_len(roles).toLocaleString()} roles (avg of ${map_len(roles) / channels.length} roles/channel) in ${Date.now() - last}ms`
+    );
+
+    last = Date.now();
+    const user_roles = await make_user_roles(users, roles);
+    console.log(
+        `Inserted ${user_roles.length.toLocaleString()} user roles in ${Date.now() - last}ms`
     );
 
     last = Date.now();
