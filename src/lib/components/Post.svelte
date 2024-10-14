@@ -2,7 +2,11 @@
     import { PUBLIC_PREVIEW_HOST } from '$env/static/public';
 
     import * as Card from '$lib/shadcn/components/ui/card';
-    import * as Popover from '$lib/shadcn/components/ui/popover';
+    import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
+    import * as Dialog from '$lib/shadcn/components/ui/dialog';
+    import * as Select from '$lib/shadcn/components/ui/select';
+
+    import { Label } from '$lib/shadcn/components/ui/label';
     import { Badge } from '$lib/shadcn/components/ui/badge';
     import { Button } from '$lib/shadcn/components/ui/button';
     import { Skeleton } from '$lib/shadcn/components/ui/skeleton';
@@ -10,8 +14,8 @@
 
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
-    import Share2 from 'lucide-svelte/icons/share-2';
     import Play from 'lucide-svelte/icons/play';
+    import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical';
 
     import Score from './Score.svelte';
     import UserChannel from './UserChannel.svelte';
@@ -19,13 +23,18 @@
 
     import type { PostData } from '$lib/types';
     import { createEventDispatcher } from 'svelte';
+    import { toast } from 'svelte-sonner';
+    import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
+    import { Flag, Share2 } from 'lucide-svelte';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
+    export let signed_in: boolean = false;
     const dispatch = createEventDispatcher();
 
     let upvote_pressed = false;
     let downvote_pressed = false;
+    let report_dialog_open = false;
 
     const vote = (dir: 'up' | 'down') => {
         let new_state;
@@ -40,11 +49,70 @@
         dispatch('voteChange', voteChangeValue);
     };
 
+    const reportData = {
+        reason: undefined,
+        details: '',
+    };
+
+    const submitReport = async () => {
+        console.log(reportData);
+        const res = await fetch(`/api/post/${post!.id}/report`, {
+            method: 'POST',
+            body: JSON.stringify(reportData),
+            headers: {
+                'content-type': 'application/json',
+            },
+        });
+
+        if (res.ok) {
+            toast.success('Report submitted sucessfully!');
+            report_dialog_open = false;
+        } else {
+            toast.error('Unexpected error while submitting report.');
+        }
+    };
+
     let hovering = false;
     $: src = post
         ? `${PUBLIC_PREVIEW_HOST}/${post.videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`
         : '';
 </script>
+
+<Dialog.Root bind:open={report_dialog_open}>
+    <Dialog.Portal>
+        <Dialog.Content>
+            <Dialog.Header>
+                <Dialog.Title>Report Form</Dialog.Title>
+                <Dialog.Description>This action cannot be undone</Dialog.Description>
+            </Dialog.Header>
+            <div class="grid gap-2 py-2">
+                <Select.Root bind:selected={reportData.reason} portal={null}>
+                    <Select.Trigger class="w-[300px]">
+                        <Select.Value placeholder="What is the reason for the report?" />
+                    </Select.Trigger>
+                    <Select.Content>
+                        <Select.Item value="community">
+                            Post violates community guidelines
+                        </Select.Item>
+                        <Select.Item value="site">Post violates site guidelines</Select.Item>
+                    </Select.Content>
+                </Select.Root>
+            </div>
+            <div class="grid gap-2 py-2">
+                <Label for="Report details" class="text-left">Report Details</Label>
+                <Textarea
+                    placeholder="Add details here"
+                    name="details"
+                    bind:value={reportData.details}
+                    class="col-span-3"
+                />
+            </div>
+            <Dialog.Footer>
+                <Button type="submit" on:click={submitReport}>Submit Report</Button>
+            </Dialog.Footer>
+        </Dialog.Content>
+    </Dialog.Portal>
+</Dialog.Root>
 
 <Card.Root class="m-auto my-3 flex h-48 w-[800px] flex-row p-2">
     <div
@@ -99,18 +167,30 @@
         </Card.Footer>
     </div>
     <div class="flex flex-col items-center justify-between justify-self-end">
-        <Popover.Root>
-            <Popover.Trigger asChild let:builder>
+        <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild let:builder>
                 <Button builders={[builder]} variant="ghost" size="icon" disabled={!post}>
                     <div class:animate-pulse={!post}>
-                        <Share2 class="h-5 w-5" />
+                        <EllipsisVertical class="h-5 w-5" />
                     </div>
                 </Button>
-            </Popover.Trigger>
-            <Popover.Content>
-                <h1>Not yet implemented!</h1>
-            </Popover.Content>
-        </Popover.Root>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content class="w-56">
+                <DropdownMenu.Item>
+                    <Share2 fill="currentColor" class="mr-2 h-4 w-4" />
+                    <span>Share</span>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                    class="text-red-600"
+                    on:click={() => (report_dialog_open = true)}
+                    disabled={!signed_in}
+                >
+                    <Flag fill="currentColor" class="mr-2 h-4 w-4" />
+                    <span>Report</span>
+                </DropdownMenu.Item>
+                <DropdownMenu.Group></DropdownMenu.Group>
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
