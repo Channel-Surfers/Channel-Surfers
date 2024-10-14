@@ -173,6 +173,69 @@ const make_user_roles = async (users: User[], roles: { [role: uuid]: Role[] }) =
     return await db.insert(userRoleTable).values(Object.keys(roles).flatMap(cid => pick_n(users, rand(15, 5)).map(u => ({ userId: u.id, roleId: faker.helpers.arrayElement(roles[cid]).id })))).returning();
 };
 
+const make_subscriptions = async (users: User[], channels: Channel[]) => {
+    return await db
+        .insert(subscriptionTable)
+        .values(
+            pick_n(users, Math.floor(users.length * 0.5)).flatMap((u) =>
+                pick_n(channels, rand(Math.floor(channels.length * 0.75), 1)).map((c) => ({
+                    channelId: c.id,
+                    userId: u.id,
+                }))
+            )
+        )
+        .returning();
+};
+
+const make_posts = async (
+    users: User[],
+    channels: Channel[],
+    channel_tags: { [id: uuid]: ChannelTag[] },
+    count: number
+) => {
+    const video_ids = [
+        'e0245338-7c04-4a6c-b44f-0e279a849cf5',
+        'ee59e892-7838-46d1-876d-49efb4feb7ba',
+        '6df184ad-6175-4dbb-88b0-7bb83c88e74c',
+        '9dae1ca5-48e8-4fed-81e7-90dff6ca6d51',
+        'ba0aa315-365c-4f90-b72a-3ddacee81381',
+        '0164c7a6-2b48-4c96-8e02-34907666ec77',
+    ];
+    const posts = await db
+        .insert(postTable)
+        .values(
+            Array(count)
+                .fill(0)
+                .map(() => ({
+                    title: faker.word.words({ count: { min: 8, max: 15 } }),
+                    description: faker.lorem.paragraphs({ min: 5, max: 20 }, '\n\n'),
+                    channelId: channels[rand(channels.length)].id,
+                    createdOn: faker.date.past({ years: 3 }),
+                    createdBy: users[rand(users.length)].id,
+                    videoId: video_ids[rand(video_ids.length)],
+                    altText: faker.lorem.sentence(),
+                }))
+        )
+        .returning();
+
+    for (const post of posts) {
+        const fill = pick_n(
+            channel_tags[post.channelId],
+            rand(channel_tags[post.channelId].length, 1)
+        ).map((tag) => {
+            return {
+                postId: post.id,
+                tagId: tag.id,
+            };
+        });
+        if (fill.length) {
+            await db.insert(postTagTable).values(fill).returning();
+        }
+    }
+
+    return posts;
+};
+
 const make_post_votes = async () => {
     // Build votes through a single query rather than drizzle.  This is a
     // little more complex, but better since we are not sending as much data to
@@ -213,79 +276,19 @@ const make_post_votes = async () => {
     return +(ret[1][0] as { count: string }).count;
 };
 
-const make_subscriptions = async (users: User[], channels: Channel[]) => {
-    return await db
-        .insert(subscriptionTable)
-        .values(
-            pick_n(users, Math.floor(users.length * 0.5)).flatMap((u) =>
-                pick_n(channels, rand(Math.floor(channels.length * 0.75), 1)).map((c) => ({
-                    channelId: c.id,
-                    userId: u.id,
-                }))
-            )
-        )
-        .returning();
-};
-
-const make_posts = async (
-    users: User[],
-    channels: Channel[],
-    channel_tags: { [id: uuid]: ChannelTag[] },
-    count: number
-) => {
-    const video_ids = [
-        'e0245338-7c04-4a6c-b44f-0e279a849cf5',
-        'ee59e892-7838-46d1-876d-49efb4feb7ba',
-        '6df184ad-6175-4dbb-88b0-7bb83c88e74c',
-        '9dae1ca5-48e8-4fed-81e7-90dff6ca6d51',
-        'ba0aa315-365c-4f90-b72a-3ddacee81381',
-        '0164c7a6-2b48-4c96-8e02-34907666ec77',
-    ];
-    const posts = await db
-        .insert(postTable)
-        .values(
-            Array(count)
-                .fill(0)
-                .map(() => ({
-                    title: faker.word.words({ count: { min: 8, max: 15 } }),
-                    description: faker.lorem.paragraphs({ min: 5, max: 20 }, '\n\n'),
-                    channelId: channels[rand(channels.length)].id,
-                    createdAt: faker.date.recent({ days: 20 }),
-                    createdBy: users[rand(users.length)].id,
-                    videoId: video_ids[rand(video_ids.length)],
-                    altText: faker.lorem.sentence(),
-                }))
-        )
-        .returning();
-
-    for (const post of posts) {
-        const fill = pick_n(
-            channel_tags[post.channelId],
-            rand(channel_tags[post.channelId].length, 1)
-        ).map((tag) => {
-            return {
-                postId: post.id,
-                tagId: tag.id,
-            };
-        });
-        if (fill.length) {
-            await db.insert(postTagTable).values(fill).returning();
-        }
-    }
-
-    return posts;
-};
-
 // Note: `count` is the number of top-level comments.  More than `count`
 // comments will actually be generated
 //
 // The actual lenth can be calculated as
 // sum _{i=0} ^5 floor(count / 2^i)
 const make_comments = async (posts: Post[], users: User[], count: number) => {
+    const now = Date.now();
     const new_comment = (replyTo: uuid | null = null): NewComment => {
+        const post = faker.helpers.arrayElement(posts);
         return {
-            postId: faker.helpers.arrayElement(posts).id,
+            postId: post.id,
             creatorId: faker.helpers.arrayElement(users).id,
+            createdOn: faker.date.between({ from: post.createdOn, to: now }),
             content: faker.lorem.paragraphs({ min: 1, max: 10 }, '\n\n'),
             replyTo: replyTo || null,
         };
