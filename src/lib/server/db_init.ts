@@ -153,25 +153,42 @@ const make_roles = async (channels: Channel[]) => {
     ] as const;
 
     const perm_from_num = (n: number): { [key in (typeof perms)[number]]: boolean } =>
-        perms.reduce((a, b, i) => ({ ...a, [b]: ((n >> i) & 1) === 1 }), {}) as { [key in (typeof perms)[number]]: boolean };
+        perms.reduce((a, b, i) => ({ ...a, [b]: ((n >> i) & 1) === 1 }), {}) as {
+            [key in (typeof perms)[number]]: boolean;
+        };
 
-    const roles = channels.flatMap(channel => Array(rand(15, 5)).fill(0).map((_, i) => ({
-        channelId: channel.id,
-        title: faker.person.jobDescriptor(),
-        isOwner: false,
-        ranking: i,
-        ...perm_from_num(rand(2 ** perms.length)),
-    })));
+    const roles = channels.flatMap((channel) =>
+        Array(rand(15, 5))
+            .fill(0)
+            .map((_, i) => ({
+                channelId: channel.id,
+                title: faker.person.jobDescriptor(),
+                isOwner: false,
+                ranking: i,
+                ...perm_from_num(rand(2 ** perms.length)),
+            }))
+    );
 
-    const d = await db.insert(roleTable)
-        .values(roles)
-        .returning();
+    const d = await db.insert(roleTable).values(roles).returning();
 
-    return d.reduce((a, b) => ({ ...a, [b.channelId]: a[b.channelId] ? a[b.channelId].concat([b]) : [b] }), {} as { [role: uuid]: Role[] });
+    return d.reduce(
+        (a, b) => ({ ...a, [b.channelId]: a[b.channelId] ? a[b.channelId].concat([b]) : [b] }),
+        {} as { [role: uuid]: Role[] }
+    );
 };
 
 const make_user_roles = async (users: User[], roles: { [role: uuid]: Role[] }) => {
-    return await db.insert(userRoleTable).values(Object.keys(roles).flatMap(cid => pick_n(users, rand(15, 5)).map(u => ({ userId: u.id, roleId: faker.helpers.arrayElement(roles[cid]).id })))).returning();
+    return await db
+        .insert(userRoleTable)
+        .values(
+            Object.keys(roles).flatMap((cid) =>
+                pick_n(users, rand(15, 5)).map((u) => ({
+                    userId: u.id,
+                    roleId: faker.helpers.arrayElement(roles[cid]).id,
+                }))
+            )
+        )
+        .returning();
 };
 
 const make_subscriptions = async (users: User[], channels: Channel[]) => {
@@ -289,7 +306,10 @@ const make_comments = async (posts: Post[], users: User[], count: number) => {
         return {
             postId: post.id,
             creatorId: faker.helpers.arrayElement(users).id,
-            createdOn: faker.date.between({ from: replyTo ? replyTo.createdOn : post.createdOn, to: now }),
+            createdOn: faker.date.between({
+                from: replyTo ? replyTo.createdOn : post.createdOn,
+                to: now,
+            }),
             content: faker.lorem.paragraphs({ min: 1, max: 10 }, '\n\n'),
             replyTo: replyTo?.id || null,
         };
@@ -364,7 +384,8 @@ export default async (_db: DB) => {
         return;
     }
 
-    const map_len = <V>(map: { [key: uuid]: V[] }): number => Object.values(map).reduce((a, b) => a + b.length, 0);
+    const map_len = <V>(map: { [key: uuid]: V[] }): number =>
+        Object.values(map).reduce((a, b) => a + b.length, 0);
 
     let last = Date.now();
     const users = await make_users(2000);
