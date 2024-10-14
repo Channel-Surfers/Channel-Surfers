@@ -16,6 +16,7 @@ import {
     userTable,
     type Channel,
     type ChannelTag,
+    type Comment,
     type NewComment,
     type Post,
     type Role,
@@ -283,27 +284,27 @@ const make_post_votes = async () => {
 // sum _{i=0} ^5 floor(count / 2^i)
 const make_comments = async (posts: Post[], users: User[], count: number) => {
     const now = Date.now();
-    const new_comment = (replyTo: uuid | null = null): NewComment => {
+    const new_comment = (replyTo: Comment | null): NewComment => {
         const post = faker.helpers.arrayElement(posts);
         return {
             postId: post.id,
             creatorId: faker.helpers.arrayElement(users).id,
-            createdOn: faker.date.between({ from: post.createdOn, to: now }),
+            createdOn: faker.date.between({ from: replyTo ? replyTo.createdOn : post.createdOn, to: now }),
             content: faker.lorem.paragraphs({ min: 1, max: 10 }, '\n\n'),
-            replyTo: replyTo || null,
+            replyTo: replyTo?.id || null,
         };
     };
 
     const comments = await db
         .insert(commentTable)
-        .values(Array(count).fill(0).map(new_comment))
+        .values(Array(count).fill(null).map(new_comment))
         .returning();
 
     let last_wave = comments;
     for (let i = 0; i < 5; ++i) {
         last_wave = await db
             .insert(commentTable)
-            .values(pick_n(last_wave, Math.floor((count /= 2))).map((c) => new_comment(c.id)))
+            .values(pick_n(last_wave, Math.floor((count /= 2))).map((c) => new_comment(c)))
             .returning();
         comments.push(...last_wave);
     }
