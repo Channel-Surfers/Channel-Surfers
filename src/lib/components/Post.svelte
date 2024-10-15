@@ -26,6 +26,8 @@
     import { toast } from 'svelte-sonner';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
     import { Flag, Share2 } from 'lucide-svelte';
+    import { elapsed_time } from '$lib/util';
+    import Elapsed from './Elapsed.svelte';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -76,6 +78,7 @@
     $: src = post
         ? `${PUBLIC_PREVIEW_HOST}/${post.videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`
         : '';
+
 </script>
 
 <Dialog.Root bind:open={report_dialog_open}>
@@ -139,8 +142,15 @@
     <div class="flex h-full w-2/5 grow flex-col justify-between">
         <Card.Header class="p-2 px-6">
             <Card.Title class="space-y-1">
-                <div class="mb-4">
-                    <UserChannel poster={post ? post.poster : undefined} />
+                <div class="flex justify-between">
+                    <div class="mb-4 grow">
+                        <UserChannel poster={post ? post.poster : undefined} />
+                    </div>
+                    <div class="text-slate-500 text-sm">
+                        {#if post}
+                            <Elapsed date={post.createdOn} />
+                        {/if}
+                    </div>
                 </div>
                 {#if post}
                     <a href="/post/{post.id}">
