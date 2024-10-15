@@ -84,7 +84,7 @@
                 <div class="flex max-w-full gap-1.5 overflow-scroll p-2">
                     {#each data.tags as tag}
                         <Badge style="background: {tag.color}">
-                        {tag.name}
+                            {tag.name}
                         </Badge>
                     {/each}
                 </div>

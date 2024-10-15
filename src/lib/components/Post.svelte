@@ -20,14 +20,13 @@
     import Score from './Score.svelte';
     import UserChannel from './UserChannel.svelte';
     import Player from './Player.svelte';
+    import Elapsed from './Elapsed.svelte';
 
     import type { PostData } from '$lib/types';
     import { createEventDispatcher } from 'svelte';
     import { toast } from 'svelte-sonner';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
     import { Flag, Share2 } from 'lucide-svelte';
-    import { elapsed_time } from '$lib/util';
-    import Elapsed from './Elapsed.svelte';
 
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
@@ -78,7 +77,6 @@
     $: src = post
         ? `${PUBLIC_PREVIEW_HOST}/${post.videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`
         : '';
-
 </script>
 
 <Dialog.Root bind:open={report_dialog_open}>
@@ -146,7 +144,7 @@
                     <div class="mb-4 grow">
                         <UserChannel poster={post ? post.poster : undefined} />
                     </div>
-                    <div class="text-slate-500 text-sm">
+                    <div class="text-sm text-slate-500">
                         {#if post}
                             <Elapsed date={post.createdOn} />
                         {/if}
