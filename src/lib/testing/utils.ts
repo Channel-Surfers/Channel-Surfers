@@ -22,7 +22,7 @@ for (const tableName in db._.tableNamesMap) {
 }
 
 export const mustGenerate = <T>(generated: T | null) => {
-    if (!generated) process.exit(1);
+    if (!generated) throw new Error('Data was not generated');
     return generated;
 };
 
