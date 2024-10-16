@@ -1,9 +1,7 @@
 import { createDb, type DB } from '$lib/server';
-import { publicChannelTable } from '$lib/server/db/public.channels.sql';
 import { tables } from '$lib/server/db/schema';
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { Mutex } from 'async-mutex';
-import { sql } from 'drizzle-orm';
 
 type DbStateGenerator<T> = (db: DB) => Promise<T>;
 type TestFunc<T> = (args: { db: DB; generated?: Awaited<T> }) => Promise<void>;
