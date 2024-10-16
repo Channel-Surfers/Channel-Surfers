@@ -7,7 +7,7 @@ import { postTable } from '../db/posts.sql';
 import { getCommentTree, getPosts, getPostStatistics } from './content';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { commentTable } from '../db/comments.sql';
-import { comment } from 'postcss';
+//import { comment } from 'postcss';
 
 const generateStatContext = async (db: DB) => {
     const [creator] = await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning();
@@ -93,58 +93,83 @@ const generateStatContext = async (db: DB) => {
     };
 };
 
-
 const generateComments = async (db: DB) => {
-    const [creator] = await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning();
+    const [creator1] = await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning();
     const [creator2] = await db.insert(userTable).values({ username: 'AwesomeGuy1' }).returning();
     const [creator3] = await db.insert(userTable).values({ username: 'AwesomeGuy2' }).returning();
     const [creator4] = await db.insert(userTable).values({ username: 'AwesomeGuy3' }).returning();
 
     const [channel] = await db
         .insert(channelTable)
-        .values({ name: 'Channel-Surfers', createdBy: creator.id })
+        .values({ name: 'Channel-Surfers', createdBy: creator1.id })
         .returning();
 
     const [post1] = await db
         .insert(postTable)
-        .values([
-            { channelId: channel.id, createdBy: creator.id, title: 'Awesome post 1', videoId: '' }
-        ])
+        .values({
+            channelId: channel.id,
+            createdBy: creator1.id,
+            title: 'Awesome post 1',
+            videoId: '',
+        })
         .returning();
 
-    const January1 = new Date(); January1.setMonth(1); January1.setDate(1);
-    const January2 = new Date(); January2.setMonth(1); January2.setDate(2);
-    const January3 = new Date(); January3.setMonth(1); January3.setDate(3);
-    const January4 = new Date(); January4.setMonth(1); January4.setDate(4);
-
+    const January1 = new Date('January 1, 2024 03:24:00');
+    const January2 = new Date('January 2, 2024 03:24:00');
+    const January3 = new Date('January 3, 2024 03:24:00');
+    const January4 = new Date('January 4, 2024 03:24:00');
 
     const [comment1, comment2] = await db
         .insert(commentTable)
         .values([
-            {content: "Awesome Video!", creatorId: creator.id, postId: post1.id, replyTo: null, createdOn: January1},
-            {content: "I loved every second of this", creatorId: creator2.id, postId: post1.id, replyTo: null, createdOn: January2},
+            {
+                content: 'Awesome Video!',
+                creatorId: creator1.id,
+                postId: post1.id,
+                replyTo: null,
+                createdOn: January1,
+            },
+            {
+                content: 'I loved every second of this',
+                creatorId: creator2.id,
+                postId: post1.id,
+                replyTo: null,
+                createdOn: January2,
+            },
         ])
         .returning();
 
     const [comment3, comment4] = await db
-    .insert(commentTable)
-    .values([
-        {content: "Me too!", creatorId: creator3.id, postId: post1.id, replyTo: comment2.id, createdOn: January3},
-        {content: "I love your pfp!", creatorId: creator4.id, postId: post1.id, replyTo: comment2.id, createdOn: January4},
-    ])
-    .returning();
+        .insert(commentTable)
+        .values([
+            {
+                content: 'Me too!',
+                creatorId: creator3.id,
+                postId: post1.id,
+                replyTo: comment2.id,
+                createdOn: January3,
+            },
+            {
+                content: 'I love your pfp!',
+                creatorId: creator4.id,
+                postId: post1.id,
+                replyTo: comment2.id,
+                createdOn: January4,
+            },
+        ])
+        .returning();
 
     return {
-        creator,
+        creator1,
         creator2,
-        creator3, 
+        creator3,
         creator4,
         channel,
         post1,
         comment1,
         comment2,
-        comment3, 
-        comment4
+        comment3,
+        comment4,
     };
 };
 
@@ -208,18 +233,17 @@ describe.concurrent('content suite', () => {
     test('Comment Tree Working Successfully', async ({ expect }) => {
         const { db, generated } = await createTestingDb(generateComments);
 
-        const { post1, creator, creator2, creator3, creator4  } = mustGenerate(generated);
-        const { comment1, comment2, comment3, comment4} = mustGenerate(generated);
+        const { post1, creator3 } = mustGenerate(generated);
+        const { comment1, comment2, comment3 } = mustGenerate(generated);
 
         const commentTree = await getCommentTree(db, post1.id);
 
-        
         expect(commentTree.length).toStrictEqual(2);
         expect(commentTree[0].content).toStrictEqual(comment1.content);
         expect(commentTree[1].content).toStrictEqual(comment2.content);
+        expect(commentTree[0].children?.length).toStrictEqual(0);
         expect(commentTree[1].children?.length).toStrictEqual(2);
         expect(commentTree[1].children![0].content).toStrictEqual(comment3.content);
         expect(commentTree[1].children![0].user).toStrictEqual(creator3.id);
-        
     });
 });

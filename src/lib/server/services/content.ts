@@ -303,14 +303,9 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
                 content: b.comment.content,
                 upvotes: 0,
                 downvotes: 0,
-                children: [] 
-            }))
+                children: [],
+            })),
     }));
-    
-
-    //console.log(CommentTree);
-
-    //console.log(CommentTree[0].children);
 
     return CommentTree;
 };
