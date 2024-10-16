@@ -14,7 +14,7 @@
 </script>
 
 <Tooltip.Root openDelay={5}>
-    <Tooltip.Trigger>
+    <Tooltip.Trigger class="cursor-default">
         <div class="text-sm text-slate-500">
             {time}
         </div>

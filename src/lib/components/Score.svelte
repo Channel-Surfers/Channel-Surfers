@@ -22,7 +22,7 @@
 </script>
 
 <Tooltip.Root openDelay={5}>
-    <Tooltip.Trigger class={clazz}>
+    <Tooltip.Trigger class="{clazz} cursor-default">
         <span class="small-caps">{humanise(Math.abs(upvotes - downvotes))}</span>
     </Tooltip.Trigger>
     <Tooltip.Content {side}>

@@ -115,9 +115,9 @@
     </Dialog.Portal>
 </Dialog.Root>
 
-<Card.Root class="m-auto my-3 flex h-48 w-[800px] flex-row p-2">
+<Card.Root class="m-auto my-3 flex w-[800px] flex-row p-2">
     <div
-        class="relative h-full w-2/5"
+        class="relative m-auto h-full w-2/5"
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
         role="img"
@@ -134,44 +134,44 @@
             >
                 <Play fill="white" size="48" />
             </button>
-            <img {src} alt="" class="h-full w-full rounded-lg object-cover" />
+            <img {src} alt="" class="h-full w-full rounded-lg" />
         {/if}
     </div>
     <div class="flex h-full w-2/5 grow flex-col justify-between">
-        <Card.Header class="p-2 px-6">
+        <Card.Header class="p-2 pl-6">
             <Card.Title class="space-y-1">
-                <div class="flex justify-between">
-                    <div class="mb-4 grow">
-                        <UserChannel poster={post ? post.poster : undefined} />
-                    </div>
-                    <div class="text-sm text-slate-500">
-                        {#if post}
-                            <Elapsed date={post.createdOn} />
-                        {/if}
-                    </div>
+                <div class="mb-2">
+                    <UserChannel poster={post ? post.poster : undefined} />
                 </div>
                 {#if post}
-                    <a href="/post/{post.id}">
-                        <h1 class="text-ellipse mt-3 w-full text-pretty">{post.title}</h1>
-                    </a>
+                    <h1 class="text-ellipse w-full text-pretty grow">
+                        <a href="/post/{post.id}">{post.title}</a>
+                    </h1>
                 {:else}
-                    <Skeleton class="mt-3 h-5 w-full" />
+                    <Skeleton class="h-5 w-full" />
                     <Skeleton class="h-5 w-2/3" />
                 {/if}
             </Card.Title>
         </Card.Header>
-        <Card.Footer class="mt-2 flex gap-1.5 p-2 px-6">
-            {#if post}
-                {#if post.tags}
-                    {#each post.tags as badge}
-                        <Badge>{badge}</Badge>
-                    {/each}
+        <Card.Footer class="mt-2 gap-1.5 pb-2 px-6 flex flex-col items-start">
+            <div class="text-sm pt-0 mt-0 text-slate-500">
+                {#if post}
+                    <Elapsed date={post.createdOn} />
                 {/if}
-            {:else}
-                <Skeleton class="h-6 w-[50px] rounded-full" />
-                <Skeleton class="h-6 w-[50px] rounded-full" />
-                <Skeleton class="h-6 w-[50px] rounded-full" />
-            {/if}
+            </div>
+            <div class="flex gap-1.5">
+                {#if post}
+                    {#if post.tags}
+                        {#each post.tags as badge}
+                            <Badge>{badge}</Badge>
+                        {/each}
+                    {/if}
+                {:else}
+                    <Skeleton class="h-6 w-[50px] rounded-full" />
+                    <Skeleton class="h-6 w-[50px] rounded-full" />
+                    <Skeleton class="h-6 w-[50px] rounded-full" />
+                {/if}
+            </div>
         </Card.Footer>
     </div>
     <div class="flex flex-col items-center justify-between justify-self-end">
