@@ -4,7 +4,7 @@
     import type { PosterData } from '$lib/types';
 
     export let poster: PosterData | undefined;
- </script>
+</script>
 
 <div class="flex items-center space-x-2">
     {#if poster}
@@ -29,7 +29,7 @@
                     c/{poster.channel.name}
                 </a>
             </p>
-            <p class="w-4/5 text-muted-foreground text-sm">
+            <p class="w-4/5 text-sm text-muted-foreground">
                 <a
                     href="/u/{poster.user.name}"
                     class="decoration-slate-700 underline-offset-2 hover:underline"
@@ -38,7 +38,7 @@
                 </a>
             </p>
         {:else}
-            <Skeleton class="h-3 mb-1 w-1/3" />
+            <Skeleton class="mb-1 h-3 w-1/3" />
             <Skeleton class="h-3 w-1/5" />
         {/if}
     </div>

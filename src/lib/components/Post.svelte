@@ -144,7 +144,7 @@
                     <UserChannel poster={post ? post.poster : undefined} />
                 </div>
                 {#if post}
-                    <h1 class="text-ellipse w-full text-pretty grow">
+                    <h1 class="text-ellipse w-full grow text-pretty">
                         <a href="/post/{post.id}">{post.title}</a>
                     </h1>
                 {:else}
@@ -153,8 +153,8 @@
                 {/if}
             </Card.Title>
         </Card.Header>
-        <Card.Footer class="mt-2 gap-1.5 pb-2 px-6 flex flex-col items-start">
-            <div class="text-sm pt-0 mt-0 text-slate-500">
+        <Card.Footer class="mt-2 flex flex-col items-start gap-1.5 px-6 pb-2">
+            <div class="mt-0 pt-0 text-sm text-slate-500">
                 {#if post}
                     <Elapsed date={post.createdOn} />
                 {/if}
