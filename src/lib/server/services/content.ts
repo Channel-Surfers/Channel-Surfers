@@ -272,7 +272,7 @@ export const getPostStatistics = async (db: DB) => {
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
 
-export const getCommentTree = async (db: DB, post_id: string): Promise<CommentData> => {
+export const getCommentTree = async (db: DB, post_id: string): Promise<CommentData[]> => {
     const firstLevelComments = await db
         .select()
         .from(postTable)
@@ -281,12 +281,6 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
         .orderBy(commentTable.createdOn)
         .limit(PAGE_SIZE);
 
-    console.log(
-        firstLevelComments.length +
-            ' top-level comment' +
-            (firstLevelComments.length != 1 ? 's' : '') +
-            ' on this post.'
-    );
     const firstLevelCommentsIds = firstLevelComments.map((p) => p.comment.id);
 
     const secondLevelComments = await db
@@ -295,45 +289,30 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
         .where(and(eq(postTable.id, post_id), inArray(commentTable.replyTo, firstLevelCommentsIds)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
         .orderBy(commentTable.createdOn)
-        .limit(PAGE_SIZE / 2);
+        .limit(Math.floor(PAGE_SIZE / 2));
 
-    console.log(
-        secondLevelComments.length +
-            ' second-level comment' +
-            (secondLevelComments.length != 1 ? 's' : '') +
-            ' on this post.'
-    );
-
-    // Now convert into commentData Components
-    const commentDataItems = [];
-
-    // First loop over first tier comments
-    for (let i = 0; i < firstLevelComments.length; i++) {
-        const currComment = firstLevelComments[i].comment;
-        //const commenterUserData = await getUserById(db, currComment.creatorId)
-        const currentCommentData: CommentData = {
-            user: currComment.creatorId,
-            content: currComment.content,
-            downvotes: 0,
-            upvotes: 0,
-            children: [],
-        };
-
-        commentDataItems.push(currentCommentData);
-    }
-    console.log(firstLevelComments);
-    console.log(secondLevelComments);
-
-    //console.log(commentDataItems)
-    const cc = firstLevelComments.map((c) => ({
-        comment: c,
-        children: secondLevelComments.filter((b) => b.comment.replyTo === c.comment.id),
+    const CommentTree = firstLevelComments.map((c) => ({
+        user: c.comment.creatorId,
+        content: c.comment.content,
+        upvotes: 0,
+        downvotes: 0,
+        children: secondLevelComments
+            .filter((b) => b.comment.replyTo === c.comment.id)
+            .map((b) => ({
+                user: b.comment.creatorId,
+                content: b.comment.content,
+                upvotes: 0,
+                downvotes: 0,
+                children: [] 
+            }))
     }));
+    
 
-    console.log(JSON.stringify(cc, null, 4));
+    //console.log(CommentTree);
 
-    // Now every item in postsArray has a post + comment that share id + postId   meaning
-    throw 'oops';
+    //console.log(CommentTree[0].children);
+
+    return CommentTree;
 };
 
 export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {

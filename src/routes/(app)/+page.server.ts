@@ -6,8 +6,7 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async () => {
     const db = await getDb();
 
-    //await getCommentTree(db, "048754ed-d41e-4dfe-9db1-09ad55f2eeee");
-    await getCommentTree(db, '08171b82-f8bc-4d67-a007-a41440196c76');
+    await getCommentTree(db, '03e55964-a94d-4a30-b64d-453026048a0d');
 
     return {
         initial_posts: await getPosts(db, 0, {
