@@ -1,5 +1,5 @@
-import { describe, test } from 'vitest';
-import { mustGenerate, withDb } from '$lib/testing/utils';
+import { describe } from 'vitest';
+import { mustGenerate, testWithDb } from '$lib/testing/utils';
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
@@ -92,8 +92,9 @@ const generateStatContext = async (db: DB) => {
 };
 
 describe.concurrent('content suite', () => {
-    test('post list contains correct data', async ({ expect }) => {
-        await withDb(async ({ db, generated }) => {
+    testWithDb(
+        'post list contains correct data',
+        async ({ expect, db, generated }) => {
             const gen = mustGenerate(generated);
 
             const [a, b, ...rest] = await getPosts(db, 0, {
@@ -127,11 +128,13 @@ describe.concurrent('content suite', () => {
             expect(p2.poster.user.name).toStrictEqual(gen.creator.username);
             expect(p2.poster.channel.id).toStrictEqual(gen.channel.id);
             expect(p2.poster.channel.name).toStrictEqual(gen.channel.name);
-        }, generateStatContext);
-    });
+        },
+        generateStatContext
+    );
 
-    test('site statistics is calculated correctly', async ({ expect }) => {
-        await withDb(async ({ db, generated }) => {
+    testWithDb(
+        'site statistics is calculated correctly',
+        async ({ expect, db, generated }) => {
             const { votes } = mustGenerate(generated);
 
             const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
@@ -143,6 +146,7 @@ describe.concurrent('content suite', () => {
             expect(numberOfDownvotes).toStrictEqual(
                 votes.downvotes1.length + votes.downvotes2.length
             );
-        }, generateStatContext);
-    });
+        },
+        generateStatContext
+    );
 });
