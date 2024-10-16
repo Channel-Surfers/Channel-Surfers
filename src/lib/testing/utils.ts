@@ -16,6 +16,11 @@ const startedContainer = await container.start();
 const db = await createDb(startedContainer.getConnectionUri());
 const lock = new Mutex();
 
+const tableNames: string[] = [];
+for (const tableName in db._.tableNamesMap) {
+    if (tableName != '') tableNames.push(tableName);
+}
+
 export const mustGenerate = <T>(generated: T | null) => {
     if (!generated) process.exit(1);
     return generated;
@@ -28,10 +33,6 @@ export const testWithDb = <T>(
 ) => {
     test(name, async ({ expect }) => {
         await lock.runExclusive(async () => {
-            const tableNames = [];
-            for (const tableName in db._.tableNamesMap) {
-                if (tableName != '') tableNames.push(tableName);
-            }
             const query = `TRUNCATE TABLE ${tableNames
                 .map((tn) => tn.split('.'))
                 .map(([schema, tn]) => `"${schema}"."${tn}"`)
