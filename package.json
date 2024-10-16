@@ -20,6 +20,7 @@
         "db:start": "docker run --rm --name surf-dev-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=dev -d -p 5432:5432 docker.io/postgres"
     },
     "devDependencies": {
+        "@faker-js/faker": "^9.0.3",
         "@playwright/test": "^1.28.1",
         "@sveltejs/adapter-auto": "^3.0.0",
         "@sveltejs/kit": "^2.0.0",
