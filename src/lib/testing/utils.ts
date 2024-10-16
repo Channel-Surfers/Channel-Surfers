@@ -1,7 +1,7 @@
 import { createDb, type DB } from '$lib/server';
-import { tables } from '$lib/server/db/schema';
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { Mutex } from 'async-mutex';
+import { sql } from 'drizzle-orm';
 import { test, type ExpectStatic } from 'vitest';
 
 type DbStateGenerator<T> = (db: DB) => Promise<T>;
@@ -28,11 +28,15 @@ export const testWithDb = <T>(
 ) => {
     test(name, async ({ expect }) => {
         await lock.runExclusive(async () => {
-            await db.transaction(async (tx) => {
-                for (const table of tables) {
-                    await tx.delete(table);
-                }
-            });
+            const tableNames = [];
+            for (const tableName in db._.tableNamesMap) {
+                if (tableName != '') tableNames.push(tableName);
+            }
+            const query = `TRUNCATE TABLE ${tableNames
+                .map((tn) => tn.split('.'))
+                .map(([schema, tn]) => `"${schema}"."${tn}"`)
+                .join(', ')} RESTART IDENTITY CASCADE;`;
+            await db.execute(sql.raw(query));
 
             const generated = generator ? await generator(db) : undefined;
 
