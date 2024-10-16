@@ -15,7 +15,7 @@ export async function getDb(): Promise<DB> {
     if (!db) {
         db = await createDb(POSTGRES_CONNECTION_STRING);
         if (dev) {
-            db_init(db);
+            await db_init(db);
         }
     }
     return db;
