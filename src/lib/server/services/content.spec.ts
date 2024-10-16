@@ -1,5 +1,5 @@
 import { describe, test } from 'vitest';
-import { createTestingDb, mustGenerate } from '$lib/testing/utils';
+import { mustGenerate, withDb } from '$lib/testing/utils';
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
@@ -91,58 +91,58 @@ const generateStatContext = async (db: DB) => {
     };
 };
 
-describe.concurrent('posts suite', () => {
+describe.concurrent('content suite', () => {
     test('post list contains correct data', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateStatContext);
+        await withDb(async ({ db, generated }) => {
+            const gen = mustGenerate(generated);
 
-        const gen = mustGenerate(generated);
+            const [a, b, ...rest] = await getPosts(db, 0, {
+                type: 'home',
+                sort: 'votes',
+                filter: 'all',
+            });
 
-        const [a, b, ...rest] = await getPosts(db, 0, {
-            type: 'home',
-            sort: 'votes',
-            filter: 'all',
-        });
+            let p1, p2;
+            if (
+                gen.votes.upvotes1.length - gen.votes.downvotes1.length >
+                gen.votes.upvotes2.length - gen.votes.downvotes2.length
+            ) {
+                [p1, p2] = [a, b];
+            } else {
+                [p1, p2] = [b, a];
+            }
 
-        let p1, p2;
-        if (
-            gen.votes.upvotes1.length - gen.votes.downvotes1.length >
-            gen.votes.upvotes2.length - gen.votes.downvotes2.length
-        ) {
-            [p1, p2] = [a, b];
-        } else {
-            [p1, p2] = [b, a];
-        }
+            expect(rest.length).toStrictEqual(0);
 
-        expect(rest.length).toStrictEqual(0);
+            expect(p1.id).toStrictEqual(gen.post1.id);
+            expect(p1.title).toStrictEqual(gen.post1.title);
+            expect(p1.poster.user.id).toStrictEqual(gen.creator.id);
+            expect(p1.poster.user.name).toStrictEqual(gen.creator.username);
+            expect(p1.poster.channel.id).toStrictEqual(gen.channel.id);
+            expect(p1.poster.channel.name).toStrictEqual(gen.channel.name);
 
-        expect(p1.id).toStrictEqual(gen.post1.id);
-        expect(p1.title).toStrictEqual(gen.post1.title);
-        expect(p1.poster.user.id).toStrictEqual(gen.creator.id);
-        expect(p1.poster.user.name).toStrictEqual(gen.creator.username);
-        expect(p1.poster.channel.id).toStrictEqual(gen.channel.id);
-        expect(p1.poster.channel.name).toStrictEqual(gen.channel.name);
-
-        expect(p2.id).toStrictEqual(gen.post2.id);
-        expect(p2.title).toStrictEqual(gen.post2.title);
-        expect(p2.poster.user.id).toStrictEqual(gen.creator.id);
-        expect(p2.poster.user.name).toStrictEqual(gen.creator.username);
-        expect(p2.poster.channel.id).toStrictEqual(gen.channel.id);
-        expect(p2.poster.channel.name).toStrictEqual(gen.channel.name);
+            expect(p2.id).toStrictEqual(gen.post2.id);
+            expect(p2.title).toStrictEqual(gen.post2.title);
+            expect(p2.poster.user.id).toStrictEqual(gen.creator.id);
+            expect(p2.poster.user.name).toStrictEqual(gen.creator.username);
+            expect(p2.poster.channel.id).toStrictEqual(gen.channel.id);
+            expect(p2.poster.channel.name).toStrictEqual(gen.channel.name);
+        }, generateStatContext);
     });
-});
 
-describe.concurrent('channels suite', () => {
     test('site statistics is calculated correctly', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateStatContext);
+        await withDb(async ({ db, generated }) => {
+            const { votes } = mustGenerate(generated);
 
-        const { votes } = mustGenerate(generated);
+            const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
+                await getPostStatistics(db);
 
-        const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
-            await getPostStatistics(db);
-
-        expect(numberOfChannelsWithPosts).toStrictEqual(1);
-        expect(numberOfPosts).toStrictEqual(2);
-        expect(numberOfUpvotes).toStrictEqual(votes.upvotes1.length + votes.upvotes2.length);
-        expect(numberOfDownvotes).toStrictEqual(votes.downvotes1.length + votes.downvotes2.length);
+            expect(numberOfChannelsWithPosts).toStrictEqual(1);
+            expect(numberOfPosts).toStrictEqual(2);
+            expect(numberOfUpvotes).toStrictEqual(votes.upvotes1.length + votes.upvotes2.length);
+            expect(numberOfDownvotes).toStrictEqual(
+                votes.downvotes1.length + votes.downvotes2.length
+            );
+        }, generateStatContext);
     });
 });
