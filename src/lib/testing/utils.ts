@@ -2,14 +2,12 @@ import { createDb, type DB } from '$lib/server';
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { Mutex } from 'async-mutex';
 import { sql } from 'drizzle-orm';
-import { test, type ExpectStatic } from 'vitest';
+import { test, type ExtendedContext, type RunnerTestCase, type TestContext } from 'vitest';
 
 type DbStateGenerator<T> = (db: DB) => Promise<T>;
-type TestFunc<T> = (args: {
-    db: DB;
-    generated?: Awaited<T>;
-    expect: ExpectStatic;
-}) => Promise<void>;
+type TestArgs<T> = { db: DB; generated?: Awaited<T> } & ExtendedContext<RunnerTestCase> &
+    TestContext;
+type TestFunc<T> = (args: TestArgs<T>) => Promise<void>;
 
 const container = new PostgreSqlContainer();
 const startedContainer = await container.start();
@@ -31,7 +29,7 @@ export const testWithDb = <T>(
     testFunc: TestFunc<T>,
     generator?: DbStateGenerator<T>
 ) => {
-    test(name, async ({ expect }) => {
+    test(name, async (testArgs) => {
         await lock.runExclusive(async () => {
             const query = `TRUNCATE TABLE ${tableNames
                 .map((tn) => tn.split('.'))
@@ -41,7 +39,11 @@ export const testWithDb = <T>(
 
             const generated = generator ? await generator(db) : undefined;
 
-            await testFunc({ db, generated, expect });
+            const newArgs = testArgs as TestArgs<T>;
+            newArgs.db = db;
+            newArgs.generated = generated;
+
+            await testFunc(newArgs);
         });
     });
 };
