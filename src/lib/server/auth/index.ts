@@ -182,16 +182,15 @@ export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
     redirectURI: `${base_url}/signin/github/callback`,
 });
 
-export const assert_auth = (event: {
+export function assert_auth (event: {
     cookies: Cookies;
     locals: App.Locals;
     url: URL;
-}): event is typeof event & {
+}): asserts event is (typeof event & {
     locals: typeof event.locals & { user: NonNullable<typeof event.locals.user> };
-} => {
+}) {
     if (!event.locals.user) {
         // redirect throws, so we don't need to return false.
         redirect(302, `/signin?redirect=${encodeURI(event.url.pathname)}`);
     }
-    return true; // `true` to actually do the assertion
 };
