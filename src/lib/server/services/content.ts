@@ -210,8 +210,6 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         .limit(PAGE_SIZE)
         .offset(page * PAGE_SIZE);
 
-    console.log(q.toSQL());
-
     return (await q).map((p) => ({
         id: p.id,
         title: p.title,
