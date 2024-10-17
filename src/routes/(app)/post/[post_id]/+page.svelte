@@ -21,14 +21,27 @@
 
     export let data;
     let user_vote: 'UP' | 'DOWN' | null = data.user_vote;
+    let upvotes = data.post.upvotes;
+    let downvotes = data.post.downvotes;
 
     const vote = async (dir: 'UP' | 'DOWN') => {
+        if (user_vote === 'UP') {
+            upvotes -= 1;
+        } else if (user_vote === 'DOWN') {
+            downvotes -= 1;
+        }
+
         if (user_vote === dir) {
             user_vote = null;
         } else {
+            if (dir === 'UP') {
+                upvotes += 1;
+            } else {
+                downvotes += 1;
+            }
             user_vote = dir;
         }
-        console.log('user_vote', user_vote);
+
         const res = await fetch(`/api/post/${data.post.id}/vote`, {
             method: 'POST',
             body: `${user_vote}`,
@@ -36,11 +49,9 @@
 
         if (res.ok) {
             const ret = await res.json();
-            data.post.upvotes = ret.upvotes;
-            data.post.downvotes = ret.downvotes;
+            upvotes = ret.upvotes;
+            downvotes = ret.downvotes;
             user_vote = ret.vote;
-            console.log(ret);
-            console.log('user_vote', user_vote);
         } else {
             user_vote = data.user_vote;
             toast.error('Unexpected error while submitting vote');
@@ -115,11 +126,7 @@
                         <ArrowUp />
                     </Toggle>
                     <span class="w-8 text-center">
-                        <Score
-                            side="top"
-                            upvotes={data.post.upvotes}
-                            downvotes={data.post.downvotes}
-                        />
+                        <Score side="top" {upvotes} {downvotes} />
                     </span>
                     <Toggle
                         size="sm"
