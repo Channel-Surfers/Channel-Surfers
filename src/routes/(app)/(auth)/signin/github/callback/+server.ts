@@ -54,11 +54,13 @@ export const GET: RequestHandler = async (event) => {
 
         await setSessionCookies(user, event.cookies);
 
-        // TODO: Let the user continue to their target destination
+        // This cookie should expire soon, but might as well delete it since we're done
+        event.cookies.delete('github_oauth_state', { path: '/' });
+
         return new Response(null, {
             status: 302,
             headers: {
-                Location: '/',
+                Location: event.cookies.get('redirect_after_auth') || '/',
             },
         });
     } catch (e) {

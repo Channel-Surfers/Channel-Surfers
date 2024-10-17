@@ -17,5 +17,15 @@ export const GET: RequestHandler = async (event) => {
         sameSite: 'lax',
     });
 
+    if (event.url.searchParams.has('redirect')) {
+        event.cookies.set('redirect_after_auth', event.url.searchParams.get('redirect')!, {
+            path: '/',
+            secure: import.meta.env.PROD,
+            httpOnly: true,
+            maxAge: 60 * 10,
+            sameSite: 'lax',
+        });
+    }
+
     redirect(302, url.toString());
 };

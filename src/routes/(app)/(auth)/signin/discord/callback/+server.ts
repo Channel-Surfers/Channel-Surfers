@@ -61,12 +61,13 @@ export const GET: RequestHandler = async (event) => {
 
         await setSessionCookies(user, event.cookies);
 
-        // Redirect to '/'
-        // TODO: Let the user continue to their target destination
+        // This cookie should expire soon, but might as well delete it since we're done
+        event.cookies.delete('discord_oauth_state', { path: '/' });
+
         return new Response(null, {
             status: 302,
             headers: {
-                Location: '/',
+                Location: event.cookies.get('redirect_after_auth') || '/',
             },
         });
     } catch (e) {
