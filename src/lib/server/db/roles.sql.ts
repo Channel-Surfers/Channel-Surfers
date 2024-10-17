@@ -26,7 +26,7 @@ export const roleTable = pgTable('role', {
     canViewUserTable: boolean('can_view_user_table').notNull().default(false),
     canEditTags: boolean('can_edit_tags').notNull().default(false),
     // permissions to channel moderation
-    canSetGuidelines: boolean('can_timeout_users').notNull().default(false),
+    canSetGuidelines: boolean('can_set_guidelines').notNull().default(false),
     canTimeoutUsers: boolean('can_timeout_users').notNull().default(false),
     canBanUsers: boolean('can_ban_users').notNull().default(false),
     canViewBannedUsers: boolean('can_view_banned_users').notNull().default(false),
