@@ -182,6 +182,21 @@ export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
     redirectURI: `${base_url}/signin/github/callback`,
 });
 
+/**
+ * Asserts user associated with an event is authenticated.  If they are not,
+ * then it will redirect to the login page.
+ *
+ * This will also assert that `event.locals.user` is not null, so it can be used without annoyance:
+ * ```ts
+ * export const load: PageServerLoad = async (event) => {
+ *     assert_auth(event); // Auth user
+ *
+ *     return {
+ *         username: event.locals.user.username, // There is no type error here for accessing `username`
+ *     };
+ * };
+ * ```
+ */
 export function assert_auth(event: {
     cookies: Cookies;
     locals: App.Locals;
