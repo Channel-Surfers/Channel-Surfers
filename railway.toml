@@ -4,3 +4,4 @@ buildCommand = "npm run build"
 
 [deploy]
 startCommand = "node build"
+healthcheckPath = "/healthcheck"
