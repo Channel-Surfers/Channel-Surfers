@@ -1,12 +1,14 @@
 <script lang="ts">
     import * as Card from '$lib/shadcn/components/ui/card';
     import * as Avatar from '$lib/shadcn/components/ui/avatar/index';
+    import * as Tooltip from '$lib/shadcn/components/ui/tooltip/index.js';
     import type { User } from '$lib/server/db/users.sql';
     import type { UserStats } from '$lib/server/services/users';
     import Skeleton from '$lib/shadcn/components/ui/skeleton/skeleton.svelte';
     import Button from '$lib/shadcn/components/ui/button/button.svelte';
 
-    export let userInfo: (User & { userStats: UserStats }) | null = null;
+    export let userInfo: (User & UserStats) | null = null;
+    export let user: User | null = null;
     export let isFollowing: boolean = false;
 </script>
 
@@ -31,14 +33,21 @@
                     <Skeleton class="h-4 w-[100px]" />
                 {/if}
             </div>
-            {#if userInfo}
+            {#if user}
                 {#if isFollowing}
                     <Button type="submit" variant="destructive">Unfollow</Button>
                 {:else}
                     <Button type="submit">Follow</Button>
                 {/if}
             {:else}
-                <Button disabled>Follow</Button>
+                <Tooltip.Root>
+                    <Tooltip.Trigger>
+                        <Button disabled>Follow</Button>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                        <p>Sign in to follow</p>
+                    </Tooltip.Content>
+                </Tooltip.Root>
             {/if}
         </div>
     </Card.Header>
