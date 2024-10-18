@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { create_users, sequentialDates, testWithDb } from '$lib/testing/utils';
+import { createUsers, sequentialDates, testWithDb } from '$lib/testing/utils';
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
@@ -190,7 +190,7 @@ const generatePosts = async (db: DB) => {
 };
 
 const generateGroups = async (db: DB) => {
-    const [creator1, creator2] = await create_users(db, 2);
+    const [creator1, creator2] = await createUsers(db, 2);
     const [channel1, channel2] = await db
         .insert(channelTable)
         .values([
@@ -234,8 +234,8 @@ const generateGroups = async (db: DB) => {
         .returning();
 
     const vote = async (post: Post, up_count: number, down_count: number) => {
-        const up = await create_users(db, up_count, `${post.title}-up-`);
-        const down = await create_users(db, down_count, `${post.title}-down-`);
+        const up = await createUsers(db, up_count, `${post.title}-up-`);
+        const down = await createUsers(db, down_count, `${post.title}-down-`);
 
         await db.insert(postVoteTable).values(
             up.map((u) => ({
@@ -262,7 +262,7 @@ const generateGroups = async (db: DB) => {
         p22: await vote(post22, 200, 500),
     };
 
-    const [user] = await create_users(db, 1);
+    const [user] = await createUsers(db, 1);
 
     await db.insert(userBlockTable).values({ userId: user.id, blockedUserId: creator1.id });
 
@@ -424,4 +424,93 @@ describe.concurrent('content suite', () => {
         },
         generateGroups
     );
+
+    testWithDb(
+        'get posts { type: home, sort: date, filter: subscribed, after: posts/2 }',
+        async ({ expect, db }) => {
+            const users = await createUsers(db, 10);
+            const channels = await db
+                .insert(channelTable)
+                .values(
+                    users
+                        .slice(0, 5)
+                        .map((u) => ({ name: `${u.username}s-channel`, createdBy: u.id }))
+                )
+                .returning();
+            const d = sequentialDates();
+            const gen_posts = await db
+                .insert(postTable)
+                .values(
+                    Array(10)
+                        .fill(0)
+                        .flatMap((_, pi) =>
+                            users.map((u, ui) => ({
+                                channelId: channels[pi % channels.length].id,
+                                createdBy: u.id,
+                                createdOn: d.next(),
+                                title: `post${pi * 10 + ui}`,
+                                videoId: '',
+                            }))
+                        )
+                )
+                .returning();
+
+            const after = gen_posts[Math.floor(gen_posts.length / 2)].createdOn;
+            const posts = await getPosts(db, 0, {
+                type: 'user',
+                sort: 'date',
+                filter: 'subscribed',
+                reverseSort: true,
+                after,
+                username: users[0].username,
+            });
+
+            const exp = gen_posts.filter(
+                (p) => p.createdBy === users[0].id && p.createdOn >= after
+            );
+            expect(posts.map((p) => p.id)).toEqual(exp.map((p) => p.id));
+        }
+    );
+
+    testWithDb('get posts for user with many users/posts', async ({ expect, db }) => {
+        const [requester] = await createUsers(db, 1, 'req');
+        const users = await createUsers(db, 10);
+        const channels = await db
+            .insert(channelTable)
+            .values(users.map((u) => ({ name: `${u.username}s-channel`, createdBy: u.id })))
+            .returning();
+        const d = sequentialDates();
+        const gen_posts = await db
+            .insert(postTable)
+            .values(
+                users.flatMap((u, ui) =>
+                    Array(10)
+                        .fill(0)
+                        .map((_, pi) => ({
+                            channelId: channels[pi].id,
+                            createdBy: u.id,
+                            createdOn: d.next(),
+                            title: `post${ui * 10 + pi}`,
+                            videoId: '',
+                        }))
+                )
+            )
+            .returning();
+
+        users.forEach(async (u) => {
+            const posts = await getPosts(db, 0, {
+                type: 'user',
+                sort: 'date',
+                filter: 'all',
+                reverseSort: true,
+                username: u.username,
+                requesterId: requester.id,
+            });
+
+            expect(posts).toHaveLength(10);
+            expect(posts.map((p) => p.id)).toEqual(
+                gen_posts.filter((p) => p.createdBy === u.id).map((p) => p.id)
+            );
+        });
+    });
 });

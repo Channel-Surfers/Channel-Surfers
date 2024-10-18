@@ -65,7 +65,7 @@ export const sequentialDates = (
     const r = {
         next: () => {
             const ret = curr;
-            curr += seconds_diff;
+            curr += seconds_diff * 1000;
             return new Date(ret);
         },
         take: (n: number) => {
@@ -75,14 +75,7 @@ export const sequentialDates = (
     return r;
 };
 
-export const assert_nonnull = <T>(t: T): t is NonNullable<T> => {
-    if (t === null) {
-        throw new Error('Assertion failed.  t === null');
-    }
-    return true;
-};
-
-export const create_users = async (
+export const createUsers = async (
     db: DB,
     count: number,
     prefix: string = ''
