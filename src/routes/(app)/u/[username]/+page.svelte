@@ -8,7 +8,7 @@
     let reverseSort = false;
     const now = new Date();
 
-    const get_posts = async (page: number) => {
+    const getPosts = async (page: number) => {
         const search = new URLSearchParams({
             page: `${page}`,
             type: 'user',
@@ -29,4 +29,4 @@
 </script>
 
 <h1>Hello {data.username}</h1>
-<InfiniteScroll init_buffer={data.posts} {get_posts} signed_in={!!data.user} />
+<InfiniteScroll init_buffer={data.posts} get_posts={getPosts} signed_in={!!data.user} />
