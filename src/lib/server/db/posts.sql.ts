@@ -21,9 +21,10 @@ export const postTable = pgTable('post', {
     createdOn: timestamp('created_on').notNull().defaultNow(),
     updatedOn: timestamp('updated_on').notNull().defaultNow(),
 
-    // Denormailise vote counts
+    // Denormalise common aggregations
     upvotes: integer('upvotes').notNull().default(0),
     downvotes: integer('downvotes').notNull().default(0),
+    comments: integer('comments').notNull().default(0),
 });
 
 export type Post = typeof postTable.$inferSelect;

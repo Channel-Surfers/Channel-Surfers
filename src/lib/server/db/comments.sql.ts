@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, foreignKey } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, foreignKey, integer } from 'drizzle-orm/pg-core';
 import { userTable } from './users.sql';
 import { postTable } from './posts.sql';
 //import { relations } from 'drizzle-orm';
@@ -21,6 +21,10 @@ export const commentTable = pgTable(
         replyTo: uuid('reply_to'),
         createdOn: timestamp('created_on').notNull().defaultNow(),
         updatedOn: timestamp('updated_on').notNull().defaultNow(),
+
+        // Denormalise vote counts
+        upvotes: integer('upvotes').notNull().default(0),
+        downvotes: integer('downvotes').notNull().default(0),
     },
     (table) => ({
         parentReference: foreignKey({
