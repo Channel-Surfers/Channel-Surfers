@@ -8,7 +8,7 @@ import {
     createChannel,
     publishChannel,
 } from './channels';
-import { mustGenerate, testWithDb } from '$lib/testing/utils';
+import { testWithDb } from '$lib/testing/utils';
 import { channelTable } from '../db/channels.sql';
 import { userTable } from '../db/users.sql';
 import type { DB } from '..';
@@ -84,7 +84,7 @@ describe.concurrent('channels suite', () => {
 
     testWithDb(
         "user's subscriptions can be fetched",
-        async ({ expect, db }, { createdChannel, subscribers: [subscriber], }) => {
+        async ({ expect, db }, { createdChannel, subscribers: [subscriber] }) => {
             const subscribedChannels = await getUserSubscriptions(db, subscriber.id);
             expect(subscribedChannels).toStrictEqual([
                 { channelId: createdChannel.id, channelDisplayName: createdChannel.name },

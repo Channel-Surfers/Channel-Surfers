@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { mustGenerate, testWithDb } from '$lib/testing/utils';
+import { testWithDb } from '$lib/testing/utils';
 import { userTable } from '../db/users.sql';
 import type { DB } from '..';
 import { getOrCreateUser, getUserById } from './users';

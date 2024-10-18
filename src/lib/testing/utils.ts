@@ -23,7 +23,7 @@ export const mustGenerate = <T>(generated: T | null) => {
     return generated;
 };
 
-export function testWithDb<T>(name: string, testFunc: (args: TestArgs) => Promise<void>): void;
+export function testWithDb(name: string, testFunc: (args: TestArgs) => Promise<void>): void;
 export function testWithDb<T>(
     name: string,
     testFunc: (args: TestArgs, generated: Awaited<T>) => Promise<void>,
@@ -82,7 +82,11 @@ export const assert_nonnull = <T>(t: T): t is NonNullable<T> => {
     return true;
 };
 
-export const create_users = async (db: DB, count: number, prefix: string = ''): Promise<schema.User[]> => {
+export const create_users = async (
+    db: DB,
+    count: number,
+    prefix: string = ''
+): Promise<schema.User[]> => {
     return await db
         .insert(schema.userTable)
         .values(Array.from({ length: count }, (_, i) => ({ username: `${prefix}user${i + 1}` })))
