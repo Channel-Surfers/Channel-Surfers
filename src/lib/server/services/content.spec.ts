@@ -244,6 +244,6 @@ describe.concurrent('content suite', () => {
         expect(commentTree[0].children?.length).toStrictEqual(0);
         expect(commentTree[1].children?.length).toStrictEqual(2);
         expect(commentTree[1].children![0].content).toStrictEqual(comment3.content);
-        expect(commentTree[1].children![0].user).toStrictEqual(creator3.id);
+        expect(commentTree[1].children![0].user).toStrictEqual(creator3);
     });
 });

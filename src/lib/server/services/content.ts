@@ -27,10 +27,6 @@ import { publicChannelTable } from '../db/public.channels.sql';
 import { subscriptionTable } from '../db/subscriptions.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
 import { userTable } from '../db/users.sql';
-//import { getUserById } from './users'
-//import { post } from '$lib/components/Post.svelte';
-//import { isNotEmptyString } from 'testcontainers/build/common';
-//import { comment } from 'postcss';
 
 export const getPost = async (db: DB, post_id: uuid) => {
     const [a] = await db
@@ -278,6 +274,7 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
         .from(postTable)
         .where(and(eq(postTable.id, post_id), isNull(commentTable.replyTo)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
+        .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
         .orderBy(commentTable.createdOn)
         .limit(PAGE_SIZE);
 
@@ -288,18 +285,19 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
         .from(postTable)
         .where(and(eq(postTable.id, post_id), inArray(commentTable.replyTo, firstLevelCommentsIds)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
+        .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
         .orderBy(commentTable.createdOn)
         .limit(Math.floor(PAGE_SIZE / 2));
 
     const CommentTree = firstLevelComments.map((c) => ({
-        user: c.comment.creatorId,
+        user: c.user,
         content: c.comment.content,
         upvotes: 0,
         downvotes: 0,
         children: secondLevelComments
             .filter((b) => b.comment.replyTo === c.comment.id)
             .map((b) => ({
-                user: b.comment.creatorId,
+                user: b.user,
                 content: b.comment.content,
                 upvotes: 0,
                 downvotes: 0,
