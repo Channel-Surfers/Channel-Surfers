@@ -11,14 +11,12 @@
     const getPosts = async (page: number) => {
         const search = new URLSearchParams({
             page: `${page}`,
-            type: 'user',
             after: now.toISOString(),
-            username: data.username,
             sort,
             filter,
             reverseSort: `${reverseSort}`,
         });
-        const res = await fetch(`/api/posts?${search}`);
+        const res = await fetch(`/api/u/${data.username}/posts?${search}`);
 
         if (res.status !== 200) {
             throw new Error(await res.text());
@@ -28,5 +26,4 @@
     };
 </script>
 
-<h1>Hello {data.username}</h1>
 <InfiniteScroll init_buffer={data.posts} get_posts={getPosts} signed_in={!!data.user} />

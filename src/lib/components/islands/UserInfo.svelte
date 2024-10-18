@@ -6,10 +6,44 @@
     import type { UserStats } from '$lib/server/services/users';
     import Skeleton from '$lib/shadcn/components/ui/skeleton/skeleton.svelte';
     import Button from '$lib/shadcn/components/ui/button/button.svelte';
+    import { toast } from 'svelte-sonner';
 
     export let userInfo: (User & UserStats) | null = null;
     export let user: User | null = null;
     export let isFollowing: boolean = false;
+    let followLoading = false;
+
+    const updateFollow = (action: 'follow' | 'unfollow') => async () => {
+        if (!userInfo) {
+            const message = `Attempted to ${action} an unknown user`;
+            console.error(message);
+            toast.error(message);
+            return;
+        }
+        followLoading = true;
+        switch (action) {
+            case 'follow': {
+                // eagerly assume action success
+                isFollowing = true;
+
+                fetch(`/api/u/${userInfo.username}/follow`, {
+                    method: 'POST',
+                })
+                    .then(() => {
+                        followLoading = false;
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                        isFollowing = false;
+                        followLoading = false;
+                    });
+
+                break;
+            }
+            case 'unfollow': {
+            }
+        }
+    };
 </script>
 
 <Card.Root>
@@ -35,9 +69,9 @@
             </div>
             {#if user}
                 {#if isFollowing}
-                    <Button type="submit" variant="destructive">Unfollow</Button>
+                    <Button variant="outline" on:click={updateFollow('follow')}>Unfollow</Button>
                 {:else}
-                    <Button type="submit">Follow</Button>
+                    <Button on:click={updateFollow('follow')}>Follow</Button>
                 {/if}
             {:else}
                 <Tooltip.Root>
