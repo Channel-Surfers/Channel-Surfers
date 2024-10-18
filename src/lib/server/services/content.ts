@@ -294,16 +294,12 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
 
     const CommentTree = firstLevelComments.map((c) => ({
         user: c.user,
-        content: c.comment.content,
-        upvotes: 0,
-        downvotes: 0,
+        comment: c.comment,
         children: secondLevelComments
             .filter((b) => b.comment.replyTo === c.comment.id)
             .map((b) => ({
                 user: b.user,
-                content: b.comment.content,
-                upvotes: 0,
-                downvotes: 0,
+                comment: b.comment,
                 children: [],
             })),
     }));

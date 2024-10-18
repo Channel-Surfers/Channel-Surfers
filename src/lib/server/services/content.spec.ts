@@ -7,7 +7,6 @@ import { postTable } from '../db/posts.sql';
 import { getCommentTree, getPosts, getPostStatistics } from './content';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { commentTable } from '../db/comments.sql';
-//import { comment } from 'postcss';
 
 const generateStatContext = async (db: DB) => {
     const [creator] = await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning();
@@ -240,11 +239,13 @@ describe.concurrent('content suite', () => {
             const commentTree = await getCommentTree(db, post1.id);
 
             expect(commentTree.length).toStrictEqual(2);
-            expect(commentTree[0].content).toStrictEqual(comment1.content);
-            expect(commentTree[1].content).toStrictEqual(comment2.content);
-            expect(commentTree[0].children?.length).toStrictEqual(0);
-            expect(commentTree[1].children?.length).toStrictEqual(2);
-            expect(commentTree[1].children![0].content).toStrictEqual(comment3.content);
+            expect(commentTree[0].comment).toStrictEqual(comment1);
+            expect(commentTree[1].comment).toStrictEqual(comment2);
+            expect(commentTree[0].children).toBeDefined();
+            expect(commentTree[1].children).toBeDefined();
+            expect(commentTree[0].children).toHaveLength(0);
+            expect(commentTree[1].children).toHaveLength(2);
+            expect(commentTree[1].children![0].comment).toStrictEqual(comment3);
             expect(commentTree[1].children![0].user).toStrictEqual(creator3);
         },
         generateComments
