@@ -27,6 +27,11 @@ import { publicChannelTable } from '../db/public.channels.sql';
 import { subscriptionTable } from '../db/subscriptions.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
 import { userTable } from '../db/users.sql';
+import {
+    channelPostReportTable,
+    type NewChannelPostReport,
+} from '../db/reports.channels.posts.sql';
+import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
 
 export const getPost = async (db: DB, post_id: uuid) => {
     const [a] = await db
@@ -205,8 +210,6 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         .limit(PAGE_SIZE)
         .offset(page * PAGE_SIZE);
 
-    console.log(q.toSQL());
-
     return (await q).map((p) => ({
         id: p.id,
         title: p.title,
@@ -306,6 +309,24 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
     }));
 
     return CommentTree;
+}
+
+export const createChannelReport = async (
+    db: DB,
+    newChannelPostReport: NewChannelPostReport
+): Promise<PostReport> => {
+    const [ret] = await db.insert(channelPostReportTable).values(newChannelPostReport).returning();
+
+    return ret;
+};
+
+export const createPostReport = async (
+    db: DB,
+    newPostReport: NewPostReport
+): Promise<PostReport> => {
+    const [ret] = await db.insert(postReportTable).values(newPostReport).returning();
+
+    return ret;
 };
 
 export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {

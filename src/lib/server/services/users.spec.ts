@@ -1,5 +1,5 @@
-import { describe, test } from 'vitest';
-import { createTestingDb, mustGenerate } from '$lib/testing/utils';
+import { describe } from 'vitest';
+import { mustGenerate, testWithDb } from '$lib/testing/utils';
 import { userTable } from '../db/users.sql';
 import type { DB } from '..';
 import { getOrCreateUser, getUserById } from './users';
@@ -16,18 +16,18 @@ const generateUser = async (db: DB) => {
 };
 
 describe.concurrent('users suite', () => {
-    test.concurrent('getting user by id returns successfully', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUser);
+    testWithDb(
+        'getting user by id returns successfully',
+        async ({ expect, db, generated }) => {
+            const { newUser } = mustGenerate(generated);
 
-        const { newUser } = mustGenerate(generated);
+            const user = await getUserById(db, newUser.id);
+            expect(user?.username).toStrictEqual(newUser.username);
+        },
+        generateUser
+    );
 
-        const user = await getUserById(db, newUser.id);
-        expect(user?.username).toStrictEqual(newUser.username);
-    });
-
-    test.concurrent('getOrCreateUser with no user in db', async ({ expect }) => {
-        const { db } = await createTestingDb();
-
+    testWithDb('getOrCreateUser with no user in db', async ({ expect, db }) => {
         const newUser = {
             username: 'new_username',
         };
@@ -36,31 +36,35 @@ describe.concurrent('users suite', () => {
         expect(user.username).toStrictEqual(newUser.username);
     });
 
-    test.concurrent('getOrCreateUser with user in db', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUser);
+    testWithDb(
+        'getOrCreateUser with user in db',
+        async ({ expect, db, generated }) => {
+            const { newUser } = mustGenerate(generated);
 
-        const { newUser } = mustGenerate(generated);
+            const user = await getOrCreateUser(
+                db,
+                { discordId: 1n },
+                {
+                    username: 'new_username',
+                }
+            );
+            expect(user.username).toStrictEqual(newUser.username);
+        },
+        generateUser
+    );
 
-        const user = await getOrCreateUser(
-            db,
-            { discordId: 1n },
-            {
+    testWithDb(
+        'getOrCreateUser with different user in db',
+        async ({ expect, db, generated }) => {
+            mustGenerate(generated);
+
+            const newUser = {
                 username: 'new_username',
-            }
-        );
-        expect(user.username).toStrictEqual(newUser.username);
-    });
+            };
 
-    test.concurrent('getOrCreateUser with different user in db', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUser);
-
-        mustGenerate(generated);
-
-        const newUser = {
-            username: 'new_username',
-        };
-
-        const user = await getOrCreateUser(db, { discordId: 2n }, newUser);
-        expect(user.username).toStrictEqual(newUser.username);
-    });
+            const user = await getOrCreateUser(db, { discordId: 2n }, newUser);
+            expect(user.username).toStrictEqual(newUser.username);
+        },
+        generateUser
+    );
 });

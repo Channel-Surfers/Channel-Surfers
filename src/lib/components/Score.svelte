@@ -9,9 +9,9 @@
     export let side: 'top' | 'left' | 'bottom' | 'right' = 'left';
 
     const humanise = (n: number): string => {
-        if (n < 1000) {
+        if (Math.abs(n) < 1000) {
             return `${n}`;
-        } else if (n < 1_000_000) {
+        } else if (Math.abs(n) < 1_000_000) {
             return `${(n / 1000).toFixed(1)}k`;
         } else {
             return `${(n / 1_000_000).toFixed(1)}m`;
@@ -23,7 +23,7 @@
 
 <Tooltip.Root openDelay={5}>
     <Tooltip.Trigger class={clazz}>
-        <span class="small-caps">{humanise(Math.abs(upvotes - downvotes))}</span>
+        <span class="small-caps">{humanise(upvotes - downvotes)}</span>
     </Tooltip.Trigger>
     <Tooltip.Content {side}>
         <p class="small-caps flex flex-row items-center text-upvote">

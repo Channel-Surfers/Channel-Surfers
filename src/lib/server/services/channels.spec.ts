@@ -1,4 +1,4 @@
-import { describe, test } from 'vitest';
+import { describe } from 'vitest';
 import {
     getChannelById,
     getChannelInfo,
@@ -8,7 +8,7 @@ import {
     createChannel,
     publishChannel,
 } from './channels';
-import { createTestingDb, mustGenerate } from '$lib/testing/utils';
+import { mustGenerate, testWithDb } from '$lib/testing/utils';
 import { channelTable } from '../db/channels.sql';
 import { userTable } from '../db/users.sql';
 import type { DB } from '..';
@@ -54,94 +54,112 @@ const generateUser = async (db: DB) => {
 };
 
 describe.concurrent('channels suite', () => {
-    test.concurrent('getting channels returns successfully', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUserAndChannel);
+    testWithDb(
+        'getting channels returns successfully',
+        async ({ expect, db, generated }) => {
+            const { createdChannel } = mustGenerate(generated);
 
-        const { createdChannel } = mustGenerate(generated);
+            const channels = await getChannels(db);
+            expect(channels.length).toStrictEqual(1);
+            expect(channels[0].name).toStrictEqual(createdChannel.name);
+        },
+        generateUserAndChannel
+    );
 
-        const channels = await getChannels(db);
-        expect(channels.length).toStrictEqual(1);
-        expect(channels[0].name).toStrictEqual(createdChannel.name);
-    });
+    testWithDb(
+        'getting channel by id returns successfully',
+        async ({ expect, db, generated }) => {
+            const { createdChannel } = mustGenerate(generated);
 
-    test.concurrent('getting channel by id returns successfully', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUserAndChannel);
+            const channel = await getChannelById(db, createdChannel.id);
+            expect(channel?.name).toStrictEqual(createdChannel.name);
+        },
+        generateUserAndChannel
+    );
 
-        const { createdChannel } = mustGenerate(generated);
+    testWithDb(
+        'getting channels by user id returns successfully',
+        async ({ expect, db, generated }) => {
+            const { creator, createdChannel } = mustGenerate(generated);
 
-        const channel = await getChannelById(db, createdChannel.id);
-        expect(channel?.name).toStrictEqual(createdChannel.name);
-    });
+            const userChannels = await getChannelsByOwner(db, creator.id);
+            expect(userChannels).toStrictEqual([createdChannel]);
+        },
+        generateUserAndChannel
+    );
 
-    test.concurrent('getting channels by user id returns successfully', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUserAndChannel);
+    testWithDb(
+        "user's subscriptions can be fetched",
+        async ({ expect, db, generated }) => {
+            const {
+                createdChannel,
+                subscribers: [subscriber],
+            } = mustGenerate(generated);
+            const subscribedChannels = await getUserSubscriptions(db, subscriber.id);
+            expect(subscribedChannels).toStrictEqual([
+                { channelId: createdChannel.id, channelDisplayName: createdChannel.name },
+            ]);
+        },
+        generateChannelAndSubs
+    );
 
-        const { creator, createdChannel } = mustGenerate(generated);
-
-        const userChannels = await getChannelsByOwner(db, creator.id);
-        expect(userChannels).toStrictEqual([createdChannel]);
-    });
-
-    test.concurrent("user's subscriptions can be fetched", async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateChannelAndSubs);
-        const {
-            createdChannel,
-            subscribers: [subscriber],
-        } = mustGenerate(generated);
-        const subscribedChannels = await getUserSubscriptions(db, subscriber.id);
-        expect(subscribedChannels).toStrictEqual([
-            { channelId: createdChannel.id, channelDisplayName: createdChannel.name },
-        ]);
-    });
-
-    test.concurrent(
+    testWithDb(
         "user's subscriptions can be fetched when there aren't any",
-        async ({ expect }) => {
-            const { db, generated } = await createTestingDb(generateUserAndPublicChannel);
+        async ({ expect, db, generated }) => {
             const { creator } = mustGenerate(generated);
             const subscribedChannels = await getUserSubscriptions(db, creator.id);
             expect(subscribedChannels).toStrictEqual([]);
-        }
+        },
+        generateUserAndPublicChannel
     );
 
-    test.concurrent('many subscriptions are counted correctly', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateChannelAndSubs);
-        const { createdChannel, subscriptionCount } = mustGenerate(generated);
+    testWithDb(
+        'many subscriptions are counted correctly',
+        async ({ expect, db, generated }) => {
+            const { createdChannel, subscriptionCount } = mustGenerate(generated);
 
-        const channelInfo = await getChannelInfo(db, createdChannel.id);
-        expect(channelInfo.subscriptionsCount).toStrictEqual(subscriptionCount);
-    });
+            const channelInfo = await getChannelInfo(db, createdChannel.id);
+            expect(channelInfo.subscriptionsCount).toStrictEqual(subscriptionCount);
+        },
+        generateChannelAndSubs
+    );
 
-    test.concurrent('zero subscriptions are counted correctly', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUserAndPublicChannel);
-        const { createdChannel } = mustGenerate(generated);
+    testWithDb(
+        'zero subscriptions are counted correctly',
+        async ({ expect, db, generated }) => {
+            const { createdChannel } = mustGenerate(generated);
 
-        const channelInfo = await getChannelInfo(db, createdChannel.id);
-        expect(channelInfo.subscriptionsCount).toStrictEqual(0);
-    });
+            const channelInfo = await getChannelInfo(db, createdChannel.id);
+            expect(channelInfo.subscriptionsCount).toStrictEqual(0);
+        },
+        generateUserAndPublicChannel
+    );
 
-    test.concurrent('creating channels returns successfully', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUser);
+    testWithDb(
+        'creating channels returns successfully',
+        async ({ expect, db, generated }) => {
+            const { creator } = mustGenerate(generated);
 
-        const { creator } = mustGenerate(generated);
+            const userChannels = await createChannel(db, {
+                name: "Evan's Channel",
+                createdBy: creator.id,
+                description: 'Funny',
+                guidelines: 'None',
+            });
+            expect(userChannels.name).toStrictEqual("Evan's Channel");
+        },
+        generateUser
+    );
 
-        const userChannels = await createChannel(db, {
-            name: "Evan's Channel",
-            createdBy: creator.id,
-            description: 'Funny',
-            guidelines: 'None',
-        });
-        expect(userChannels.name).toStrictEqual("Evan's Channel");
-    });
+    testWithDb(
+        'publishing channels returns successfully',
+        async ({ expect, db, generated }) => {
+            const { createdChannel } = mustGenerate(generated);
 
-    test.concurrent('publishing channels returns successfully', async ({ expect }) => {
-        const { db, generated } = await createTestingDb(generateUserAndChannel);
-        mustGenerate(generated);
+            const publishedChannel: PublicChannel = await publishChannel(db, createdChannel);
 
-        const { createdChannel } = mustGenerate(generated);
-
-        const publishedChannel: PublicChannel = await publishChannel(db, createdChannel);
-
-        expect(publishedChannel.name).toStrictEqual(createdChannel.name);
-    });
+            expect(publishedChannel.name).toStrictEqual(createdChannel.name);
+        },
+        generateUserAndChannel
+    );
 });
