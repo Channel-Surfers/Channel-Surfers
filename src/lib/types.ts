@@ -1,3 +1,7 @@
+//import type { User } from "./server/db/users.sql";
+
+import type { User } from 'lucia';
+
 /**
  * An alias for a string that hints to the developer that this is a uuid
  */
@@ -33,4 +37,12 @@ export interface ChannelData {
     id: uuid;
     name: string;
     private: boolean;
+}
+
+export interface CommentData {
+    user: User; // may need to be User
+    content: string;
+    downvotes: number;
+    upvotes: number;
+    children?: CommentData[];
 }
