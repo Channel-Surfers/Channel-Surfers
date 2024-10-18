@@ -27,7 +27,7 @@ AS
 $$
 BEGIN
     UPDATE post
-        SET comments = "comment".upvotes + 1
+        SET comments = post.comments + 1
         WHERE "post".id = NEW.post_id;
     RETURN NEW;
 END;
@@ -40,7 +40,7 @@ AS
 $$
 BEGIN
     UPDATE post
-        SET comments = "comment".upvotes - 1
+        SET comments = post.comments - 1
         WHERE "post".id = OLD.post_id;
     RETURN NEW;
 END;
@@ -113,13 +113,13 @@ $$;
 
 CREATE TRIGGER insert_comment
 AFTER INSERT
-ON comment_vote
+ON "comment"
 FOR EACH ROW
     EXECUTE FUNCTION insert_comment_fn();
 
 CREATE TRIGGER delete_comment
 AFTER DELETE
-ON comment_vote
+ON "comment"
 FOR EACH ROW
     EXECUTE FUNCTION delete_comment_fn();
 
