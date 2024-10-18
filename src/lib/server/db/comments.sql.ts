@@ -21,7 +21,7 @@ export const commentTable = pgTable(
         replyTo: uuid('reply_to'),
         createdOn: timestamp('created_on').notNull().defaultNow(),
         updatedOn: timestamp('updated_on').notNull().defaultNow(),
-        
+
         // Denormalise vote counts
         upvotes: integer('upvotes').notNull().default(0),
         downvotes: integer('downvotes').notNull().default(0),
