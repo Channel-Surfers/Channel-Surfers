@@ -18,9 +18,7 @@ const generateUser = async (db: DB) => {
 describe.concurrent('users suite', () => {
     testWithDb(
         'getting user by id returns successfully',
-        async ({ expect, db, generated }) => {
-            const { newUser } = mustGenerate(generated);
-
+        async ({ expect, db }, { newUser }) => {
             const user = await getUserById(db, newUser.id);
             expect(user?.username).toStrictEqual(newUser.username);
         },
@@ -38,9 +36,7 @@ describe.concurrent('users suite', () => {
 
     testWithDb(
         'getOrCreateUser with user in db',
-        async ({ expect, db, generated }) => {
-            const { newUser } = mustGenerate(generated);
-
+        async ({ expect, db }, { newUser }) => {
             const user = await getOrCreateUser(
                 db,
                 { discordId: 1n },
@@ -55,9 +51,7 @@ describe.concurrent('users suite', () => {
 
     testWithDb(
         'getOrCreateUser with different user in db',
-        async ({ expect, db, generated }) => {
-            mustGenerate(generated);
-
+        async ({ expect, db }) => {
             const newUser = {
                 username: 'new_username',
             };
