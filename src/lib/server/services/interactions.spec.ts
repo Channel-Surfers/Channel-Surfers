@@ -70,4 +70,16 @@ describe.concurrent('interactions suite', () => {
         },
         generateUserAndFollowers(1)
     );
+
+    testWithDb(
+        'users cannot duplicate follow',
+        async ({ expect, db, generated }) => {
+            const {
+                users: [user1, user2],
+            } = mustGenerate(generated);
+            const following1 = await followUser(db, user1.id, user2.id);
+            expect(followUser(db, user1.id, user2.id)).rejects.toThrow();
+        },
+        generateUser(2)
+    );
 });
