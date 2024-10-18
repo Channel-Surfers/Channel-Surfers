@@ -235,7 +235,7 @@ describe.concurrent('content suite', () => {
     testWithDb(
         'Comment Tree Working Successfully',
         async ({ expect, db, generated }) => {
-            const { post1, creator3, comment1, comment2, comment3, comment4 } = mustGenerate(generated);
+            const { post1, creator3, comment1, comment2, comment3 } = mustGenerate(generated);
 
             const commentTree = await getCommentTree(db, post1.id);
 

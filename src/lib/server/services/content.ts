@@ -309,7 +309,7 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
     }));
 
     return CommentTree;
-}
+};
 
 export const createChannelReport = async (
     db: DB,
