@@ -37,7 +37,7 @@ const generateUserAndFollowers =
             );
 
         const followings = await Promise.all(
-            followers.slice(1).map((follower) => followUser(db, follower.id, user.id))
+            followers.map((follower) => followUser(db, follower.id, user.id))
         );
         return { user, followers, followings };
     };
@@ -77,8 +77,23 @@ describe.concurrent('interactions suite', () => {
             const {
                 users: [user1, user2],
             } = mustGenerate(generated);
-            const following1 = await followUser(db, user1.id, user2.id);
-            expect(followUser(db, user1.id, user2.id)).rejects.toThrow();
+            const _following = await followUser(db, user1.id, user2.id);
+            await expect(() => followUser(db, user1.id, user2.id)).rejects.toThrowError(
+                'already following'
+            );
+        },
+        generateUser(2)
+    );
+
+    testWithDb(
+        'user not following',
+        async ({ expect, db, generated }) => {
+            const {
+                users: [user1, user2],
+            } = mustGenerate(generated);
+            await expect(() => unfollowUser(db, user1.id, user2.id)).rejects.toThrowError(
+                'not following'
+            );
         },
         generateUser(2)
     );
