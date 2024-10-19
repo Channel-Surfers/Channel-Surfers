@@ -13,7 +13,6 @@
     import UserInfo from '$lib/components/islands/UserInfo.svelte';
     import type { User } from '$lib/server/db/users.sql';
     import PlaylistInfo from '$lib/components/islands/PlaylistInfo.svelte';
-    import type { AuthUser } from '$lib/server/auth';
 
     export let data: LayoutServerData;
 
@@ -43,6 +42,7 @@
         : null;
 
     $: ({ myChannels, mySubscriptions } = data);
+    $: userAsUser = data.user ? (data.user as User) : null;
 </script>
 
 <!-- Enable dark-mode detection and switching -->
@@ -79,7 +79,7 @@
             <UserInfo
                 isFollowing={data.island.data.isFollowing}
                 userInfo={data.island.data.userData}
-                user={data.user}
+                user={userAsUser}
             />
         {/if}
 

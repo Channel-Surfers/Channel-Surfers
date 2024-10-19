@@ -23,17 +23,27 @@
         followLoading = true;
         switch (action) {
             case 'follow': {
+                if (isFollowing) {
+                    const message = `Attempted to follow a user you're already following`;
+                    console.error(message);
+                    toast.error(message);
+                }
                 // eagerly assume action success
                 isFollowing = true;
 
                 fetch(`/api/u/${userInfo.username}/follow`, {
                     method: 'POST',
                 })
-                    .then(() => {
+                    .then(async (res) => {
+                        if (!res.ok) {
+                            throw new Error(`Failed to follow user: ${await res.text()}`);
+                        }
                         followLoading = false;
                     })
                     .catch((e) => {
-                        console.log(e);
+                        console.error(e);
+                        const message = `Failed to follow user`;
+                        toast.error(message);
                         isFollowing = false;
                         followLoading = false;
                     });
@@ -41,6 +51,28 @@
                 break;
             }
             case 'unfollow': {
+                if (!isFollowing) {
+                    const message = `Attempted to unfollow a user you're not following`;
+                    console.error(message);
+                    toast.error(message);
+                }
+                isFollowing = false;
+                fetch(`/api/u/${userInfo.username}/follow`, {
+                    method: 'DELETE',
+                })
+                    .then(async (res) => {
+                        if (!res.ok) {
+                            throw new Error(`Failed to unfollow user: ${await res.text()}`);
+                        }
+                        followLoading = false;
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                        const message = `Failed to unfollow user`;
+                        toast.error(message);
+                        isFollowing = true;
+                        followLoading = false;
+                    });
             }
         }
     };
@@ -69,9 +101,15 @@
             </div>
             {#if user}
                 {#if isFollowing}
-                    <Button variant="outline" on:click={updateFollow('follow')}>Unfollow</Button>
+                    <Button
+                        disabled={followLoading}
+                        variant="outline"
+                        on:click={updateFollow('unfollow')}>Unfollow</Button
+                    >
                 {:else}
-                    <Button on:click={updateFollow('follow')}>Follow</Button>
+                    <Button disabled={followLoading} on:click={updateFollow('follow')}
+                        >Follow</Button
+                    >
                 {/if}
             {:else}
                 <Tooltip.Root>

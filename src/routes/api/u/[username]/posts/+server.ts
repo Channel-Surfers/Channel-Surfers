@@ -3,7 +3,6 @@ import { error, json } from '@sveltejs/kit';
 import { getPosts } from '$lib/server/services/content';
 import { getDb } from '$lib/server';
 import { is } from '$lib/util';
-import { getUserByUsername } from '$lib/server/services/users';
 
 export const GET: RequestHandler = async ({ locals, params: { username }, url }) => {
     const page = +(url.searchParams.get('page') ?? 0);
