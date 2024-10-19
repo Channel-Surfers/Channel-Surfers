@@ -44,7 +44,6 @@
 </script>
 
 <ScrollArea class="mx-2 flex h-full max-h-full flex-col items-center">
-    <Post />
     {#each buffer as post}
         <Post {post} {signed_in} />
     {/each}
