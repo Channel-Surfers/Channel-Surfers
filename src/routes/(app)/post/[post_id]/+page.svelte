@@ -18,6 +18,7 @@
     import { Button } from '$lib/shadcn/components/ui/button';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
     import { gfmPlugin } from 'svelte-exmarkdown/gfm';
+    import Elapsed from '$lib/components/Elapsed.svelte';
 
     export let data;
     let user_vote: 'UP' | 'DOWN' | null = data.user_vote;
@@ -90,12 +91,15 @@
                 <Player title={data.post.title} videoId={data.post.videoId} />
             </AspectRatio>
             <!-- Tags -->
-            <div class="flex max-w-full gap-1.5 overflow-scroll p-2">
-                {#each data.tags as tag}
-                    <Badge style="background: {tag.color}">
-                        {tag.name}
-                    </Badge>
-                {/each}
+            <div class="flex justify-between">
+                <div class="flex max-w-full gap-1.5 overflow-scroll p-2">
+                    {#each data.tags as tag}
+                        <Badge style="background: {tag.color}">
+                            {tag.name}
+                        </Badge>
+                    {/each}
+                </div>
+                <Elapsed date={data.post.createdOn} />
             </div>
             <!-- Buttons/Stats -->
             <div class="my-4 flex flex-row items-center items-center justify-between">
