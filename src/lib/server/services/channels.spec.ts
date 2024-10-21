@@ -119,7 +119,7 @@ describe.concurrent('channels suite', () => {
             const { createdChannel, subscriptionCount } = mustGenerate(generated);
 
             const channelInfo = await getChannelInfo(db, createdChannel.id);
-            expect(channelInfo.subscriptionsCount).toStrictEqual(subscriptionCount);
+            expect(channelInfo.subscribers).toStrictEqual(subscriptionCount);
         },
         generateChannelAndSubs
     );
@@ -130,7 +130,7 @@ describe.concurrent('channels suite', () => {
             const { createdChannel } = mustGenerate(generated);
 
             const channelInfo = await getChannelInfo(db, createdChannel.id);
-            expect(channelInfo.subscriptionsCount).toStrictEqual(0);
+            expect(channelInfo.subscribers).toStrictEqual(0);
         },
         generateUserAndPublicChannel
     );

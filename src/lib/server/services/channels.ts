@@ -61,37 +61,8 @@ export type UserSubscription = Awaited<ReturnType<typeof getUserSubscriptions>>[
  * @param db PostgreSQL db
  * @param channelId identifies a particular channel
  */
-export const getChannelInfo = async (
-    db: DB,
-    channelId: string
-): Promise<Channel & { subscriptionsCount: number }> => {
-    const [ret] = await db
-        .select({
-            id: channelTable.id,
-            icon: channelTable.icon,
-            bannerImage: channelTable.bannerImage,
-            name: channelTable.name,
-            description: channelTable.description,
-            guidelines: channelTable.guidelines,
-            createdBy: channelTable.createdBy,
-            createdOn: channelTable.createdOn,
-            updatedOn: channelTable.updatedOn,
-            subscriptionsCount: countDistinct(subscriptionTable.id),
-        })
-        .from(channelTable)
-        .leftJoin(subscriptionTable, eq(channelTable.id, subscriptionTable.channelId)) // Ensure you're joining on the correct foreign key
-        .where(eq(channelTable.id, channelId))
-        .groupBy(
-            channelTable.id,
-            channelTable.icon,
-            channelTable.bannerImage,
-            channelTable.name,
-            channelTable.description,
-            channelTable.guidelines,
-            channelTable.createdBy,
-            channelTable.createdOn,
-            channelTable.updatedOn
-        );
+export const getChannelInfo = async (db: DB, channelId: string): Promise<Channel> => {
+    const [ret] = await db.select().from(channelTable).where(eq(channelTable.id, channelId));
     return ret;
 };
 export type ChannelInfo = Awaited<ReturnType<typeof getChannelInfo>>;
