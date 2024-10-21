@@ -21,40 +21,38 @@
     import Elapsed from '$lib/components/Elapsed.svelte';
 
     export let data;
-    let user_vote: 'UP' | 'DOWN' | null = data.user_vote;
-    let upvotes = data.post.upvotes;
-    let downvotes = data.post.downvotes;
+    let { userVote, post: { upvotes, downvotes } } = data;
 
     const vote = async (dir: 'UP' | 'DOWN') => {
-        if (user_vote === 'UP') {
+        if (userVote === 'UP') {
             upvotes -= 1;
-        } else if (user_vote === 'DOWN') {
+        } else if (userVote === 'DOWN') {
             downvotes -= 1;
         }
 
-        if (user_vote === dir) {
-            user_vote = null;
+        if (userVote === dir) {
+            userVote = null;
         } else {
             if (dir === 'UP') {
                 upvotes += 1;
             } else {
                 downvotes += 1;
             }
-            user_vote = dir;
+            userVote = dir;
         }
 
         const res = await fetch(`/api/post/${data.post.id}/vote`, {
             method: 'POST',
-            body: `${user_vote}`,
+            body: `${userVote}`,
         });
 
         if (res.ok) {
             const ret = await res.json();
             upvotes = ret.upvotes;
             downvotes = ret.downvotes;
-            user_vote = ret.vote;
+            userVote = ret.vote;
         } else {
-            user_vote = data.user_vote;
+            userVote = data.userVote;
             toast.error('Unexpected error while submitting vote');
         }
     };
@@ -123,8 +121,8 @@
                     <Toggle
                         size="sm"
                         class="hover:text-upvote data-[state=on]:text-upvote"
-                        disabled={!data.signed_in}
-                        pressed={user_vote === 'UP'}
+                        disabled={!data.signedIn}
+                        pressed={userVote === 'UP'}
                         on:click={() => vote('UP')}
                     >
                         <ArrowUp />
@@ -135,8 +133,8 @@
                     <Toggle
                         size="sm"
                         class="hover:text-downvote data-[state=on]:text-downvote"
-                        disabled={!data.signed_in}
-                        pressed={user_vote === 'DOWN'}
+                        disabled={!data.signedIn}
+                        pressed={userVote === 'DOWN'}
                         on:click={() => vote('DOWN')}
                     >
                         <ArrowDown />
