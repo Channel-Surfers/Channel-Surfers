@@ -165,11 +165,11 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
     }
 
     if (filter.after) {
-        conditions.push(lte(postTable.createdOn, filter.after));
+        conditions.push(gte(postTable.createdOn, filter.after));
     }
 
     if (filter.before) {
-        conditions.push(gte(postTable.createdOn, filter.before));
+        conditions.push(lte(postTable.createdOn, filter.before));
     }
 
     if (filter.requesterId) {
