@@ -3,7 +3,7 @@ import type { Channel } from '$lib/server/db/channels.sql';
 import type { PageServerLoad } from './$types';
 
 export const load = (async () => {
-    const db = await getDb();
+    const _db = await getDb();
 
     return {
         channels: [] as Channel[],
