@@ -22,7 +22,6 @@ export const POST: RequestHandler = async ({ locals, params }) => {
     let follow;
     try {
         follow = await followUser(db, locals.user.id, user.id);
-        console.log(follow);
     } catch (e: unknown) {
         if (e instanceof Error) {
             throw error(500, 'An unknown error occurred');

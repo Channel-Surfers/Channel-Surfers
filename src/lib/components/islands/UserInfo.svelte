@@ -80,48 +80,46 @@
 
 <Card.Root>
     <Card.Header>
-        <div class="flex flex-row items-center justify-between">
-            <div class="flex flex-row items-center space-x-4">
-                {#if userInfo}
-                    <Avatar.Root class="h-12 w-12">
-                        <Avatar.Image src={userInfo.profileImage || ''} alt={userInfo.username} />
-                        <Avatar.Fallback class="font-bold"
-                            >{userInfo.username[0]?.toUpperCase() || '?'}</Avatar.Fallback
-                        >
-                    </Avatar.Root>
-                {:else}
-                    <Skeleton class="h-12 w-12 rounded-full" />
-                {/if}
-                {#if userInfo}
-                    <h1 class="text-xl font-bold">u/{userInfo.username}</h1>
-                {:else}
-                    <h1 class="text-xl font-bold">u/</h1>
-                    <Skeleton class="h-4 w-[100px]" />
-                {/if}
+        <div class="flex flex-col">
+            <div class="flex flex-row items-center justify-between">
+                <div class="flex flex-row items-center space-x-4">
+                    {#if userInfo}
+                        <Avatar.Root class="h-12 w-12">
+                            <Avatar.Image
+                                src={userInfo.profileImage || ''}
+                                alt={userInfo.username}
+                            />
+                            <Avatar.Fallback class="font-bold"
+                                >{userInfo.username[0]?.toUpperCase() || '?'}</Avatar.Fallback
+                            >
+                        </Avatar.Root>
+                    {:else}
+                        <Skeleton class="h-12 w-12 rounded-full" />
+                    {/if}
+                    {#if userInfo}
+                        <h1 class="text-xl font-bold">u/{userInfo.username}</h1>
+                    {:else}
+                        <h1 class="text-xl font-bold">u/</h1>
+                        <Skeleton class="h-4 w-[100px]" />
+                    {/if}
+                </div>
             </div>
-            {#if user}
-                {#if isFollowing}
-                    <Button
-                        disabled={followLoading}
-                        variant="outline"
-                        on:click={updateFollow('unfollow')}>Unfollow</Button
-                    >
-                {:else}
-                    <Button disabled={followLoading} on:click={updateFollow('follow')}
-                        >Follow</Button
-                    >
-                {/if}
-            {:else}
-                <Tooltip.Root>
-                    <Tooltip.Trigger>
-                        <Button disabled>Follow</Button>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>
-                        <p>Sign in to follow</p>
-                    </Tooltip.Content>
-                </Tooltip.Root>
-            {/if}
         </div>
     </Card.Header>
-    <Card.Content></Card.Content>
+    <Card.Content>
+        {#if isFollowing}
+            <Button
+                class="w-full"
+                disabled={followLoading}
+                variant="outline"
+                on:click={updateFollow('unfollow')}>Unfollow</Button
+            >
+        {:else}
+            <Button
+                class="w-full"
+                disabled={followLoading || !user}
+                on:click={updateFollow('follow')}>Follow</Button
+            >
+        {/if}
+    </Card.Content>
 </Card.Root>
