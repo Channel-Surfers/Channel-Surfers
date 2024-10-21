@@ -465,9 +465,7 @@ describe.concurrent('content suite', () => {
                 username: users[0].username,
             });
 
-            const exp = genPosts.filter(
-                (p) => p.createdBy === users[0].id && p.createdOn >= after
-            );
+            const exp = genPosts.filter((p) => p.createdBy === users[0].id && p.createdOn >= after);
             expect(posts.map((p) => p.id)).toEqual(exp.map((p) => p.id));
         }
     );

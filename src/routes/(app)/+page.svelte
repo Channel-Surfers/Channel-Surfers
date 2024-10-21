@@ -32,5 +32,5 @@
 </svelte:head>
 
 <div class="h-[100vh] w-full">
-    <InfiniteScroll initBuffer={data.initialPosts} getPosts={getPosts} signedIn={!!data.user} />
+    <InfiniteScroll initBuffer={data.initialPosts} {getPosts} signedIn={!!data.user} />
 </div>

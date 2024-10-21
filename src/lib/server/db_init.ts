@@ -431,9 +431,7 @@ export default async (_db: DB) => {
 
     last = Date.now();
     const postVoteCount = await makePostVotes();
-    console.log(
-        `Inserted ${postVoteCount.toLocaleString()} post votes in ${Date.now() - last}ms`
-    );
+    console.log(`Inserted ${postVoteCount.toLocaleString()} post votes in ${Date.now() - last}ms`);
 
     last = Date.now();
     const comments = await makeComments(posts, users, 500);
