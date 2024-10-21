@@ -9,11 +9,11 @@ export const POST: RequestHandler = async ({ locals, params }) => {
     const db = await getDb();
 
     // get user by username
-    let user = await getUserByUsername(db, params.username);
+    const user = await getUserByUsername(db, params.username);
     if (!user) {
         throw error(404, `User of username ${params.username} could not be found`);
     }
-    let follow = await followUser(db, locals.user.id, user.id);
+    const follow = await followUser(db, locals.user.id, user.id);
     return json(follow, { status: 201 });
 };
 
@@ -21,7 +21,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
     if (!locals.user) return error(401);
     const db = await getDb();
 
-    let user = await getUserByUsername(db, params.username);
+    const user = await getUserByUsername(db, params.username);
     if (!user) {
         throw error(404, `User of username ${params.username} could not be found`);
     }
