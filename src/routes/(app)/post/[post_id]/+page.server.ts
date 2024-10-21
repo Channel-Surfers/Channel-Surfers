@@ -3,7 +3,7 @@ import { getPost, getUserPostVote } from '$lib/server/services/content';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { canViewChannel } from '$lib/server/services/channels';
-import { assert_auth } from '$lib/server/auth';
+import { assertAuth } from '$lib/server/auth';
 
 export const load: PageServerLoad = async (event) => {
     const db = await getDb();
@@ -14,7 +14,7 @@ export const load: PageServerLoad = async (event) => {
     if (!data) return error(404);
 
     if (data.private_channel) {
-        assert_auth(event);
+        assertAuth(event);
         if (!canViewChannel(db, event.locals.user.id, data.channel.id)) {
             return error(401);
         }

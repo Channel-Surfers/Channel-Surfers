@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
-import { assert_auth } from '$lib/server/auth';
+import { assertAuth } from '$lib/server/auth';
 
 export const load: PageServerLoad = async (event) => {
-    assert_auth(event);
+    assertAuth(event);
 
     return {
         username: event.locals.user.username,

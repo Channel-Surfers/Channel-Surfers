@@ -197,7 +197,7 @@ export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
  * };
  * ```
  */
-export function assert_auth(event: {
+export function assertAuth(event: {
     cookies: Cookies;
     locals: App.Locals;
     url: URL;
