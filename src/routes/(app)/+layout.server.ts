@@ -2,7 +2,7 @@ import { getDb } from '$lib/server';
 import type { User } from '$lib/server/db/users.sql';
 import { getChannelsByOwner, getUserSubscriptions } from '$lib/server/services/channels';
 import { getPostStatistics } from '$lib/server/services/content';
-import { getUserInfoByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
+import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route, locals, params }) => {
@@ -18,14 +18,22 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                 return { type: 'hide' } as const;
             }
             case '/(app)/u/[username]': {
-                const userData = await getUserInfoByUsername(db, params.username!);
+                const user = await getUserByUsername(db, params.username!);
+                if (!user) {
+                    return {
+                        type: 'user',
+                        exists: false,
+                    } as const;
+                }
+                const userData = await getUserStats(db, user.id);
                 return {
                     type: 'user',
+                    exists: true,
                     data: {
-                        userData,
+                        userData: { ...user, ...userData },
                         user: locals.user as User,
                         isFollowing: locals.user
-                            ? await userIsFollowing(db, userData.id, locals.user.id)
+                            ? await userIsFollowing(db, user.id, locals.user.id)
                             : false,
                     },
                 } as const;

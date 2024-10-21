@@ -5,55 +5,26 @@ import { getDb } from '$lib/server';
 import { getUserByUsername } from '$lib/server/services/users';
 
 export const POST: RequestHandler = async ({ locals, params }) => {
-    if (!locals.user || !locals.session) throw error(403, 'Must be logged in to follow users');
+    if (!locals.user) return error(401);
     const db = await getDb();
 
     // get user by username
-    let user;
-    try {
-        user = await getUserByUsername(db, params.username);
-    } catch (e: unknown) {
-        if (e instanceof Error) throw error(500, 'An unknown error occurred');
-        else throw e;
-    }
+    let user = await getUserByUsername(db, params.username);
     if (!user) {
         throw error(404, `User of username ${params.username} could not be found`);
     }
-    let follow;
-    try {
-        follow = await followUser(db, locals.user.id, user.id);
-    } catch (e: unknown) {
-        if (e instanceof Error) {
-            throw error(500, 'An unknown error occurred');
-        } else throw e;
-    }
+    let follow = await followUser(db, locals.user.id, user.id);
     return json(follow, { status: 201 });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-    if (!locals.user || !locals.session) throw error(403, 'Must be logged in to unfollow users');
+    if (!locals.user) return error(401);
     const db = await getDb();
 
-    let user;
-    try {
-        user = await getUserByUsername(db, params.username);
-    } catch (e: unknown) {
-        if (e instanceof Error) throw error(500, 'An unknown error occurred');
-        else throw e;
-    }
+    let user = await getUserByUsername(db, params.username);
     if (!user) {
         throw error(404, `User of username ${params.username} could not be found`);
     }
-    try {
-        await unfollowUser(db, locals.user.id, user.id);
-    } catch (e: unknown) {
-        if (e instanceof Error) {
-            if (e.message == 'not following') {
-                return new Response(null, { status: 204 });
-            } else {
-                throw error(500, 'An unknown error occurred');
-            }
-        } else throw e;
-    }
+    await unfollowUser(db, locals.user.id, user.id);
     return new Response(null, { status: 204 });
 };

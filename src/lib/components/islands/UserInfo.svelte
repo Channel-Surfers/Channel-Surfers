@@ -30,22 +30,18 @@
                 // eagerly assume action success
                 isFollowing = true;
 
-                fetch(`/api/u/${userInfo.username}/follow`, {
-                    method: 'POST',
-                })
-                    .then(async (res) => {
-                        if (!res.ok) {
-                            throw new Error(`Failed to follow user: ${await res.text()}`);
-                        }
-                        followLoading = false;
-                    })
-                    .catch((e) => {
-                        console.error(e);
-                        const message = `Failed to follow user`;
-                        toast.error(message);
-                        isFollowing = false;
-                        followLoading = false;
+                try {
+                    const res = await fetch(`/api/u/${userInfo.username}/follow`, {
+                        method: 'POST',
                     });
+                    if (!res.ok) {
+                        throw new Error(`Failed to follow user: ${await res.text()}`);
+                    }
+                } catch (e) {
+                    console.error(e);
+                    toast.error('Failed to follow user');
+                    isFollowing = false;
+                }
 
                 break;
             }
@@ -56,24 +52,22 @@
                     toast.error(message);
                 }
                 isFollowing = false;
-                fetch(`/api/u/${userInfo.username}/follow`, {
-                    method: 'DELETE',
-                })
-                    .then(async (res) => {
-                        if (!res.ok) {
-                            throw new Error(`Failed to unfollow user: ${await res.text()}`);
-                        }
-                        followLoading = false;
-                    })
-                    .catch((e) => {
-                        console.error(e);
-                        const message = `Failed to unfollow user`;
-                        toast.error(message);
-                        isFollowing = true;
-                        followLoading = false;
+                try {
+                    const res = await fetch(`/api/u/${userInfo.username}/follow`, {
+                        method: 'DELETE',
                     });
+                    if (!res.ok) {
+                        throw new Error(`Failed to unfollow user: ${await res.text()}`);
+                    }
+                    followLoading = false;
+                } catch (e) {
+                    console.error(e);
+                    toast.error('Failed to unfollow user');
+                    isFollowing = true;
+                }
             }
         }
+        followLoading = false;
     };
 </script>
 

@@ -75,7 +75,7 @@
         {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
-        {:else if data.island.type === 'user' && data.island.data}
+        {:else if data.island.type === 'user' && data.island.exists && data.island.data}
             <UserInfo
                 isFollowing={data.island.data.isFollowing}
                 userInfo={data.island.data.userData}
