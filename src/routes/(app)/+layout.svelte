@@ -45,6 +45,7 @@
         : null;
 
     $: ({ myChannels, mySubscriptions } = data);
+    $: userAsUser = data.user ? (data.user as User) : null;
 </script>
 
 <!-- Enable dark-mode detection and switching -->
@@ -75,7 +76,7 @@
     <!-- Right islands -->
     <div class="flex w-1/6 min-w-96 flex-col space-y-4 pr-4 pt-4">
         {#if data.island.type === 'home' && data.island.data}
-            <HomeInfo stats={data.island.data} />
+            <HomeInfo stats={data.island.data} user={userAsUser} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
         {/if}
 
