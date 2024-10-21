@@ -292,7 +292,7 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
         .orderBy(commentTable.createdOn)
         .limit(Math.floor(PAGE_SIZE / 2));
 
-    const CommentTree = firstLevelComments.map((c) => ({
+    const commentTree = firstLevelComments.map((c) => ({
         user: c.user,
         comment: c.comment,
         children: secondLevelComments
@@ -304,7 +304,7 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
             })),
     }));
 
-    return CommentTree;
+    return commentTree;
 };
 
 export const createChannelReport = async (

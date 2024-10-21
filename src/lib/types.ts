@@ -39,7 +39,7 @@ export interface ChannelData {
 }
 
 export interface CommentData {
-    user: User; // may need to be User
+    user: User;
     comment: Comment;
     children: CommentData[];
 }
