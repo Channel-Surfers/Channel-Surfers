@@ -33,6 +33,7 @@ export default [
             '.svelte-kit/',
             'dist/',
             'tailwind.config.ts',
+            'vite.config.ts.*',
             'src/lib/shadcn/',
             'docs/',
             'drizle/',
@@ -40,6 +41,17 @@ export default [
     },
     {
         rules: {
+            camelcase: 'error',
+            eqeqeq: 'error',
+            'no-useless-assignment': 'warn',
+            'consistent-return': 'error',
+            'dot-notation': 'error',
+            'no-unneeded-ternary': 'warn',
+            'object-shorthand': 'error',
+            'prefer-const': 'warn',
+            'prefer-destructuring': 'error',
+            'no-useless-rename': 'error',
+            'no-cond-assign': 'error',
             '@typescript-eslint/no-unused-vars': [
                 'error', // Change to 'error' if you want it to be an error
                 {
