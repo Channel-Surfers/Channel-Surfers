@@ -41,7 +41,12 @@ export default [
     },
     {
         rules: {
-            camelcase: 'error',
+            camelcase: [
+                'error',
+                {
+                    ignoreImports: true,
+                },
+            ],
             eqeqeq: 'error',
             'no-useless-assignment': 'warn',
             'consistent-return': 'error',

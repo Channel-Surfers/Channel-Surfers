@@ -159,25 +159,25 @@ export interface AuthUser {
  * the desired form
  */
 const determineOrigin = () => {
-    let base_url = BASE_URL ?? 'localhost:5173';
-    if (base_url.endsWith('/')) {
-        base_url = base_url.substring(0, BASE_URL.length - 1);
+    let baseUrl = BASE_URL ?? 'localhost:5173';
+    if (baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.substring(0, BASE_URL.length - 1);
     }
 
-    if (!base_url.startsWith('http')) {
-        base_url = `http${dev ? '' : 's'}://${base_url}`;
+    if (!baseUrl.startsWith('http')) {
+        baseUrl = `http${dev ? '' : 's'}://${baseUrl}`;
     }
-    return base_url;
+    return baseUrl;
 };
 
-const base_url = determineOrigin();
+const baseUrl = determineOrigin();
 
 export const discord = new Discord(
     DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET,
-    `${base_url}/signin/discord/callback`
+    `${baseUrl}/signin/discord/callback`
 );
 
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
-    redirectURI: `${base_url}/signin/github/callback`,
+    redirectURI: `${baseUrl}/signin/github/callback`,
 });

@@ -15,7 +15,7 @@ const lock = new Mutex();
 
 const tableNames: string[] = [];
 for (const tableName in db._.tableNamesMap) {
-    if (tableName != '') tableNames.push(tableName);
+    if (tableName !== '') tableNames.push(tableName);
 }
 
 export const mustGenerate = <T>(generated: T | null) => {
@@ -59,13 +59,13 @@ export function testWithDb<T>(
 // mimics an iterator, but not an actual iterator so we don't need to do `.next().value`
 export const sequentialDates = (
     start: Date | number = new Date(2020, 0),
-    seconds_diff: number = 60 * 60 * 24
+    secondsDiff: number = 60 * 60 * 24
 ) => {
     let curr = +start;
     const r = {
         next: () => {
             const ret = curr;
-            curr += seconds_diff * 1000;
+            curr += secondsDiff * 1000;
             return new Date(ret);
         },
         take: (n: number) => {

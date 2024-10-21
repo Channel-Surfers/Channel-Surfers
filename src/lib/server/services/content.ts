@@ -33,13 +33,13 @@ import {
 } from '../db/reports.channels.posts.sql';
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
 
-export const getPost = async (db: DB, post_id: uuid) => {
+export const getPost = async (db: DB, postId: uuid) => {
     const [a] = await db
         .select()
         .from(postTable)
         .innerJoin(channelTable, eq(channelTable.id, postTable.channelId))
         .innerJoin(userTable, eq(userTable.id, postTable.createdBy))
-        .where(eq(postTable.id, post_id));
+        .where(eq(postTable.id, postId));
 
     if (!a) return null;
 
@@ -49,14 +49,14 @@ export const getPost = async (db: DB, post_id: uuid) => {
         .select({ name: channelTagsTable.name, color: channelTagsTable.color })
         .from(postTagTable)
         .innerJoin(channelTagsTable, eq(channelTagsTable.id, postTagTable.tagId))
-        .where(eq(postTagTable.postId, post_id));
+        .where(eq(postTagTable.postId, postId));
 
     return {
         post,
         user,
         channel,
         tags,
-        private_channel: false,
+        privateChannel: false,
     };
 };
 

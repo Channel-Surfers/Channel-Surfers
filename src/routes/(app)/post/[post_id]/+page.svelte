@@ -21,34 +21,34 @@
     import Elapsed from '$lib/components/Elapsed.svelte';
 
     export let data;
-    let { user_vote } = data;
+    let { userVote } = data;
 
     const vote = async (dir: 'UP' | 'DOWN') => {
-        if (user_vote === dir) {
-            user_vote = null;
+        if (userVote === dir) {
+            userVote = null;
         } else {
-            user_vote = dir;
+            userVote = dir;
         }
-        console.log('user_vote', user_vote);
+        console.log('user_vote', userVote);
         const res = await fetch(`/api/post/${data.post.id}/vote`, {
             method: 'POST',
-            body: `${user_vote}`,
+            body: `${userVote}`,
         });
 
         if (res.ok) {
             const ret = await res.json();
             data.post.upvotes = ret.upvotes;
             data.post.downvotes = ret.downvotes;
-            user_vote = ret.vote;
+            userVote = ret.vote;
             console.log(ret);
-            console.log('user_vote', user_vote);
+            console.log('user_vote', userVote);
         } else {
-            user_vote = data.user_vote;
+            ({ userVote } = data);
             toast.error('Unexpected error while submitting vote');
         }
     };
 
-    const md_plugins = [gfmPlugin()];
+    const mdPlugins = [gfmPlugin()];
 </script>
 
 <svelte:head>
@@ -103,7 +103,7 @@
                             channel: {
                                 name: data.channel.name,
                                 id: data.channel.id,
-                                private: data.private_channel,
+                                private: data.privateChannel,
                             },
                         }}
                     />
@@ -113,7 +113,7 @@
                         size="sm"
                         class="hover:text-upvote data-[state=on]:text-upvote"
                         disabled={!data.signed_in}
-                        pressed={user_vote === 'UP'}
+                        pressed={userVote === 'UP'}
                         on:click={() => vote('UP')}
                     >
                         <ArrowUp />
@@ -129,7 +129,7 @@
                         size="sm"
                         class="hover:text-downvote data-[state=on]:text-downvote"
                         disabled={!data.signed_in}
-                        pressed={user_vote === 'DOWN'}
+                        pressed={userVote === 'DOWN'}
                         on:click={() => vote('DOWN')}
                     >
                         <ArrowDown />
@@ -140,7 +140,7 @@
             <!-- Description -->
             {#if data.post.description}
                 <p class="markdown">
-                    <Markdown md={data.post.description} plugins={md_plugins} />
+                    <Markdown md={data.post.description} plugins={mdPlugins} />
                 </p>
             {/if}
         </Card.Content>

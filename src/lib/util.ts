@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
-export const sleep = (delay_ms: number): Promise<void> =>
-    new Promise((res) => setTimeout(() => res(), delay_ms));
+export const sleep = (delayMs: number): Promise<void> =>
+    new Promise((res) => setTimeout(() => res(), delayMs));
 
 let intersectionObserver: IntersectionObserver | undefined;
 const getIntersectionObserver = (): IntersectionObserver => {
@@ -39,7 +39,7 @@ export const is = <const T extends string[]>(t: T, v: unknown): v is T[number] =
     return typeof v === 'string' && t.includes(v);
 };
 
-export const elapsed_time = (event: Date): string => {
+export const elapsedTime = (event: Date): string => {
     dayjs.extend(relativeTime);
     return dayjs(event).fromNow();
 };

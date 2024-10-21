@@ -28,7 +28,7 @@ let db: DB;
 
 const rand = (n: number, o = 0): number => o + Math.floor(Math.random() * (n - o));
 
-const pick_n = <T>(arr: T[], n: number): T[] => {
+const pickN = <T>(arr: T[], n: number): T[] => {
     if (arr.length < n) throw new Error(`(n = ${n}) < (arr.length = ${arr.length})`);
     const a = [...arr];
     if (a.length === n) return a;
@@ -37,25 +37,25 @@ const pick_n = <T>(arr: T[], n: number): T[] => {
         .map(() => a.splice(rand(a.length), 1)[0]);
 };
 
-const make_users = async (count: number) => {
-    const user_data = faker.helpers.uniqueArray(faker.word.sample, count).map((username) => ({
+const makeUsers = async (count: number) => {
+    const userData = faker.helpers.uniqueArray(faker.word.sample, count).map((username) => ({
         username,
         profileImage: faker.image.avatar(),
     }));
 
     const users: User[] = [];
-    while (user_data.length) {
-        users.push(...(await db.insert(userTable).values(user_data.splice(0, 10_000)).returning()));
+    while (userData.length) {
+        users.push(...(await db.insert(userTable).values(userData.splice(0, 10_000)).returning()));
     }
     return users;
 };
 
-const make_follows = async (users: User[]) => {
+const makeFollows = async (users: User[]) => {
     return await db
         .insert(followTable)
         .values(
-            pick_n(users, Math.floor(users.length * 0.8)).flatMap((u) =>
-                pick_n(
+            pickN(users, Math.floor(users.length * 0.8)).flatMap((u) =>
+                pickN(
                     users.filter((s) => s.id !== u.id),
                     rand(20, 1)
                 ).map((f) => ({
@@ -67,12 +67,12 @@ const make_follows = async (users: User[]) => {
         .returning();
 };
 
-const make_user_blocks = async (users: User[]) => {
+const makeUserBlocks = async (users: User[]) => {
     return await db
         .insert(userBlockTable)
         .values(
-            pick_n(users, Math.floor(users.length * 0.5)).flatMap((u) =>
-                pick_n(
+            pickN(users, Math.floor(users.length * 0.5)).flatMap((u) =>
+                pickN(
                     users.filter((s) => s.id !== u.id),
                     rand(5, 1)
                 ).map((b) => ({
@@ -84,11 +84,11 @@ const make_user_blocks = async (users: User[]) => {
         .returning();
 };
 
-const make_channels = async (users: User[], count: number) => {
+const makeChannels = async (users: User[], count: number) => {
     const channels = await db
         .insert(channelTable)
         .values(
-            pick_n(users, count).map((u) => ({
+            pickN(users, count).map((u) => ({
                 name: faker.internet.domainWord().substring(0, 25),
                 description: faker.lorem.sentences(),
                 guidelines: faker.lorem.sentences(),
@@ -106,9 +106,9 @@ const make_channels = async (users: User[], count: number) => {
         }))
     );
 
-    const channel_tags: { [id: uuid]: ChannelTag[] } = {};
+    const channelTags: { [id: uuid]: ChannelTag[] } = {};
     for (const channel of channels) {
-        channel_tags[channel.id] = await db
+        channelTags[channel.id] = await db
             .insert(channelTagsTable)
             .values(
                 faker.helpers.uniqueArray(faker.hacker.noun, 5).map((word) => ({
@@ -120,10 +120,10 @@ const make_channels = async (users: User[], count: number) => {
             .returning();
     }
 
-    return { channels, channel_tags };
+    return { channels, channelTags };
 };
 
-const make_roles = async (channels: Channel[]) => {
+const makeRoles = async (channels: Channel[]) => {
     const perms = [
         'canCreateRoles',
         'canViewRoles',
@@ -152,7 +152,7 @@ const make_roles = async (channels: Channel[]) => {
         'canUnregisterEvents',
     ] as const;
 
-    const perm_from_num = (n: number): { [key in (typeof perms)[number]]: boolean } =>
+    const permFromNum = (n: number): { [key in (typeof perms)[number]]: boolean } =>
         perms.reduce((a, b, i) => ({ ...a, [b]: ((n >> i) & 1) === 1 }), {}) as {
             [key in (typeof perms)[number]]: boolean;
         };
@@ -165,7 +165,7 @@ const make_roles = async (channels: Channel[]) => {
                 title: faker.person.jobDescriptor(),
                 isOwner: false,
                 ranking: i,
-                ...perm_from_num(rand(2 ** perms.length)),
+                ...permFromNum(rand(2 ** perms.length)),
             }))
     );
 
@@ -177,12 +177,12 @@ const make_roles = async (channels: Channel[]) => {
     );
 };
 
-const make_user_roles = async (users: User[], roles: { [role: uuid]: Role[] }) => {
+const makeUserRoles = async (users: User[], roles: { [role: uuid]: Role[] }) => {
     return await db
         .insert(userRoleTable)
         .values(
             Object.keys(roles).flatMap((cid) =>
-                pick_n(users, rand(15, 5)).map((u) => ({
+                pickN(users, rand(15, 5)).map((u) => ({
                     userId: u.id,
                     roleId: faker.helpers.arrayElement(roles[cid]).id,
                 }))
@@ -191,12 +191,12 @@ const make_user_roles = async (users: User[], roles: { [role: uuid]: Role[] }) =
         .returning();
 };
 
-const make_subscriptions = async (users: User[], channels: Channel[]) => {
+const makeSubscriptions = async (users: User[], channels: Channel[]) => {
     return await db
         .insert(subscriptionTable)
         .values(
-            pick_n(users, Math.floor(users.length * 0.5)).flatMap((u) =>
-                pick_n(channels, rand(Math.floor(channels.length * 0.75), 1)).map((c) => ({
+            pickN(users, Math.floor(users.length * 0.5)).flatMap((u) =>
+                pickN(channels, rand(Math.floor(channels.length * 0.75), 1)).map((c) => ({
                     channelId: c.id,
                     userId: u.id,
                 }))
@@ -205,13 +205,13 @@ const make_subscriptions = async (users: User[], channels: Channel[]) => {
         .returning();
 };
 
-const make_posts = async (
+const makePosts = async (
     users: User[],
     channels: Channel[],
-    channel_tags: { [id: uuid]: ChannelTag[] },
+    channelTags: { [id: uuid]: ChannelTag[] },
     count: number
 ) => {
-    const video_ids = [
+    const videoIds = [
         'e0245338-7c04-4a6c-b44f-0e279a849cf5',
         'ee59e892-7838-46d1-876d-49efb4feb7ba',
         '6df184ad-6175-4dbb-88b0-7bb83c88e74c',
@@ -230,16 +230,16 @@ const make_posts = async (
                     channelId: channels[rand(channels.length)].id,
                     createdOn: faker.date.past({ years: 3 }),
                     createdBy: users[rand(users.length)].id,
-                    videoId: video_ids[rand(video_ids.length)],
+                    videoId: videoIds[rand(videoIds.length)],
                     altText: faker.lorem.sentence(),
                 }))
         )
         .returning();
 
     for (const post of posts) {
-        const fill = pick_n(
-            channel_tags[post.channelId],
-            rand(channel_tags[post.channelId].length, 1)
+        const fill = pickN(
+            channelTags[post.channelId],
+            rand(channelTags[post.channelId].length, 1)
         ).map((tag) => {
             return {
                 postId: post.id,
@@ -254,7 +254,7 @@ const make_posts = async (
     return posts;
 };
 
-const make_post_votes = async () => {
+const makePostVotes = async () => {
     // Build votes through a single query rather than drizzle.  This is a
     // little more complex, but better since we are not sending as much data to
     // the database, which is especially beneficial when we're adding data to
@@ -299,9 +299,9 @@ const make_post_votes = async () => {
 //
 // The actual lenth can be calculated as
 // sum _{i=0} ^5 floor(count / 2^i)
-const make_comments = async (posts: Post[], users: User[], count: number) => {
+const makeComments = async (posts: Post[], users: User[], count: number) => {
     const now = Date.now();
-    const new_comment = (replyTo: Comment | null): NewComment => {
+    const newComment = (replyTo: Comment | null): NewComment => {
         const post = faker.helpers.arrayElement(posts);
         return {
             postId: post.id,
@@ -317,22 +317,22 @@ const make_comments = async (posts: Post[], users: User[], count: number) => {
 
     const comments = await db
         .insert(commentTable)
-        .values(Array(count).fill(null).map(new_comment))
+        .values(Array(count).fill(null).map(newComment))
         .returning();
 
-    let last_wave = comments;
+    let lastWave = comments;
     for (let i = 0; i < 5; ++i) {
-        last_wave = await db
+        lastWave = await db
             .insert(commentTable)
-            .values(pick_n(last_wave, Math.floor((count /= 2))).map((c) => new_comment(c)))
+            .values(pickN(lastWave, Math.floor((count /= 2))).map((c) => newComment(c)))
             .returning();
-        comments.push(...last_wave);
+        comments.push(...lastWave);
     }
 
     return comments;
 };
 
-const make_comment_votes = async () => {
+const makeCommentVotes = async () => {
     // Build votes through a single query rather than drizzle.  This is a
     // little more complex, but better since we are not sending as much data to
     // the database, which is especially beneficial when we're adding data to
@@ -384,65 +384,65 @@ export default async (_db: DB) => {
         return;
     }
 
-    const map_len = <V>(map: { [key: uuid]: V[] }): number =>
+    const mapLen = <V>(map: { [key: uuid]: V[] }): number =>
         Object.values(map).reduce((a, b) => a + b.length, 0);
 
     let last = Date.now();
-    const users = await make_users(2000);
+    const users = await makeUsers(2000);
     console.log(`Inserted ${users.length.toLocaleString()} users in ${Date.now() - last}ms`);
 
     last = Date.now();
-    const follows = await make_follows(users);
+    const follows = await makeFollows(users);
     console.log(`Inserted ${follows.length.toLocaleString()} follows in ${Date.now() - last}ms`);
 
     last = Date.now();
-    const user_blocks = await make_user_blocks(users);
+    const userBlocks = await makeUserBlocks(users);
     console.log(
-        `Inserted ${user_blocks.length.toLocaleString()} user blocks in ${Date.now() - last}ms`
+        `Inserted ${userBlocks.length.toLocaleString()} user blocks in ${Date.now() - last}ms`
     );
 
     last = Date.now();
-    const { channels, channel_tags } = await make_channels(users, 40);
+    const { channels, channelTags } = await makeChannels(users, 40);
     console.log(
-        `Inserted ${channels.length.toLocaleString()} channels with ${map_len(channel_tags).toLocaleString()} tags in ${Date.now() - last}ms`
+        `Inserted ${channels.length.toLocaleString()} channels with ${mapLen(channelTags).toLocaleString()} tags in ${Date.now() - last}ms`
     );
 
     last = Date.now();
-    const posts = await make_posts(users, channels, channel_tags, 200);
+    const posts = await makePosts(users, channels, channelTags, 200);
     console.log(`Inserted ${posts.length.toLocaleString()} posts in ${Date.now() - last}ms`);
 
     last = Date.now();
-    const subscriptions = await make_subscriptions(users, channels);
+    const subscriptions = await makeSubscriptions(users, channels);
     console.log(
         `Inserted ${subscriptions.length.toLocaleString()} subscriptions (avg of ${subscriptions.length / users.length} subs/user) in ${Date.now() - last}ms`
     );
 
     last = Date.now();
-    const roles = await make_roles(channels);
+    const roles = await makeRoles(channels);
     console.log(
-        `Inserted ${map_len(roles).toLocaleString()} roles (avg of ${map_len(roles) / channels.length} roles/channel) in ${Date.now() - last}ms`
+        `Inserted ${mapLen(roles).toLocaleString()} roles (avg of ${mapLen(roles) / channels.length} roles/channel) in ${Date.now() - last}ms`
     );
 
     last = Date.now();
-    const user_roles = await make_user_roles(users, roles);
+    const userRoles = await makeUserRoles(users, roles);
     console.log(
-        `Inserted ${user_roles.length.toLocaleString()} user roles in ${Date.now() - last}ms`
+        `Inserted ${userRoles.length.toLocaleString()} user roles in ${Date.now() - last}ms`
     );
 
     last = Date.now();
-    const post_vote_count = await make_post_votes();
+    const postVoteCount = await makePostVotes();
     console.log(
-        `Inserted ${post_vote_count.toLocaleString()} post votes in ${Date.now() - last}ms`
+        `Inserted ${postVoteCount.toLocaleString()} post votes in ${Date.now() - last}ms`
     );
 
     last = Date.now();
-    const comments = await make_comments(posts, users, 500);
+    const comments = await makeComments(posts, users, 500);
     console.log(`Inserted ${comments.length.toLocaleString()} comments in ${Date.now() - last}ms`);
 
     last = Date.now();
-    const comment_vote_count = await make_comment_votes();
+    const commentVoteCount = await makeCommentVotes();
     console.log(
-        `Inserted ${comment_vote_count.toLocaleString()} comment votes in ${Date.now() - last}ms`
+        `Inserted ${commentVoteCount.toLocaleString()} comment votes in ${Date.now() - last}ms`
     );
 
     console.log(`Init complete in ${Date.now() - start}ms`);

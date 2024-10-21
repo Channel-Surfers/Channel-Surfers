@@ -113,13 +113,13 @@ export const canViewChannel = async (db: DB, userId: uuid, channelId: uuid): Pro
 
     if (ret) return true;
 
-    const [user_perm] = await db
+    const [userPerm] = await db
         .select()
         .from(roleTable)
         .innerJoin(userRoleTable, eq(userRoleTable.roleId, roleTable.id))
         .where(and(eq(userRoleTable.userId, userId), eq(roleTable.channelId, channelId)));
 
-    return !!user_perm;
+    return !!userPerm;
 };
 
 export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {
