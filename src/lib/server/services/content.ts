@@ -304,7 +304,7 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
         .values({ postId, userId, vote })
         .onConflictDoUpdate({
             target: [postVoteTable.postId, postVoteTable.userId],
-            set: { vote: vote },
+            set: { vote },
         })
         .returning();
     return ret;

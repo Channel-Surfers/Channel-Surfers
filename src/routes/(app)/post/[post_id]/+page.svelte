@@ -21,7 +21,7 @@
     import Elapsed from '$lib/components/Elapsed.svelte';
 
     export let data;
-    let user_vote: 'UP' | 'DOWN' | null = data.user_vote;
+    let { user_vote } = data;
 
     const vote = async (dir: 'UP' | 'DOWN') => {
         if (user_vote === dir) {
