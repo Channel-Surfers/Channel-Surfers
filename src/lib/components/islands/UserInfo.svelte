@@ -1,7 +1,6 @@
 <script lang="ts">
     import * as Card from '$lib/shadcn/components/ui/card';
     import * as Avatar from '$lib/shadcn/components/ui/avatar/index';
-    import * as Tooltip from '$lib/shadcn/components/ui/tooltip/index.js';
     import type { User } from '$lib/server/db/users.sql';
     import type { UserStats } from '$lib/server/services/users';
     import Skeleton from '$lib/shadcn/components/ui/skeleton/skeleton.svelte';
