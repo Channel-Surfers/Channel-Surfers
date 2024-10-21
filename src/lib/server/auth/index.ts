@@ -189,7 +189,7 @@ export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
  * This will also assert that `event.locals.user` is not null, so it can be used without annoyance:
  * ```ts
  * export const load: PageServerLoad = async (event) => {
- *     assert_auth(event); // Auth user
+ *     assertAuth(event); // Auth user
  *
  *     return {
  *         username: event.locals.user.username, // There is no type error here for accessing `username`
