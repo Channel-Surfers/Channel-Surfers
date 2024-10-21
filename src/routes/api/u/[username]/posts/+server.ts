@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ locals, params: { username }, url })
     const posts = await getPosts(db, page, {
         requesterId: locals.user?.id,
         type: 'user',
-        username: username,
+        username,
         reverseSort,
         sort,
         filter,

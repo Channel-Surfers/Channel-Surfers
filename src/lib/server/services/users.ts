@@ -98,7 +98,7 @@ export const userIsFollowing = async (db: DB, userId: string, followerId: string
         .select()
         .from(followTable)
         .where(and(eq(followTable.userId, userId), eq(followTable.followerId, followerId)));
-    return follows.length == 1;
+    return follows.length === 1;
 };
 
 export const getUserByUsername = async (db: DB, username: string) => {
