@@ -1,4 +1,4 @@
-import { mustGenerate, testWithDb } from '$lib/testing/utils';
+import { testWithDb } from '$lib/testing/utils';
 import { describe } from 'vitest';
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
@@ -45,11 +45,7 @@ const generateUserAndFollowers =
 describe.concurrent('interactions suite', () => {
     testWithDb(
         'users can be followed',
-        async ({ expect, db, generated }) => {
-            const {
-                users: [user1, user2],
-            } = mustGenerate(generated);
-
+        async ({ expect, db }, { users: [user1, user2] }) => {
             const following = await followUser(db, user1.id, user2.id);
             expect(following.followerId).toStrictEqual(user1.id);
             expect(following.userId).toStrictEqual(user2.id);
@@ -59,12 +55,7 @@ describe.concurrent('interactions suite', () => {
 
     testWithDb(
         'users can be unfollowed',
-        async ({ db, expect, generated }) => {
-            const {
-                user,
-                followers: [follower],
-            } = mustGenerate(generated);
-
+        async ({ db, expect }, { user, followers: [follower] }) => {
             const unfollowed = await unfollowUser(db, follower.id, user.id);
             expect(unfollowed).toBeTruthy();
         },
@@ -73,10 +64,7 @@ describe.concurrent('interactions suite', () => {
 
     testWithDb(
         'users cannot duplicate follow',
-        async ({ expect, db, generated }) => {
-            const {
-                users: [user1, user2],
-            } = mustGenerate(generated);
+        async ({ expect, db }, { users: [user1, user2] }) => {
             const _following = await followUser(db, user1.id, user2.id);
             await expect(() => followUser(db, user1.id, user2.id)).rejects.toThrowError(
                 'already following'
@@ -87,10 +75,7 @@ describe.concurrent('interactions suite', () => {
 
     testWithDb(
         'user not following',
-        async ({ expect, db, generated }) => {
-            const {
-                users: [user1, user2],
-            } = mustGenerate(generated);
+        async ({ expect, db }, { users: [user1, user2] }) => {
             await expect(() => unfollowUser(db, user1.id, user2.id)).rejects.toThrowError(
                 'not following'
             );
