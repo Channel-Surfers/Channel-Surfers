@@ -1,6 +1,6 @@
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { countDistinct, eq, and } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import type { uuid } from '$lib/types';
 
 import { subscriptionTable } from '../db/subscriptions.sql';
