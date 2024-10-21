@@ -7,11 +7,15 @@ import { userTable } from './users.sql';
 export const followTable = pgTable(
     'follow',
     {
-        followerId: uuid('follower_id').notNull().references(() => userTable.id),
-        userId: uuid('user_id').notNull().references(() => userTable.id),
+        followerId: uuid('follower_id')
+            .notNull()
+            .references(() => userTable.id),
+        userId: uuid('user_id')
+            .notNull()
+            .references(() => userTable.id),
     },
     (table) => ({
-        pk: primaryKey({ columns: [table.userId, table.followerId] })
+        pk: primaryKey({ columns: [table.userId, table.followerId] }),
     })
 );
 
