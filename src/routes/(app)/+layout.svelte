@@ -30,9 +30,6 @@
         subscriptionsCount: 2,
     };
 
-    $: dummyUser = data.user
-        ? { ...(data.user as User), userStats: { numberOfUpvotes: 200, numberOfDownvotes: 100 } }
-        : null;
     $: dummyPlaylist = data.user
         ? {
               creator: data.user as User,
@@ -45,6 +42,7 @@
         : null;
 
     $: ({ myChannels, mySubscriptions } = data);
+    $: userAsUser = data.user ? (data.user as User) : null;
 </script>
 
 <!-- Enable dark-mode detection and switching -->
@@ -77,11 +75,15 @@
         {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
+        {:else if data.island.type === 'user' && data.island.exists && data.island.data}
+            <UserInfo
+                isFollowing={data.island.data.isFollowing}
+                userInfo={data.island.data.userData}
+                user={userAsUser}
+            />
         {/if}
 
         <ChannelInfo channel={dummyChannel} />
-
-        <UserInfo userInfo={dummyUser} />
 
         <PlaylistInfo playlistInfo={dummyPlaylist} />
 
