@@ -1,6 +1,6 @@
 import { getDb } from '$lib/server';
 import { getPost, getUserPostVote } from '$lib/server/services/content';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { canViewChannel } from '$lib/server/services/channels';
 import { assert_auth } from '$lib/server/auth';
