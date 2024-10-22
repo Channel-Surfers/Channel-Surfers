@@ -9,11 +9,16 @@
     import Input from '$lib/shadcn/components/ui/input/input.svelte';
     import Label from '$lib/shadcn/components/ui/label/label.svelte';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
+    import { toast, type ExternalToast } from 'svelte-sonner';
+    import { UploadIcon } from 'lucide-svelte';
+    import UserInfo from '$lib/components/islands/UserInfo.svelte';
+    import VideoUploadProgress from '$lib/components/VideoUploadProgress.svelte';
 
     export let data;
 
     let open = false;
     let value = '';
+    let formState: 'METADATA' | 'UPLOAD' = 'METADATA';
 
     $: selectedValue = data.channels.find((f) => f.name === value)?.name ?? 'Select a channel...';
 
@@ -22,6 +27,15 @@
         tick().then(() => {
             document.getElementById(triggerId)?.focus();
         });
+    }
+    function dummyToast() {
+        const y: ExternalToast = {
+            description: 'upload in progress. Please be patient',
+            componentProps: { title: 'awesome video' },
+            duration: 99999,
+            important: true,
+        };
+        const x = toast.custom(VideoUploadProgress, y);
     }
 </script>
 
@@ -70,4 +84,9 @@
             </Command.Root>
         </Popover.Content>
     </Popover.Root>
+
+    <Label>Upload Video</Label>
+    <Input type={'file'} />
 </form>
+
+<Button on:click={dummyToast}>toast</Button>
