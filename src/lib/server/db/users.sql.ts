@@ -17,6 +17,10 @@ export const userTable = pgTable('user', {
 
     discordId: bigint('discord_id', { mode: 'bigint' }).unique(undefined, { nulls: 'distinct' }),
     githubId: integer('github_id').unique(undefined, { nulls: 'distinct' }),
+
+    // Denormalise common aggregations
+    followers: integer('followers').notNull().default(0),
+    following: integer('following').notNull().default(0),
 });
 
 /**
