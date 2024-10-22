@@ -34,84 +34,96 @@
 <!-- public.channel -->
 <g id="node2" class="node">
 <title>public.channel</title>
-<polygon fill="#efefef" stroke="transparent" points="43.5,-627.5 43.5,-662.5 350.5,-662.5 350.5,-627.5 43.5,-627.5"/>
-<polygon fill="none" stroke="#000000" points="43.5,-627.5 43.5,-662.5 350.5,-662.5 350.5,-627.5 43.5,-627.5"/>
-<text text-anchor="start" x="75.6988" y="-640.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.channel</text>
-<text text-anchor="start" x="190.7332" y="-640.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
-<text text-anchor="start" x="224.938" y="-640.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="#efefef" stroke="transparent" points="43.5,-657.5 43.5,-692.5 350.5,-692.5 350.5,-657.5 43.5,-657.5"/>
+<polygon fill="none" stroke="#000000" points="43.5,-657.5 43.5,-692.5 350.5,-692.5 350.5,-657.5 43.5,-657.5"/>
+<text text-anchor="start" x="75.6988" y="-670.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.channel</text>
+<text text-anchor="start" x="190.7332" y="-670.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
+<text text-anchor="start" x="224.938" y="-670.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="#000000" points="43.5,-627.5 43.5,-657.5 350.5,-657.5 350.5,-627.5 43.5,-627.5"/>
+<text text-anchor="start" x="50.5" y="-638.9" font-family="Arial" font-size="14.00" fill="#000000">id    </text>
+<text text-anchor="start" x="95.594" y="-638.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-597.5 43.5,-627.5 350.5,-627.5 350.5,-597.5 43.5,-597.5"/>
-<text text-anchor="start" x="50.5" y="-608.9" font-family="Arial" font-size="14.00" fill="#000000">id    </text>
-<text text-anchor="start" x="95.594" y="-608.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<text text-anchor="start" x="50.5" y="-608.9" font-family="Arial" font-size="14.00" fill="#000000">name    </text>
+<text text-anchor="start" x="119.7132" y="-608.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-567.5 43.5,-597.5 350.5,-597.5 350.5,-567.5 43.5,-567.5"/>
-<text text-anchor="start" x="50.5" y="-578.9" font-family="Arial" font-size="14.00" fill="#000000">name    </text>
-<text text-anchor="start" x="119.7132" y="-578.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<text text-anchor="start" x="50.5" y="-578.9" font-family="Arial" font-size="14.00" fill="#000000">description    </text>
+<text text-anchor="start" x="152.3822" y="-578.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-537.5 43.5,-567.5 350.5,-567.5 350.5,-537.5 43.5,-537.5"/>
-<text text-anchor="start" x="50.5" y="-548.9" font-family="Arial" font-size="14.00" fill="#000000">description    </text>
-<text text-anchor="start" x="152.3822" y="-548.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<text text-anchor="start" x="50.5" y="-548.9" font-family="Arial" font-size="14.00" fill="#000000">guidelines    </text>
+<text text-anchor="start" x="147.7202" y="-548.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-507.5 43.5,-537.5 350.5,-537.5 350.5,-507.5 43.5,-507.5"/>
-<text text-anchor="start" x="50.5" y="-518.9" font-family="Arial" font-size="14.00" fill="#000000">guidelines    </text>
-<text text-anchor="start" x="147.7202" y="-518.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<text text-anchor="start" x="50.5" y="-518.9" font-family="Arial" font-size="14.00" fill="#000000">created_by    </text>
+<text text-anchor="start" x="153.9516" y="-518.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-477.5 43.5,-507.5 350.5,-507.5 350.5,-477.5 43.5,-477.5"/>
-<text text-anchor="start" x="50.5" y="-488.9" font-family="Arial" font-size="14.00" fill="#000000">created_by    </text>
-<text text-anchor="start" x="153.9516" y="-488.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<text text-anchor="start" x="50.5" y="-488.9" font-family="Arial" font-size="14.00" fill="#000000">banner_image    </text>
+<text text-anchor="start" x="174.176" y="-488.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-447.5 43.5,-477.5 350.5,-477.5 350.5,-447.5 43.5,-447.5"/>
-<text text-anchor="start" x="50.5" y="-458.9" font-family="Arial" font-size="14.00" fill="#000000">banner_image    </text>
-<text text-anchor="start" x="174.176" y="-458.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<text text-anchor="start" x="50.5" y="-458.9" font-family="Arial" font-size="14.00" fill="#000000">icon    </text>
+<text text-anchor="start" x="110.3766" y="-458.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-417.5 43.5,-447.5 350.5,-447.5 350.5,-417.5 43.5,-417.5"/>
-<text text-anchor="start" x="50.5" y="-428.9" font-family="Arial" font-size="14.00" fill="#000000">icon    </text>
-<text text-anchor="start" x="110.3766" y="-428.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<text text-anchor="start" x="50.5" y="-428.9" font-family="Arial" font-size="14.00" fill="#000000">created_on    </text>
+<text text-anchor="start" x="154.7342" y="-428.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-387.5 43.5,-417.5 350.5,-417.5 350.5,-387.5 43.5,-387.5"/>
-<text text-anchor="start" x="50.5" y="-398.9" font-family="Arial" font-size="14.00" fill="#000000">created_on    </text>
-<text text-anchor="start" x="154.7342" y="-398.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
+<text text-anchor="start" x="50.3605" y="-398.9" font-family="Arial" font-size="14.00" fill="#000000">updated_on    </text>
+<text text-anchor="start" x="158.4993" y="-398.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
 <polygon fill="none" stroke="#000000" points="43.5,-357.5 43.5,-387.5 350.5,-387.5 350.5,-357.5 43.5,-357.5"/>
-<text text-anchor="start" x="50.3605" y="-368.9" font-family="Arial" font-size="14.00" fill="#000000">updated_on    </text>
-<text text-anchor="start" x="158.4993" y="-368.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
+<text text-anchor="start" x="50.5" y="-368.9" font-family="Arial" font-size="14.00" fill="#000000">subscribers    </text>
+<text text-anchor="start" x="156.263" y="-368.9" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
+<polygon fill="none" stroke="#000000" points="43.5,-327.5 43.5,-357.5 350.5,-357.5 350.5,-327.5 43.5,-327.5"/>
+<text text-anchor="start" x="50.5" y="-338.9" font-family="Arial" font-size="14.00" fill="#000000">posts    </text>
+<text text-anchor="start" x="118.1606" y="-338.9" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
 </g>
 <!-- public.invite&#45;&gt;public.channel -->
 <g id="edge1" class="edge">
 <title>public.invite:channel_id&#45;&gt;public.channel:id</title>
-<path fill="none" stroke="#000000" d="M461.2403,-1207.0005C386.1207,-1199.2773 421.8166,-1103.4372 401.5,-1021 390.5546,-976.5876 396.2413,-612.5 350.5,-612.5"/>
-<polygon fill="#000000" stroke="#000000" points="461.5118,-1207.0137 471.2812,-1211.9947 466.5059,-1207.2568 471.5,-1207.5 471.5,-1207.5 471.5,-1207.5 466.5059,-1207.2568 471.7188,-1203.0053 461.5118,-1207.0137 461.5118,-1207.0137"/>
+<path fill="none" stroke="#000000" d="M461.2423,-1207C386.1536,-1199.2692 422.2175,-1103.3374 401.5,-1021 380.7905,-938.6942 435.3712,-642.5 350.5,-642.5"/>
+<polygon fill="#000000" stroke="#000000" points="461.5119,-1207.0131 471.2809,-1211.9947 466.5059,-1207.2565 471.5,-1207.5 471.5,-1207.5 471.5,-1207.5 466.5059,-1207.2565 471.7191,-1203.0053 461.5119,-1207.0131 461.5119,-1207.0131"/>
 <text text-anchor="start" x="215.7675" y="-1217.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (channel_id) REFERENCES channel(id)</text>
 </g>
 <!-- public.user -->
 <g id="node3" class="node">
 <title>public.user</title>
-<polygon fill="#efefef" stroke="transparent" points="454.5,-612.5 454.5,-647.5 761.5,-647.5 761.5,-612.5 454.5,-612.5"/>
-<polygon fill="none" stroke="#000000" points="454.5,-612.5 454.5,-647.5 761.5,-647.5 761.5,-612.5 454.5,-612.5"/>
-<text text-anchor="start" x="500.7091" y="-625.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.user</text>
-<text text-anchor="start" x="587.7229" y="-625.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
-<text text-anchor="start" x="621.9277" y="-625.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="#efefef" stroke="transparent" points="454.5,-642.5 454.5,-677.5 761.5,-677.5 761.5,-642.5 454.5,-642.5"/>
+<polygon fill="none" stroke="#000000" points="454.5,-642.5 454.5,-677.5 761.5,-677.5 761.5,-642.5 454.5,-642.5"/>
+<text text-anchor="start" x="500.7091" y="-655.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.user</text>
+<text text-anchor="start" x="587.7229" y="-655.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
+<text text-anchor="start" x="621.9277" y="-655.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="#000000" points="454.5,-612.5 454.5,-642.5 761.5,-642.5 761.5,-612.5 454.5,-612.5"/>
+<text text-anchor="start" x="461.5" y="-623.9" font-family="Arial" font-size="14.00" fill="#000000">id    </text>
+<text text-anchor="start" x="506.594" y="-623.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
 <polygon fill="none" stroke="#000000" points="454.5,-582.5 454.5,-612.5 761.5,-612.5 761.5,-582.5 454.5,-582.5"/>
-<text text-anchor="start" x="461.5" y="-593.9" font-family="Arial" font-size="14.00" fill="#000000">id    </text>
-<text text-anchor="start" x="506.594" y="-593.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<text text-anchor="start" x="461.5" y="-593.9" font-family="Arial" font-size="14.00" fill="#000000">username    </text>
+<text text-anchor="start" x="557.939" y="-593.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(25)]</text>
 <polygon fill="none" stroke="#000000" points="454.5,-552.5 454.5,-582.5 761.5,-582.5 761.5,-552.5 454.5,-552.5"/>
-<text text-anchor="start" x="461.5" y="-563.9" font-family="Arial" font-size="14.00" fill="#000000">username    </text>
-<text text-anchor="start" x="557.939" y="-563.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(25)]</text>
+<text text-anchor="start" x="461.5" y="-563.9" font-family="Arial" font-size="14.00" fill="#000000">profile_image    </text>
+<text text-anchor="start" x="579.7146" y="-563.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="454.5,-522.5 454.5,-552.5 761.5,-552.5 761.5,-522.5 454.5,-522.5"/>
-<text text-anchor="start" x="461.5" y="-533.9" font-family="Arial" font-size="14.00" fill="#000000">profile_image    </text>
-<text text-anchor="start" x="579.7146" y="-533.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<text text-anchor="start" x="461.5" y="-533.9" font-family="Arial" font-size="14.00" fill="#000000">role    </text>
+<text text-anchor="start" x="519.0372" y="-533.9" font-family="Arial" font-size="14.00" fill="#666666">[site_role]</text>
 <polygon fill="none" stroke="#000000" points="454.5,-492.5 454.5,-522.5 761.5,-522.5 761.5,-492.5 454.5,-492.5"/>
-<text text-anchor="start" x="461.5" y="-503.9" font-family="Arial" font-size="14.00" fill="#000000">role    </text>
-<text text-anchor="start" x="519.0372" y="-503.9" font-family="Arial" font-size="14.00" fill="#666666">[site_role]</text>
+<text text-anchor="start" x="461.5" y="-503.9" font-family="Arial" font-size="14.00" fill="#000000">created_on    </text>
+<text text-anchor="start" x="565.7342" y="-503.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
 <polygon fill="none" stroke="#000000" points="454.5,-462.5 454.5,-492.5 761.5,-492.5 761.5,-462.5 454.5,-462.5"/>
-<text text-anchor="start" x="461.5" y="-473.9" font-family="Arial" font-size="14.00" fill="#000000">created_on    </text>
-<text text-anchor="start" x="565.7342" y="-473.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
+<text text-anchor="start" x="461.3605" y="-473.9" font-family="Arial" font-size="14.00" fill="#000000">updated_on    </text>
+<text text-anchor="start" x="569.4993" y="-473.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
 <polygon fill="none" stroke="#000000" points="454.5,-432.5 454.5,-462.5 761.5,-462.5 761.5,-432.5 454.5,-432.5"/>
-<text text-anchor="start" x="461.3605" y="-443.9" font-family="Arial" font-size="14.00" fill="#000000">updated_on    </text>
-<text text-anchor="start" x="569.4993" y="-443.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
+<text text-anchor="start" x="461.5" y="-443.9" font-family="Arial" font-size="14.00" fill="#000000">discord_id    </text>
+<text text-anchor="start" x="559.4916" y="-443.9" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
 <polygon fill="none" stroke="#000000" points="454.5,-402.5 454.5,-432.5 761.5,-432.5 761.5,-402.5 454.5,-402.5"/>
-<text text-anchor="start" x="461.5" y="-413.9" font-family="Arial" font-size="14.00" fill="#000000">discord_id    </text>
-<text text-anchor="start" x="559.4916" y="-413.9" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<text text-anchor="start" x="461.5" y="-413.9" font-family="Arial" font-size="14.00" fill="#000000">github_id    </text>
+<text text-anchor="start" x="552.5042" y="-413.9" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
 <polygon fill="none" stroke="#000000" points="454.5,-372.5 454.5,-402.5 761.5,-402.5 761.5,-372.5 454.5,-372.5"/>
-<text text-anchor="start" x="461.5" y="-383.9" font-family="Arial" font-size="14.00" fill="#000000">github_id    </text>
-<text text-anchor="start" x="552.5042" y="-383.9" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
+<text text-anchor="start" x="461.5" y="-383.9" font-family="Arial" font-size="14.00" fill="#000000">followers    </text>
+<text text-anchor="start" x="550.9236" y="-383.9" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
+<polygon fill="none" stroke="#000000" points="454.5,-342.5 454.5,-372.5 761.5,-372.5 761.5,-342.5 454.5,-342.5"/>
+<text text-anchor="start" x="461.5" y="-353.9" font-family="Arial" font-size="14.00" fill="#000000">following    </text>
+<text text-anchor="start" x="550.1522" y="-353.9" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
 </g>
 <!-- public.invite&#45;&gt;public.user -->
 <g id="edge2" class="edge">
 <title>public.invite:user_id&#45;&gt;public.user:id</title>
-<path fill="none" stroke="#000000" d="M462.0498,-1173.1649C405.5114,-1120.0894 393.3019,-597.5 454.5,-597.5"/>
-<polygon fill="#000000" stroke="#000000" points="462.4107,-1173.3304 469.6237,-1181.5902 466.9554,-1175.4152 471.5,-1177.5 471.5,-1177.5 471.5,-1177.5 466.9554,-1175.4152 473.3763,-1173.4098 462.4107,-1173.3304 462.4107,-1173.3304"/>
+<path fill="none" stroke="#000000" d="M462.2007,-1173.0728C408.784,-1121.0217 396.5839,-627.5 454.5,-627.5"/>
+<polygon fill="#000000" stroke="#000000" points="462.471,-1173.2015 469.5657,-1181.5631 466.9855,-1175.3507 471.5,-1177.5 471.5,-1177.5 471.5,-1177.5 466.9855,-1175.3507 473.4343,-1173.4369 462.471,-1173.2015 462.471,-1173.2015"/>
 <text text-anchor="start" x="239.7855" y="-1187.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (user_id) REFERENCES &quot;user&quot;(id)</text>
 </g>
 <!-- public.role -->
