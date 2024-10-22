@@ -106,7 +106,9 @@ export const userIsBlocking = async (db: DB, userId: string, blockedUserId: stri
     const [block] = await db
         .select()
         .from(userBlockTable)
-        .where(and(eq(userBlockTable.userId, userId), eq(userBlockTable.blockedUserId, blockedUserId)))
+        .where(
+            and(eq(userBlockTable.userId, userId), eq(userBlockTable.blockedUserId, blockedUserId))
+        )
         .limit(1);
     return !!block;
 };

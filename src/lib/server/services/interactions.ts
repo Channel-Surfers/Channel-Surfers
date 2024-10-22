@@ -29,7 +29,11 @@ export const unfollowUser = async (db: DB, followerId: string, userId: string) =
 };
 
 export const blockUser = async (db: DB, userId: uuid, blockedUserId: uuid) => {
-    const [blocking] = await db.insert(userBlockTable).values({ userId, blockedUserId }).onConflictDoNothing().returning();
+    const [blocking] = await db
+        .insert(userBlockTable)
+        .values({ userId, blockedUserId })
+        .onConflictDoNothing()
+        .returning();
     if (!blocking) throw new Error('already blocking');
     return blocking;
 };
@@ -37,7 +41,9 @@ export const blockUser = async (db: DB, userId: uuid, blockedUserId: uuid) => {
 export const unblockUser = async (db: DB, userId: uuid, blockedUserId: uuid) => {
     const [deleted] = await db
         .delete(userBlockTable)
-        .where(and(eq(userBlockTable.userId, userId), eq(userBlockTable.blockedUserId, blockedUserId)))
+        .where(
+            and(eq(userBlockTable.userId, userId), eq(userBlockTable.blockedUserId, blockedUserId))
+        )
         .returning();
     if (!deleted) throw new Error('not blocking');
     return true;
