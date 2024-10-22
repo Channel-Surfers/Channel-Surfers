@@ -2,7 +2,7 @@ import { getDb } from '$lib/server';
 import type { User } from '$lib/server/db/users.sql';
 import { getChannelsByOwner, getUserSubscriptions } from '$lib/server/services/channels';
 import { getPostStatistics } from '$lib/server/services/content';
-import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
+import { getUserByUsername, getUserStats, userIsBlocking, userIsFollowing } from '$lib/server/services/users';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route, locals, params }) => {
@@ -32,9 +32,8 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                     data: {
                         userData: { ...user, ...userData },
                         user: locals.user as User,
-                        isFollowing: locals.user
-                            ? await userIsFollowing(db, user.id, locals.user.id)
-                            : false,
+                        isBlocking: locals.user && await userIsBlocking(db, locals.user.id, user.id),
+                        isFollowing: locals.user && await userIsFollowing(db, user.id, locals.user.id),
                     },
                 } as const;
             }
