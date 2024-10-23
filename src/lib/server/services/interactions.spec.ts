@@ -2,7 +2,7 @@ import { testWithDb } from '$lib/testing/utils';
 import { describe } from 'vitest';
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
-import { followUser, unfollowUser } from './interactions';
+import { blockUser, followUser, unblockUser, unfollowUser } from './interactions';
 
 const generateUser = (count: number, nameGenerator?: (n: number) => string) => async (db: DB) => {
     const users = await db
@@ -78,6 +78,27 @@ describe.concurrent('interactions suite', () => {
         async ({ expect, db }, { users: [user1, user2] }) => {
             await expect(() => unfollowUser(db, user1.id, user2.id)).rejects.toThrowError(
                 'not following'
+            );
+        },
+        generateUser(2)
+    );
+
+    testWithDb(
+        'users cannot duplicate block',
+        async ({ expect, db }, { users: [user1, user2] }) => {
+            await blockUser(db, user1.id, user2.id);
+            await expect(() => blockUser(db, user1.id, user2.id)).rejects.toThrowError(
+                'already blocking'
+            );
+        },
+        generateUser(2)
+    );
+
+    testWithDb(
+        'user not blocking',
+        async ({ expect, db }, { users: [user1, user2] }) => {
+            await expect(() => unblockUser(db, user1.id, user2.id)).rejects.toThrowError(
+                'not blocking'
             );
         },
         generateUser(2)

@@ -5,6 +5,7 @@ import { userTable, type NewUser, type User } from '../db/users.sql';
 import { postTable } from '../db/posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { followTable } from '../db/follows.sql';
+import { userBlockTable } from '../db/blocks.users.sql';
 
 export const getUserById = async (db: DB, id: string): Promise<User> => {
     const [ret] = await db.select().from(userTable).where(eq(userTable.id, id));
@@ -99,6 +100,17 @@ export const userIsFollowing = async (db: DB, userId: string, followerId: string
         .from(followTable)
         .where(and(eq(followTable.userId, userId), eq(followTable.followerId, followerId)));
     return follows.length === 1;
+};
+
+export const userIsBlocking = async (db: DB, userId: string, blockedUserId: string) => {
+    const [block] = await db
+        .select()
+        .from(userBlockTable)
+        .where(
+            and(eq(userBlockTable.userId, userId), eq(userBlockTable.blockedUserId, blockedUserId))
+        )
+        .limit(1);
+    return !!block;
 };
 
 export const getUserByUsername = async (db: DB, username: string) => {
