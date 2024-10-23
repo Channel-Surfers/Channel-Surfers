@@ -77,10 +77,12 @@
         {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
+        
+
+        {:else if data.island.type === 'channel' && data.island.data}
+            <ChannelInfo channel = {dummyChannel}/>          
+
         {/if}
-
-        <ChannelInfo channel={dummyChannel} />
-
         <UserInfo userInfo={dummyUser} />
 
         <PlaylistInfo playlistInfo={dummyPlaylist} />
