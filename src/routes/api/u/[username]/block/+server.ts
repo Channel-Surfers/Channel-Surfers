@@ -11,7 +11,6 @@ export const POST: RequestHandler = async ({ locals, params }) => {
     const user = await getUserByUsername(db, params.username);
     if (!user) error(404);
 
-    console.log('block');
     await blockUser(db, locals.user.id, user.id);
     return new Response(null, { status: 201 });
 };
