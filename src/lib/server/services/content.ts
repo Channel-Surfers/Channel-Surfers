@@ -271,11 +271,11 @@ export const getPostStatistics = async (db: DB) => {
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
 
-export const getCommentTree = async (db: DB, post_id: string): Promise<CommentData[]> => {
+export const getCommentTree = async (db: DB, postId: string): Promise<CommentData[]> => {
     const firstLevelComments = await db
         .select()
         .from(postTable)
-        .where(and(eq(postTable.id, post_id), isNull(commentTable.replyTo)))
+        .where(and(eq(postTable.id, postId), isNull(commentTable.replyTo)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
         .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
         .orderBy(commentTable.createdOn)
@@ -286,7 +286,7 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
     const secondLevelComments = await db
         .select()
         .from(postTable)
-        .where(and(eq(postTable.id, post_id), inArray(commentTable.replyTo, firstLevelCommentsIds)))
+        .where(and(eq(postTable.id, postId), inArray(commentTable.replyTo, firstLevelCommentsIds)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
         .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
         .orderBy(commentTable.createdOn)
