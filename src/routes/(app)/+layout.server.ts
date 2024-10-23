@@ -1,7 +1,8 @@
 import { getDb } from '$lib/server';
 import { getPublicChannelByName, getChannelsByOwner, getUserSubscriptions, getChannelById } from '$lib/server/services/channels';
+import type { User } from '$lib/server/db/users.sql';
 import { getPostStatistics } from '$lib/server/services/content';
-import { getUserStats } from '$lib/server/services/users';
+import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route, locals, params }) => {
@@ -36,6 +37,36 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                     }
                 } 
             }
+            case '/(app)/u/[username]': {
+                const user = await getUserByUsername(db, params.username!);
+                if (!user) {
+                    return {
+                        type: 'user',
+                        exists: false,
+                    } as const;
+                }
+                const userData = await getUserStats(db, user.id);
+                return {
+                    type: 'user',
+                    exists: true,
+                    data: {
+                        userData: { ...user, ...userData },
+                        user: locals.user as User,
+                        isFollowing: locals.user
+                            ? await userIsFollowing(db, user.id, locals.user.id)
+                            : false,
+                    },
+                } as const;
+            }
+            //case '/(app)/c': {
+            // Use the getChannelInfo function to get required info
+            //    // return channel data
+            //    break;
+            //}
+            //case '/(app)/c/private': {
+            //    // return private channel data
+            //    break;
+            //}
             //case '/(app)/u': {
             //    // return user data
             //    break;

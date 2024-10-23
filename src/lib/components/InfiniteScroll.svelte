@@ -37,6 +37,12 @@
     };
 
     export function reset(posts: PostData[] = []) {
+        // if init_buffer has a length less than page size, there logically cannot be any more posts
+        if (posts.length > 0 && posts.length < PAGE_SIZE) {
+            buffer = posts;
+            state = 'no-posts';
+            return;
+        }
         buffer = posts;
         state = 'active';
         page = Math.floor(posts.length / PAGE_SIZE);
