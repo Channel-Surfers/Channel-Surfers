@@ -106,7 +106,7 @@ describe.concurrent('channels suite', () => {
         'many subscriptions are counted correctly',
         async ({ expect, db }, { createdChannel, subscriptionCount }) => {
             const channelInfo = await getChannelInfo(db, createdChannel.id);
-            expect(channelInfo.subscriptionsCount).toStrictEqual(subscriptionCount);
+            expect(channelInfo.subscribers).toStrictEqual(subscriptionCount);
         },
         generateChannelAndSubs
     );
@@ -115,7 +115,7 @@ describe.concurrent('channels suite', () => {
         'zero subscriptions are counted correctly',
         async ({ expect, db }, { createdChannel }) => {
             const channelInfo = await getChannelInfo(db, createdChannel.id);
-            expect(channelInfo.subscriptionsCount).toStrictEqual(0);
+            expect(channelInfo.subscribers).toStrictEqual(0);
         },
         generateUserAndPublicChannel
     );

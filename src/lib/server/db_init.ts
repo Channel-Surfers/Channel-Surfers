@@ -269,8 +269,8 @@ const makePostVotes = async () => {
                     LEFT JOIN LATERAL (
                         SELECT (ARRAY[CAST('UP' AS vote), CAST('DOWN' AS vote)])[
                             (SELECT ( -- Need this so that the query runs for every row
-                                UUID_EXTRACT_VERSION("user".id) - UUID_EXTRACT_VERSION(post.id)
-                            ))
+                                OCTET_LENGTH("user".username) + OCTET_LENGTH(post.name)
+                            )) * 0
                             + (RANDOM() > (7/8.0))::int + 1
                         ] vote
                     ) x ON TRUE
@@ -345,10 +345,10 @@ const makeCommentVotes = async () => {
                     FROM "comment"
                     CROSS JOIN "user"
                     LEFT JOIN LATERAL (
-                        SELECT (ARRAY[CAST('UP' AS vote), CAST('UP' AS vote), CAST('UP' AS vote), CAST('DOWN' AS vote)])[
+                        SELECT (ARRAY[CAST('UP' AS vote), CAST('DOWN' AS vote)])[
                             (SELECT ( -- Need this so that the query runs for every row
-                                UUID_EXTRACT_VERSION("user".id) - UUID_EXTRACT_VERSION(comment.id)
-                            ))
+                                OCTET_LENGTH("user".username) + OCTET_LENGTH(comment.content)
+                            )) * 0
                             + (RANDOM() > (7/8.0))::int + 1
                         ] vote
                     ) x ON TRUE
@@ -357,17 +357,16 @@ const makeCommentVotes = async () => {
             SELECT COUNT(*) FROM rows;
         SET session_replication_role = DEFAULT;
 
-        -- Temorarily disabled until we denormalise comment votes
-        -- UPDATE comment
-        --     SET upvotes = (
-        --         SELECT count(*) FROM comment_vote
-        --             WHERE comment_id = comment.id AND vote = 'UP'
-        --     );
-        -- UPDATE comment
-        --     SET downvotes = (
-        --         SELECT count(*) FROM comment_vote
-        --             WHERE comment_id = comment.id AND vote = 'DOWN'
-        --     );
+        UPDATE comment
+            SET upvotes = (
+                SELECT count(*) FROM comment_vote
+                    WHERE comment_id = comment.id AND vote = 'UP'
+            );
+        UPDATE comment
+            SET downvotes = (
+                SELECT count(*) FROM comment_vote
+                    WHERE comment_id = comment.id AND vote = 'DOWN'
+            );
     `);
 
     // This type is super funky for some reason, so just cast it
