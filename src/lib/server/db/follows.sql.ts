@@ -1,4 +1,5 @@
-import { pgTable, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, primaryKey, uuid } from 'drizzle-orm/pg-core';
+import { userTable } from './users.sql';
 
 /**
  * @document public.follow.md
@@ -6,10 +7,16 @@ import { pgTable, uuid } from 'drizzle-orm/pg-core';
 export const followTable = pgTable(
     'follow',
     {
-        followerId: uuid('follower_id').notNull(),
-        userId: uuid('user_id').notNull(),
+        followerId: uuid('follower_id')
+            .notNull()
+            .references(() => userTable.id),
+        userId: uuid('user_id')
+            .notNull()
+            .references(() => userTable.id),
     },
-    (table) => ({ pk: { columns: [table.userId, table.followerId] } })
+    (table) => ({
+        pk: primaryKey({ columns: [table.userId, table.followerId] }),
+    })
 );
 
 /**
