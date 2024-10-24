@@ -1,5 +1,6 @@
 import { getDb } from '$lib/server';
 import type { Channel } from '$lib/server/db/channels.sql';
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ url }) => {
@@ -14,7 +15,7 @@ export const load = (async ({ url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  create: async ({locals}) {
-      
-  }
-}
+    create: async ({ locals }) => {
+        if (!locals.user) throw error(401);
+    },
+};

@@ -1,9 +1,9 @@
 import { describe } from 'vitest';
-import { createUsers, sequentialDates, testWithDb } from '$lib/testing/utils';
+import { createUsers, sequentialDates, testWithDb, generateUsers } from '$lib/testing/utils';
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
-import { getCommentTree, getPosts, getPostStatistics } from './content';
+import { createPost, getCommentTree, getPosts, getPostStatistics } from './content';
 import { postTable, type Post } from '../db/posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { commentTable } from '../db/comments.sql';
@@ -365,6 +365,32 @@ const generateComments = async (db: DB) => {
 
 describe.concurrent('content suite', () => {
     testWithDb(
+        'posts can be created',
+        async ({ db, expect }, { user, channel }) => {
+            const post = await createPost(db, {
+                title: 'Awesome post',
+                description: 'description of awesome post',
+                createdBy: user.id,
+                videoId: '',
+                channelId: channel.id,
+            });
+            expect(post.title).toStrictEqual('Awesome post');
+            expect(post.description).toStrictEqual('description of awesome post');
+            expect(post.createdBy).toStrictEqual(user.id);
+            expect(post.channelId).toStrictEqual(channel.id);
+        },
+        async (db: DB) => {
+            const {
+                users: [user],
+            } = await generateUsers(1)(db);
+            const [channel] = await db
+                .insert(channelTable)
+                .values({ name: `${user.username}s-c`, createdBy: user.id })
+                .returning();
+            return { user, channel };
+        }
+    );
+    testWithDb(
         'site statistics is calculated correctly',
         async ({ expect, db }, { votes }) => {
             const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
@@ -572,7 +598,7 @@ describe.concurrent('content suite', () => {
     );
 
     testWithDb('get posts for user with many users/posts', async ({ expect, db }) => {
-        const [requester] = await createUsers(db, 1, 'req');
+        const [requester] = await createUsers(db, 1, `req-`);
         const users = await createUsers(db, 10);
         const channels = await db
             .insert(channelTable)
