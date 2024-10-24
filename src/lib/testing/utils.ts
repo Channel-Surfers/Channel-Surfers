@@ -85,3 +85,19 @@ export const createUsers = async (
         .values(Array.from({ length: count }, (_, i) => ({ username: `${prefix}user${i + 1}` })))
         .returning();
 };
+
+export const generateUsers =
+    (count: number, nameGenerator?: (n: number) => string) => async (db: DB) => {
+        const users = await db
+            .insert(schema.userTable)
+            .values(
+                Array(count)
+                    .fill(0)
+                    .map((_: number, idx) => ({
+                        username: nameGenerator ? nameGenerator(idx) : `user-${idx}`,
+                        discordId: BigInt(idx),
+                    }))
+            )
+            .returning();
+        return { users };
+    };

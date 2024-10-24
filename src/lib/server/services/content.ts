@@ -20,7 +20,7 @@ import type { CommentData, PostData, uuid } from '$lib/types';
 import { channelTable } from '../db/channels.sql';
 import { channelTagsTable } from '../db/tags.channels.sql';
 import { commentTable } from '../db/comments.sql';
-import { postTable } from '../db/posts.sql';
+import { postTable, type NewPost } from '../db/posts.sql';
 import { postTagTable } from '../db/tags.posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { publicChannelTable } from '../db/public.channels.sql';
@@ -343,5 +343,10 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
             set: { vote: vote },
         })
         .returning();
+    return ret;
+};
+
+export const createPost = async (db: DB, post: NewPost) => {
+    const [ret] = await db.insert(postTable).values(post).returning();
     return ret;
 };
