@@ -1,6 +1,6 @@
 import { getDb } from '$lib/server';
+import { getPublicChannelByName, getChannelsByOwner, getUserSubscriptions, getChannelById } from '$lib/server/services/channels';
 import type { User } from '$lib/server/db/users.sql';
-import { getChannelsByOwner, getUserSubscriptions } from '$lib/server/services/channels';
 import { getPostStatistics } from '$lib/server/services/content';
 import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
 import type { LayoutServerLoad } from './$types';
@@ -16,6 +16,26 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
             }
             case '/(app)/(auth)/signin': {
                 return { type: 'hide' } as const;
+            }
+            case '/(app)/c/[channel_name]': {
+                const channelData = await getPublicChannelByName(db, params.channel_name!);
+                return {
+                    type: 'channel',
+                    data: {
+                        channelData,
+                        channel: channelData?.id
+                    },
+                } as const;
+            }
+            case '/(app)/c/private/[channel_id]': {
+                const channelData = await getChannelById(db, params.channel_id!);
+                return {
+                    type: 'channel',
+                    data: {
+                        channelData,
+                        channel: channelData?.name
+                    }
+                } 
             }
             case '/(app)/u/[username]': {
                 const user = await getUserByUsername(db, params.username!);

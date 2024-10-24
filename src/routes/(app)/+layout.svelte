@@ -76,6 +76,12 @@
         {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
+        
+
+        {:else if data.island.type === 'channel' && data.island.data}
+            <ChannelInfo channel={dummyChannel}/>          
+
+            
         {:else if data.island.type === 'user' && data.island.exists && data.island.data}
             <UserInfo
                 isFollowing={data.island.data.isFollowing}
@@ -83,8 +89,6 @@
                 user={userAsUser}
             />
         {/if}
-
-        <ChannelInfo channel={dummyChannel} />
 
         <PlaylistInfo playlistInfo={dummyPlaylist} />
 

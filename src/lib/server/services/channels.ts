@@ -120,3 +120,5 @@ export const getPublicChannelByName = async (db: DB, name: string): Promise<Chan
     if (!ret) return null;
     return ret.channel;
 };
+
+export type PublicChannelByName = Awaited<ReturnType<typeof getPublicChannelByName>>;
