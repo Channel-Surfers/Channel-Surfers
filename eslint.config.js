@@ -61,8 +61,14 @@ export default [
             'prefer-destructuring': 'error',
             'no-useless-rename': 'error',
             'no-cond-assign': 'error',
-            'drizzle/enforce-delete-with-where': 'error',
-            'drizzle/enforce-update-with-where': 'error',
+            'drizzle/enforce-delete-with-where': [
+                'error',
+                { drizzleObjectName: 'db' }
+            ],
+            'drizzle/enforce-update-with-where': [
+                'error',
+                { drizzleObjectName: 'db' }
+            ],
             '@typescript-eslint/no-unused-vars': [
                 'error', // Change to 'error' if you want it to be an error
                 {
