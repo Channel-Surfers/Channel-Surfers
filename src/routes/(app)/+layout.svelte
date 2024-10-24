@@ -13,6 +13,7 @@
     import UserInfo from '$lib/components/islands/UserInfo.svelte';
     import type { User } from '$lib/server/db/users.sql';
     import PlaylistInfo from '$lib/components/islands/PlaylistInfo.svelte';
+    import { page } from '$app/stores';
 
     export let data: LayoutServerData;
 
@@ -110,10 +111,20 @@
                     >
                 </Card.Header>
                 <Card.Content class="flex flex-col gap-2">
-                    <Button href="/signin/discord" variant="secondary" class="w-full"
-                        >Discord</Button
+                    <Button
+                        href="/signin/discord?redirect={encodeURI($page.url.pathname)}"
+                        variant="secondary"
+                        class="w-full"
                     >
-                    <Button href="/signin/github" variant="secondary" class="w-full">GitHub</Button>
+                        Discord
+                    </Button>
+                    <Button
+                        href="/signin/github?redirect={encodeURI($page.url.pathname)}"
+                        variant="secondary"
+                        class="w-full"
+                    >
+                        GitHub
+                    </Button>
                 </Card.Content>
             </Card.Root>
         {/if}
