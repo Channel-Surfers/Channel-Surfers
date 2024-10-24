@@ -8,10 +8,15 @@
     import { goto } from '$app/navigation';
     import { createEventDispatcher } from 'svelte';
     import { toast } from 'svelte-sonner';
+    import type { CreateChannel } from '$lib/types';
+    import { validateUrl } from '$lib/util';
+    import type { Channel } from '$lib/server/db/channels.sql';
 
     const dispatch = createEventDispatcher();
 
-    const formData = {
+    const formData: {
+        [k in keyof CreateChannel]-?: { value: NonNullable<CreateChannel[k]>; error: string };
+    } = {
         name: { value: '', error: '' },
         description: { value: '', error: '' },
         guidelines: { value: '', error: '' },
@@ -19,9 +24,6 @@
         icon: { value: '', error: '' },
         publishNow: { value: false, error: '' },
     };
-
-    // if it starts with 'http' and has at least one dot, it is a valid url.
-    const validateUrl = (url: string): boolean => url.startsWith('http') && url.includes('.');
 
     const validate = () => {
         let valid = true;
@@ -54,8 +56,6 @@
     };
 
     const submit = async () => {
-        let success = false;
-
         if (!validate()) return;
 
         const body = Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, v.value]));
@@ -66,20 +66,28 @@
             method: 'POST',
         });
 
-        if (!res.ok) {
+        if (res.status === 400 || res.status === 409) {
+            const json = await res.json();
+            for (const [k, v] of Object.entries(json) as [keyof CreateChannel, string][]) {
+                formData[k].error = v;
+            }
+            return;
+        } else if (!res.ok) {
             console.error(res);
             console.error(await res.text());
             toast.error('Unexpected error while creating channel.');
             return;
         }
 
-        const json = await res.json();
+        const channel: Channel = await res.json();
 
-        goto('/u/accompanist');
-
-        if (success) {
-            dispatch('submit');
+        if (formData.publishNow.value) {
+            goto(`/c/${channel.name}`);
+        } else {
+            goto(`/c/private/${channel.id}`);
         }
+
+        dispatch('create');
     };
 </script>
 

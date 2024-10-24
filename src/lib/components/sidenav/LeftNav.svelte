@@ -10,11 +10,21 @@
     import type { Playlist } from '$lib/server/db/playlists.sql';
     import { Button } from '$lib/shadcn/components/ui/button';
     import CreateChannelDialog from './CreateChannelDialog.svelte';
+    import { createEventDispatcher } from 'svelte';
 
     // type signature here is temporary
     export let channels: (Channel & { publicInfo: { displayName: string } | null })[] | null = null;
     export let subscriptions: UserSubscription[] | null = null;
     export let playlists: Playlist[] | null = null;
+
+    const dispatch = createEventDispatcher();
+
+    const createChannel = () => {
+        dispatch('updateChannels');
+        channelDialogOpen = false;
+    };
+
+    let channelDialogOpen = false;
 </script>
 
 <div class="flex h-full flex-col justify-between">
@@ -40,11 +50,13 @@
                             {:else}
                                 <p class="pl-2">You have no channels</p>
                             {/each}
-                            <Dialog.Root>
+                            <Dialog.Root bind:open={channelDialogOpen}>
                                 <Dialog.Trigger class="flex w-full justify-center">
                                     <Button class="m-2 w-full">Create Channel</Button>
                                 </Dialog.Trigger>
-                                <CreateChannelDialog />
+                                {#key channelDialogOpen}
+                                    <CreateChannelDialog on:create={createChannel} />
+                                {/key}
                             </Dialog.Root>
                         {:else}
                             <p class="pl-2">Login to create a channel</p>

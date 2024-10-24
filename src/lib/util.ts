@@ -26,6 +26,9 @@ export const viewport = (element: Element) => {
     };
 };
 
+// if it starts with 'http' and has at least one dot, it is a valid url.
+export const validateUrl = (url: string): boolean => url.startsWith('http') && url.includes('.');
+
 /**
  * Check if a value matches a tuple and assert for typescript that it is an enum:
  *
@@ -43,3 +46,15 @@ export const elapsed_time = (event: Date): string => {
     dayjs.extend(relativeTime);
     return dayjs(event).fromNow();
 };
+
+export type UnionToIntersection<U> = (
+  U extends never ? never : (arg: U) => never
+) extends (arg: infer I) => void
+  ? I
+  : never;
+
+export type UnionToTuple<T> = UnionToIntersection<
+  T extends never ? never : (t: T) => T
+> extends (_: never) => infer W
+  ? [...UnionToTuple<Exclude<T, W>>, W]
+  : [];
