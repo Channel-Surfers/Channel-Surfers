@@ -8,7 +8,7 @@ import { Lucia, type Session } from 'lucia';
 import { sessionTable } from '../db/sessions.sql';
 import { userTable, type User } from '../db/users.sql';
 
-import type { Cookies } from '@sveltejs/kit';
+import { redirect, type Cookies } from '@sveltejs/kit';
 import type { SiteRole } from '../db/types.sql';
 
 import {
@@ -181,3 +181,31 @@ export const discord = new Discord(
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, {
     redirectURI: `${base_url}/signin/github/callback`,
 });
+
+/**
+ * Asserts user associated with an event is authenticated.  If they are not,
+ * then it will redirect to the login page.
+ *
+ * This will also assert that `event.locals.user` is not null, so it can be used without annoyance:
+ * ```ts
+ * export const load: PageServerLoad = async (event) => {
+ *     assertAuth(event); // Auth user
+ *
+ *     return {
+ *         username: event.locals.user.username, // There is no type error here for accessing `username`
+ *     };
+ * };
+ * ```
+ */
+export function assertAuth(event: {
+    cookies: Cookies;
+    locals: App.Locals;
+    url: URL;
+}): asserts event is typeof event & {
+    locals: typeof event.locals & { user: NonNullable<typeof event.locals.user> };
+} {
+    if (!event.locals.user) {
+        // redirect throws, so we don't need to return false.
+        redirect(302, `/signin?redirect=${encodeURI(event.url.pathname)}`);
+    }
+}
