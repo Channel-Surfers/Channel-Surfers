@@ -11,7 +11,7 @@ export const POST: RequestHandler = async (event) => {
         description: data.details,
         postId: event.params.post_id,
     });
-    if (data.reason.value == 'site') {
+    if (data.reason.value === 'site') {
         await createPostReport(db, {
             description: data.details,
             postId: event.params.post_id,

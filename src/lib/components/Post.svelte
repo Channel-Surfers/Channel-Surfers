@@ -29,24 +29,24 @@
     import { Flag, Share2 } from 'lucide-svelte';
 
     export let post: PostData | undefined = undefined;
-    export let playing_video: boolean = false;
-    export let signed_in: boolean = false;
+    export let playingVideo: boolean = false;
+    export let signedIn: boolean = false;
     const dispatch = createEventDispatcher();
 
-    let upvote_pressed = false;
-    let downvote_pressed = false;
-    let report_dialog_open = false;
+    let upvotePressed = false;
+    let downvotePressed = false;
+    let reportDialogOpen = false;
 
     const vote = (dir: 'up' | 'down') => {
-        let new_state;
+        let newState;
         if (dir === 'up') {
-            downvote_pressed = false;
-            new_state = !upvote_pressed;
+            downvotePressed = false;
+            newState = !upvotePressed;
         } else {
-            upvote_pressed = false;
-            new_state = !downvote_pressed;
+            upvotePressed = false;
+            newState = !downvotePressed;
         }
-        const voteChangeValue: 'up' | 'down' | 'none' = new_state ? dir : 'none';
+        const voteChangeValue: 'up' | 'down' | 'none' = newState ? dir : 'none';
         dispatch('voteChange', voteChangeValue);
     };
 
@@ -67,7 +67,7 @@
 
         if (res.ok) {
             toast.success('Report submitted sucessfully!');
-            report_dialog_open = false;
+            reportDialogOpen = false;
         } else {
             toast.error('Unexpected error while submitting report.');
         }
@@ -79,7 +79,7 @@
         : '';
 </script>
 
-<Dialog.Root bind:open={report_dialog_open}>
+<Dialog.Root bind:open={reportDialogOpen}>
     <Dialog.Portal>
         <Dialog.Content>
             <Dialog.Header>
@@ -124,13 +124,13 @@
     >
         {#if !post}
             <Skeleton class="h-full w-full rounded-lg" />
-        {:else if playing_video}
+        {:else if playingVideo}
             <Player videoId={post.videoId} autoplay />
         {:else}
             <button
                 class="absolute flex h-full w-full items-center justify-center rounded-lg bg-black/50"
                 class:hidden={!hovering}
-                on:click={() => (playing_video = true)}
+                on:click={() => (playingVideo = true)}
             >
                 <Play fill="white" size="48" />
             </button>
@@ -190,8 +190,8 @@
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                     class="text-red-600"
-                    on:click={() => (report_dialog_open = true)}
-                    disabled={!signed_in}
+                    on:click={() => (reportDialogOpen = true)}
+                    disabled={!signedIn}
                 >
                     <Flag fill="currentColor" class="mr-2 h-4 w-4" />
                     <span>Report</span>
@@ -204,7 +204,7 @@
                 size="sm"
                 disabled={!post}
                 class="hover:text-upvote data-[state=on]:text-upvote"
-                bind:pressed={upvote_pressed}
+                bind:pressed={upvotePressed}
                 on:click={() => vote('up')}
             >
                 <div class:animate-pulse={!post}>
@@ -220,7 +220,7 @@
                 size="sm"
                 disabled={!post}
                 class="hover:text-downvote data-[state=on]:text-downvote"
-                bind:pressed={downvote_pressed}
+                bind:pressed={downvotePressed}
                 on:click={() => vote('down')}
             >
                 <div class:animate-pulse={!post}>

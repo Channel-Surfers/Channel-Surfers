@@ -47,5 +47,5 @@ jobs:
               with:
                   submodules: true
             - run: npm ci
-            - name: prettier
+            - name: eslint
               run: node .github/workflows/eslint.js
