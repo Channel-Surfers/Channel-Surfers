@@ -31,6 +31,12 @@
         subscriptionsCount: 2,
     };
 
+    const updateChannels = async () => {
+        const res = await fetch('/api/channels');
+        data.myChannels = await res.json();
+        console.log(data.myChannels);
+    };
+
     $: dummyPlaylist = data.user
         ? {
               creator: data.user as User,
@@ -60,6 +66,7 @@
                     publicInfo: { displayName: channel.name },
                 }))}
                 subscriptions={mySubscriptions}
+                on:updateChannels={updateChannels}
             />
         {:else}
             <LeftNav />

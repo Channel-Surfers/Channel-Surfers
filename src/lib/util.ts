@@ -26,6 +26,9 @@ export const viewport = (element: Element) => {
     };
 };
 
+// if it starts with 'http' and has at least one dot, it is a valid url.
+export const validateUrl = (url: string): boolean => url.startsWith('http') && url.includes('.');
+
 /**
  * Check if a value matches a tuple and assert for typescript that it is an enum:
  *
