@@ -96,14 +96,20 @@ export const canViewChannel = async (db: DB, userId: uuid, channelId: uuid): Pro
 export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {
     const existingChannel = await getPrivateChannel(db, channelData.createdBy, channelData.name);
 
-    if (existingChannel) throw new Error(`User ${channelData.createdBy} already has channel named '${channelData.name}'`);
+    if (existingChannel)
+        throw new Error(
+            `User ${channelData.createdBy} already has channel named '${channelData.name}'`
+        );
 
     const [channel] = await db.insert(channelTable).values(channelData).returning();
 
     return channel;
 };
 
-export const publishChannel = async (db: DB, { name, id: channelId }: { name: string, id: uuid }): Promise<PublicChannel> => {
+export const publishChannel = async (
+    db: DB,
+    { name, id: channelId }: { name: string; id: uuid }
+): Promise<PublicChannel> => {
     const [publicChannel] = await db
         .insert(publicChannelTable)
         .values({ name, channelId })
@@ -122,16 +128,15 @@ export const getPublicChannelByName = async (db: DB, name: string): Promise<Chan
     return ret.channel;
 };
 
-export const getPrivateChannel = async (db: DB, userId: uuid, channelName: string): Promise<Channel | null> => {
+export const getPrivateChannel = async (
+    db: DB,
+    userId: uuid,
+    channelName: string
+): Promise<Channel | null> => {
     const [existingChannel] = await db
         .select()
         .from(channelTable)
-        .where(
-            and(
-                eq(channelTable.createdBy, userId),
-                eq(channelTable.name, channelName),
-            )
-        )
+        .where(and(eq(channelTable.createdBy, userId), eq(channelTable.name, channelName)))
         .limit(1);
     return existingChannel || null;
-}
+};

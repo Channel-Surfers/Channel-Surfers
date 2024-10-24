@@ -1,6 +1,5 @@
 import type { User } from 'lucia';
 import type { Comment } from './server/db/comments.sql';
-import { createKeys, type UnionToTuple } from './util';
 
 /**
  * An alias for a string that hints to the developer that this is a uuid
@@ -51,8 +50,8 @@ export interface CommentData {
 export interface CreateChannel {
     name: string;
     description?: string;
-    guidelines?: string,
-    bannerImage?: string,
-    icon?: string,
-    publishNow: boolean,
+    guidelines?: string;
+    bannerImage?: string;
+    icon?: string;
+    publishNow: boolean;
 }
