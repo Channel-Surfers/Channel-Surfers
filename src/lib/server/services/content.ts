@@ -15,7 +15,7 @@ import {
 import { array_agg, dedupe_nonull_array } from './utils';
 import { PAGE_SIZE } from '$lib';
 import type { DB } from '..';
-import type { PostData, uuid } from '$lib/types';
+import type { CommentData, PostData, uuid } from '$lib/types';
 
 import { channelTable } from '../db/channels.sql';
 import { channelTagsTable } from '../db/tags.channels.sql';
@@ -165,11 +165,11 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
     }
 
     if (filter.after) {
-        conditions.push(lte(postTable.createdOn, filter.after));
+        conditions.push(gte(postTable.createdOn, filter.after));
     }
 
     if (filter.before) {
-        conditions.push(gte(postTable.createdOn, filter.before));
+        conditions.push(lte(postTable.createdOn, filter.before));
     }
 
     if (filter.requesterId) {
@@ -270,6 +270,42 @@ export const getPostStatistics = async (db: DB) => {
     };
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
+
+export const getCommentTree = async (db: DB, post_id: string): Promise<CommentData[]> => {
+    const firstLevelComments = await db
+        .select()
+        .from(postTable)
+        .where(and(eq(postTable.id, post_id), isNull(commentTable.replyTo)))
+        .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
+        .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
+        .orderBy(commentTable.createdOn)
+        .limit(PAGE_SIZE);
+
+    const firstLevelCommentsIds = firstLevelComments.map((p) => p.comment.id);
+
+    const secondLevelComments = await db
+        .select()
+        .from(postTable)
+        .where(and(eq(postTable.id, post_id), inArray(commentTable.replyTo, firstLevelCommentsIds)))
+        .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
+        .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
+        .orderBy(commentTable.createdOn)
+        .limit(Math.floor(PAGE_SIZE / 2));
+
+    const commentTree = firstLevelComments.map((c) => ({
+        user: c.user,
+        comment: c.comment,
+        children: secondLevelComments
+            .filter((b) => b.comment.replyTo === c.comment.id)
+            .map((b) => ({
+                user: b.user,
+                comment: b.comment,
+                children: [],
+            })),
+    }));
+
+    return commentTree;
+};
 
 export const createChannelReport = async (
     db: DB,
