@@ -10,8 +10,6 @@
     import Label from '$lib/shadcn/components/ui/label/label.svelte';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
     import { toast, type ExternalToast } from 'svelte-sonner';
-    import { UploadIcon } from 'lucide-svelte';
-    import UserInfo from '$lib/components/islands/UserInfo.svelte';
     import VideoUploadProgress from '$lib/components/VideoUploadProgress.svelte';
 
     export let data;
@@ -20,7 +18,12 @@
     let value = '';
     let formState: 'METADATA' | 'UPLOAD' = 'METADATA';
 
-    $: selectedValue = data.channels.find((f) => f.name === value)?.name ?? 'Select a channel...';
+    $: channel = data.channels.find((f) => f.name === value)?.name ?? 'Select a channel...';
+
+    let title = '';
+    let description = '';
+
+    function submitMetadata() {}
 
     function closeAndFocusTrigger(triggerId: string) {
         open = false;
@@ -39,54 +42,56 @@
     }
 </script>
 
-<form class="m-auto w-3/5">
-    <Label for={'title'} aria-required>Title</Label>
-    <Input name={'title'} required />
-    <Label for={'description'}>Description</Label>
-    <Textarea name={'description'} />
-    <Label>Channel</Label>
-    <Popover.Root bind:open let:ids>
-        <Popover.Trigger asChild let:builder>
-            <Button
-                builders={[builder]}
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                class="w-full justify-between"
-            >
-                {selectedValue}
-                <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-        </Popover.Trigger>
-        <Popover.Content class="p-0">
-            <Command.Root>
-                <Command.Input placeholder="Search channel..." />
-                <Command.Empty>No channel found.</Command.Empty>
-                <Command.Group>
-                    {#each data.channels as channel}
-                        <Command.Item
-                            value={channel.name}
-                            onSelect={(currentValue) => {
-                                value = currentValue;
-                                closeAndFocusTrigger(ids.trigger);
-                            }}
-                        >
-                            <Check
-                                class={cn(
-                                    'mr-2 h-4 w-4',
-                                    value !== channel.name && 'text-transparent'
-                                )}
-                            />
-                            {channel.name}
-                        </Command.Item>
-                    {/each}
-                </Command.Group>
-            </Command.Root>
-        </Popover.Content>
-    </Popover.Root>
+{#if formState === 'METADATA'}
+    <form method="POST" action="?/create" class="m-auto w-3/5">
+        <Label for={'title'} aria-required>Title</Label>
+        <Input name={'title'} required />
+        <Label for={'description'}>Description</Label>
+        <Textarea name={'description'} />
+        <Label>Channel</Label>
+        <Popover.Root bind:open let:ids>
+            <Popover.Trigger asChild let:builder>
+                <Button
+                    builders={[builder]}
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    class="w-full justify-between"
+                >
+                    {channel}
+                    <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </Popover.Trigger>
+            <Popover.Content class="p-0">
+                <Command.Root>
+                    <Command.Input placeholder="Search channel..." />
+                    <Command.Empty>No channel found.</Command.Empty>
+                    <Command.Group>
+                        {#each data.channels as channel}
+                            <Command.Item
+                                value={channel.name}
+                                onSelect={(currentValue) => {
+                                    value = currentValue;
+                                    closeAndFocusTrigger(ids.trigger);
+                                }}
+                            >
+                                <Check
+                                    class={cn(
+                                        'mr-2 h-4 w-4',
+                                        value !== channel.name && 'text-transparent'
+                                    )}
+                                />
+                                {channel.name}
+                            </Command.Item>
+                        {/each}
+                    </Command.Group>
+                </Command.Root>
+            </Popover.Content>
+        </Popover.Root>
 
-    <Label>Upload Video</Label>
-    <Input type={'file'} />
-</form>
-
-<Button on:click={dummyToast}>toast</Button>
+        <Label>Upload Video</Label>
+        <Input type={'file'} />
+    </form>
+{:else if formState === 'UPLOAD'}
+    <Button on:click={dummyToast}>toast</Button>
+{/if}
