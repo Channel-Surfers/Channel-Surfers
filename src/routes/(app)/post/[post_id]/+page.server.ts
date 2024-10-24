@@ -20,13 +20,13 @@ export const load: PageServerLoad = async (event) => {
         }
     }
 
-    const user_vote = event.locals.user
+    const userVote = event.locals.user
         ? await getUserPostVote(db, event.locals.user.id, post_id)
         : null;
 
     return {
-        user_vote,
-        signed_in: !!event.locals.user,
+        userVote,
+        signedIn: !!event.locals.user,
         ...data,
     };
 };
