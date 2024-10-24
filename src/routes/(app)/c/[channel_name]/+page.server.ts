@@ -11,7 +11,7 @@ export const load = (async ({ params: { channel_name }, locals}) => {
     if (!channel) {
         error(404)
     }
-    
+
     const postQuery = getPosts(db, 0, {
         type: 'channel',
         channelId: channel.id,

@@ -18,7 +18,7 @@
             filter,
             reverseSort: `${reverseSort}`,
         });
-
+        
         const res = await fetch(`/api/c//private${data.channel_id}/posts?${search}`);
 
         if (res.status !== 200) {
@@ -29,5 +29,4 @@
     };
 </script>
 
-<h1>Hello {data.channel_id}</h1>
 <InfiniteScroll init_buffer={data.posts} {get_posts} signed_in={!!data.user} />

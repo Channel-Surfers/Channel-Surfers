@@ -28,5 +28,5 @@
     };
 </script>
 
-<h1>Hello {data.channel_name}</h1>
+
 <InfiniteScroll init_buffer={data.posts} {get_posts} signed_in={!!data.user} />

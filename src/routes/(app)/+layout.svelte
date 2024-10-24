@@ -79,7 +79,7 @@
         
 
         {:else if data.island.type === 'channel' && data.island.data}
-            <ChannelInfo channel = {dummyChannel}/>          
+            <ChannelInfo channel={dummyChannel}/>          
 
             
         {:else if data.island.type === 'user' && data.island.exists && data.island.data}
