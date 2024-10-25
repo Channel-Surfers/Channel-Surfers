@@ -23,8 +23,8 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
             case '/(app)/(auth)/signin': {
                 return { type: 'hide' } as const;
             }
-            case '/(app)/c/[channel_name]': {
-                const channel = await getPublicChannelByName(db, params.channel_name!);
+            case '/(app)/c/[channelName]': {
+                const channel = await getPublicChannelByName(db, params.channelName!);
                 if (!channel) {
                     return {
                         type: 'channel',
@@ -41,8 +41,8 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                     },
                 };
             }
-            case '/(app)/c/private/[channel_id]': {
-                const channelData = await getChannelById(db, params.channel_id!);
+            case '/(app)/c/private/[channelId]': {
+                const channelData = await getChannelById(db, params.channelId!);
                 return {
                     type: 'channel',
                     data: {

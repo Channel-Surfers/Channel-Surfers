@@ -7,6 +7,7 @@ import {
     getUserSubscriptions,
     createChannel,
     publishChannel,
+    userIsSubscribed,
 } from './channels';
 import { testWithDb } from '$lib/testing/utils';
 import { channelTable } from '../db/channels.sql';
@@ -140,6 +141,27 @@ describe.concurrent('channels suite', () => {
             const publishedChannel: PublicChannel = await publishChannel(db, createdChannel);
 
             expect(publishedChannel.name).toStrictEqual(createdChannel.name);
+        },
+        generateUserAndChannel
+    );
+
+    testWithDb(
+        'User is subscribed',
+        async ({ expect, db }, { creator, createdChannel }) => {
+            await db
+                .insert(subscriptionTable)
+                .values({ userId: creator.id, channelId: createdChannel.id });
+            const subscribed = await userIsSubscribed(db, creator.id, createdChannel.id);
+            expect(subscribed).toStrictEqual(true);
+        },
+        generateUserAndChannel
+    );
+
+    testWithDb(
+        'User is not subscribed',
+        async ({ expect, db }, { creator, createdChannel }) => {
+            const subscribed = await userIsSubscribed(db, creator.id, createdChannel.id);
+            expect(subscribed).toStrictEqual(false);
         },
         generateUserAndChannel
     );

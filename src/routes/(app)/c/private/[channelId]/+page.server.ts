@@ -6,15 +6,16 @@ import type { PageServerLoad } from './$types';
 import { canViewChannel } from '$lib/server/services/channels';
 import { assertAuth } from '$lib/server/auth';
 
-export const load: PageServerLoad = (async (event) => {
-    const db = await getDb();
-    const { channel_id } = event.params;
-    const data = await getChannelById(db, channel_id);
-    const channel_name = data.name;
-
+export const load: PageServerLoad = async (event) => {
     assertAuth(event);
+
+    const db = await getDb();
+    const { channelId } = event.params;
+    const data = await getChannelById(db, channelId);
+    const channelName = data.name;
+
     if (!(await canViewChannel(db, event.locals.user.id, data.id))) {
-        return error(401);
+        return error(401, `You do not have access to channel with id ${data.id}`);
     }
 
     const postQuery = getPosts(db, 0, {
@@ -25,8 +26,8 @@ export const load: PageServerLoad = (async (event) => {
         requesterId: event.locals.user ? event.locals.user.id : undefined,
     });
     return {
-        channel_id,
-        channel_name,
+        channelId,
+        channelName,
         posts: await postQuery,
     };
-}) satisfies PageServerLoad;
+};

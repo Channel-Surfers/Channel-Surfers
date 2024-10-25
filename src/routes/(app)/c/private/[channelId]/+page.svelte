@@ -10,7 +10,7 @@
 
     const now = new Date();
 
-    const get_posts = async (page: number) => {
+    const getPosts = async (page: number) => {
         const search = new URLSearchParams({
             page: `${page}`,
             after: now.toISOString(),
@@ -19,7 +19,7 @@
             reverseSort: `${reverseSort}`,
         });
 
-        const res = await fetch(`/api/c//private${data.channel_id}/posts?${search}`);
+        const res = await fetch(`/api/c/private/${data.channelId}/posts?${search}`);
 
         if (res.status !== 200) {
             throw new Error(await res.text());
@@ -29,4 +29,4 @@
     };
 </script>
 
-<InfiniteScroll init_buffer={data.posts} {get_posts} signed_in={!!data.user} />
+<InfiniteScroll init_buffer={data.posts} {getPosts} signed_in={!!data.user} />

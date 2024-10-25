@@ -4,12 +4,12 @@ import { getPosts } from '$lib/server/services/content';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load = (async ({ params: { channel_name }, locals }) => {
+export const load: PageServerLoad = async ({ params: { channelName }, locals }) => {
     const db = await getDb();
-    const channel = await getPublicChannelByName(db, channel_name);
+    const channel = await getPublicChannelByName(db, channelName);
 
     if (!channel) {
-        error(404);
+        error(404, `Channel of name ${channelName} not found`);
     }
 
     const postQuery = getPosts(db, 0, {
@@ -20,7 +20,7 @@ export const load = (async ({ params: { channel_name }, locals }) => {
         requesterId: locals.user ? locals.user.id : undefined,
     });
     return {
-        channel_name,
+        channelName,
         posts: await postQuery,
     };
-}) satisfies PageServerLoad;
+};
