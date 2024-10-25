@@ -4,9 +4,10 @@ import { Mutex } from 'async-mutex';
 import { sql } from 'drizzle-orm';
 import { test, type ExtendedContext, type RunnerTestCase, type TestContext } from 'vitest';
 import * as schema from '$lib/server/db/schema';
+import { MockBunnyClient } from '$lib/server/bunny/mock';
 
 type DbStateGenerator<T> = (db: DB) => Promise<T>;
-type TestArgs = { db: DB } & ExtendedContext<RunnerTestCase> & TestContext;
+type TestArgs = { db: DB; bunny: MockBunnyClient } & ExtendedContext<RunnerTestCase> & TestContext;
 
 const container = new PostgreSqlContainer();
 const startedContainer = await container.start();
@@ -46,6 +47,7 @@ export function testWithDb<T>(
 
             const newArgs = testArgs as TestArgs;
             newArgs.db = db;
+            newArgs.bunny = new MockBunnyClient();
 
             if (generator) {
                 await testFunc(newArgs, mustGenerate(await generator(db)));

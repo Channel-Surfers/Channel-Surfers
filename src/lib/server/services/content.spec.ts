@@ -9,6 +9,287 @@ import { postVoteTable } from '../db/votes.posts.sql';
 import { commentTable } from '../db/comments.sql';
 import { subscriptionTable, userBlockTable } from '../db/schema';
 
+describe.concurrent('content suite', () => {
+    testWithDb(
+        'posts can be created',
+        async ({ bunny, db, expect }, { user, channel }) => {
+            const { post, video } = await createPost(db, bunny, {
+                title: 'Awesome post',
+                description: 'description of awesome post',
+                createdBy: user.id,
+                videoId: '',
+                channelId: channel.id,
+                status: 'UPLOADING',
+            });
+            expect(video != null).toStrictEqual(true);
+            expect(post.title).toStrictEqual('Awesome post');
+            expect(post.description).toStrictEqual('description of awesome post');
+            expect(post.createdBy).toStrictEqual(user.id);
+            expect(post.channelId).toStrictEqual(channel.id);
+            expect(post.status).toStrictEqual('UPLOADING');
+            expect(bunny.calls.createVideo).toStrictEqual(1);
+        },
+        async (db: DB) => {
+            const {
+                users: [user],
+            } = await generateUsers(1)(db);
+            const [channel] = await db
+                .insert(channelTable)
+                .values({ name: `${user.username}s-c`, createdBy: user.id })
+                .returning();
+            return { user, channel };
+        }
+    );
+    testWithDb(
+        'site statistics is calculated correctly',
+        async ({ expect, db }, { votes }) => {
+            const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
+                await getPostStatistics(db);
+
+            expect(numberOfChannelsWithPosts).toStrictEqual(1);
+            expect(numberOfPosts).toStrictEqual(2);
+            expect(numberOfUpvotes).toStrictEqual(votes.upvotes1.length + votes.upvotes2.length);
+            expect(numberOfDownvotes).toStrictEqual(
+                votes.downvotes1.length + votes.downvotes2.length
+            );
+        },
+        generateStatContext
+    );
+
+    testWithDb(
+        'Comment Tree Working Successfully',
+        async ({ expect, db }, { post1, creator3, comment1, comment2, comment3 }) => {
+            const commentTree = await getCommentTree(db, post1.id);
+
+            expect(commentTree.length).toStrictEqual(2);
+            expect(commentTree[0].comment).toStrictEqual(comment1);
+            expect(commentTree[1].comment).toStrictEqual(comment2);
+            expect(commentTree[0].children).toBeDefined();
+            expect(commentTree[1].children).toBeDefined();
+            expect(commentTree[0].children).toHaveLength(0);
+            expect(commentTree[1].children).toHaveLength(2);
+            expect(commentTree[1].children![0].comment).toStrictEqual(comment3);
+            expect(commentTree[1].children![0].user).toStrictEqual(creator3);
+        },
+        generateComments
+    );
+
+    testWithDb(
+        'get posts { type: home, sort: votes, filter: all }',
+        async ({ expect, db }, { post1, post2, votes, creator, channel }) => {
+            const [a, b, ...rest] = await getPosts(db, 0, {
+                type: 'home',
+                sort: 'votes',
+                filter: 'all',
+            });
+
+            let p1, p2;
+            if (
+                votes.upvotes1.length - votes.downvotes1.length >
+                votes.upvotes2.length - votes.downvotes2.length
+            ) {
+                [p1, p2] = [a, b];
+            } else {
+                [p1, p2] = [b, a];
+            }
+
+            expect(rest).toHaveLength(0);
+
+            expect(p1.id).toStrictEqual(post1.id);
+            expect(p1.title).toStrictEqual(post1.title);
+            expect(p1.poster.user.id).toStrictEqual(creator.id);
+            expect(p1.poster.user.name).toStrictEqual(creator.username);
+            expect(p1.poster.channel.id).toStrictEqual(channel.id);
+            expect(p1.poster.channel.name).toStrictEqual(channel.name);
+
+            expect(p2.id).toStrictEqual(post2.id);
+            expect(p2.title).toStrictEqual(post2.title);
+            expect(p2.poster.user.id).toStrictEqual(creator.id);
+            expect(p2.poster.user.name).toStrictEqual(creator.username);
+            expect(p2.poster.channel.id).toStrictEqual(channel.id);
+            expect(p2.poster.channel.name).toStrictEqual(channel.name);
+        },
+        generatePosts
+    );
+
+    testWithDb(
+        'get posts { type: home, sort: date, filter: all }',
+        async ({ expect, db }, { post1, post2 }) => {
+            const [p1, p2, ...rest] = await getPosts(db, 0, {
+                type: 'home',
+                sort: 'date',
+                filter: 'all',
+            });
+
+            expect(rest).toHaveLength(0);
+
+            expect(p1.id).toStrictEqual(post2.id);
+            expect(p2.id).toStrictEqual(post1.id);
+        },
+        generatePosts
+    );
+
+    testWithDb(
+        'get posts { type: home, sort: date, filter: all, reverseSort: true }',
+        async ({ expect, db }, { post1, post2 }) => {
+            const [p1, p2, ...rest] = await getPosts(db, 0, {
+                type: 'home',
+                sort: 'date',
+                filter: 'all',
+                reverseSort: true,
+            });
+
+            expect(rest).toHaveLength(0);
+
+            expect(p1.id).toStrictEqual(post1.id);
+            expect(p2.id).toStrictEqual(post2.id);
+        },
+        generatePosts
+    );
+
+    testWithDb(
+        'get posts { type: user, sort: date, filter: all }',
+        async ({ expect, db }, { post11, post21, creator1 }) => {
+            const [p1, p2, ...rest] = await getPosts(db, 0, {
+                type: 'user',
+                sort: 'date',
+                filter: 'all',
+                username: creator1.username,
+            });
+
+            expect(rest).toHaveLength(0);
+
+            expect(p1.id).toStrictEqual(post21.id);
+            expect(p2.id).toStrictEqual(post11.id);
+        },
+        generateGroups
+    );
+
+    testWithDb(
+        'get posts { type: channel, sort: date, filter: all }',
+        async ({ expect, db }, { post11, post12, channel1 }) => {
+            const [p1, p2, ...rest] = await getPosts(db, 0, {
+                type: 'channel',
+                sort: 'date',
+                filter: 'all',
+                channelId: channel1.id,
+            });
+
+            expect(rest).toHaveLength(0);
+
+            expect(p1.id).toStrictEqual(post12.id);
+            expect(p2.id).toStrictEqual(post11.id);
+        },
+        generateGroups
+    );
+
+    testWithDb(
+        'get posts { type: home, sort: date, filter: subscribed }',
+        async ({ expect, db }, { post12, user }) => {
+            const [p1, ...rest] = await getPosts(db, 0, {
+                type: 'home',
+                sort: 'date',
+                filter: 'subscribed',
+                requesterId: user.id,
+            });
+
+            expect(rest).toHaveLength(0);
+
+            expect(p1.id).toStrictEqual(post12.id);
+        },
+        generateGroups
+    );
+
+    testWithDb(
+        'get posts { type: home, sort: date, filter: subscribed, after: posts/2 }',
+        async ({ expect, db }) => {
+            const users = await createUsers(db, 10);
+            const channels = await db
+                .insert(channelTable)
+                .values(
+                    users
+                        .slice(0, 5)
+                        .map((u) => ({ name: `${u.username}s-channel`, createdBy: u.id }))
+                )
+                .returning();
+            const d = sequentialDates();
+            const gen_posts = await db
+                .insert(postTable)
+                .values(
+                    Array(10)
+                        .fill(0)
+                        .flatMap((_, pi) =>
+                            users.map((u, ui) => ({
+                                channelId: channels[pi % channels.length].id,
+                                createdBy: u.id,
+                                createdOn: d.next(),
+                                title: `post${pi * 10 + ui}`,
+                                videoId: '',
+                            }))
+                        )
+                )
+                .returning();
+
+            const after = gen_posts[Math.floor(gen_posts.length / 2)].createdOn;
+            const posts = await getPosts(db, 0, {
+                type: 'user',
+                sort: 'date',
+                filter: 'subscribed',
+                reverseSort: true,
+                after,
+                username: users[0].username,
+            });
+
+            const exp = gen_posts.filter(
+                (p) => p.createdBy === users[0].id && p.createdOn >= after
+            );
+            expect(posts.map((p) => p.id)).toEqual(exp.map((p) => p.id));
+        }
+    );
+
+    testWithDb('get posts for user with many users/posts', async ({ expect, db }) => {
+        const [requester] = await createUsers(db, 1, `req-`);
+        const users = await createUsers(db, 10);
+        const channels = await db
+            .insert(channelTable)
+            .values(users.map((u) => ({ name: `${u.username}s-channel`, createdBy: u.id })))
+            .returning();
+        const d = sequentialDates();
+        const gen_posts = await db
+            .insert(postTable)
+            .values(
+                users.flatMap((u, ui) =>
+                    Array(10)
+                        .fill(0)
+                        .map((_, pi) => ({
+                            channelId: channels[pi].id,
+                            createdBy: u.id,
+                            createdOn: d.next(),
+                            title: `post${ui * 10 + pi}`,
+                            videoId: '',
+                        }))
+                )
+            )
+            .returning();
+
+        users.forEach(async (u) => {
+            const posts = await getPosts(db, 0, {
+                type: 'user',
+                sort: 'date',
+                filter: 'all',
+                reverseSort: true,
+                username: u.username,
+                requesterId: requester.id,
+            });
+
+            expect(posts).toHaveLength(10);
+            expect(posts.map((p) => p.id)).toEqual(
+                gen_posts.filter((p) => p.createdBy === u.id).map((p) => p.id)
+            );
+        });
+    });
+});
+
 const generateStatContext = async (db: DB) => {
     const [creator] = await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning();
     const [channel] = await db
@@ -362,280 +643,3 @@ const generateComments = async (db: DB) => {
         comment4,
     };
 };
-
-describe.concurrent('content suite', () => {
-    testWithDb(
-        'posts can be created',
-        async ({ db, expect }, { user, channel }) => {
-            const post = await createPost(db, {
-                title: 'Awesome post',
-                description: 'description of awesome post',
-                createdBy: user.id,
-                videoId: '',
-                channelId: channel.id,
-            });
-            expect(post.title).toStrictEqual('Awesome post');
-            expect(post.description).toStrictEqual('description of awesome post');
-            expect(post.createdBy).toStrictEqual(user.id);
-            expect(post.channelId).toStrictEqual(channel.id);
-        },
-        async (db: DB) => {
-            const {
-                users: [user],
-            } = await generateUsers(1)(db);
-            const [channel] = await db
-                .insert(channelTable)
-                .values({ name: `${user.username}s-c`, createdBy: user.id })
-                .returning();
-            return { user, channel };
-        }
-    );
-    testWithDb(
-        'site statistics is calculated correctly',
-        async ({ expect, db }, { votes }) => {
-            const { numberOfChannelsWithPosts, numberOfPosts, numberOfUpvotes, numberOfDownvotes } =
-                await getPostStatistics(db);
-
-            expect(numberOfChannelsWithPosts).toStrictEqual(1);
-            expect(numberOfPosts).toStrictEqual(2);
-            expect(numberOfUpvotes).toStrictEqual(votes.upvotes1.length + votes.upvotes2.length);
-            expect(numberOfDownvotes).toStrictEqual(
-                votes.downvotes1.length + votes.downvotes2.length
-            );
-        },
-        generateStatContext
-    );
-
-    testWithDb(
-        'Comment Tree Working Successfully',
-        async ({ expect, db }, { post1, creator3, comment1, comment2, comment3 }) => {
-            const commentTree = await getCommentTree(db, post1.id);
-
-            expect(commentTree.length).toStrictEqual(2);
-            expect(commentTree[0].comment).toStrictEqual(comment1);
-            expect(commentTree[1].comment).toStrictEqual(comment2);
-            expect(commentTree[0].children).toBeDefined();
-            expect(commentTree[1].children).toBeDefined();
-            expect(commentTree[0].children).toHaveLength(0);
-            expect(commentTree[1].children).toHaveLength(2);
-            expect(commentTree[1].children![0].comment).toStrictEqual(comment3);
-            expect(commentTree[1].children![0].user).toStrictEqual(creator3);
-        },
-        generateComments
-    );
-
-    testWithDb(
-        'get posts { type: home, sort: votes, filter: all }',
-        async ({ expect, db }, { post1, post2, votes, creator, channel }) => {
-            const [a, b, ...rest] = await getPosts(db, 0, {
-                type: 'home',
-                sort: 'votes',
-                filter: 'all',
-            });
-
-            let p1, p2;
-            if (
-                votes.upvotes1.length - votes.downvotes1.length >
-                votes.upvotes2.length - votes.downvotes2.length
-            ) {
-                [p1, p2] = [a, b];
-            } else {
-                [p1, p2] = [b, a];
-            }
-
-            expect(rest).toHaveLength(0);
-
-            expect(p1.id).toStrictEqual(post1.id);
-            expect(p1.title).toStrictEqual(post1.title);
-            expect(p1.poster.user.id).toStrictEqual(creator.id);
-            expect(p1.poster.user.name).toStrictEqual(creator.username);
-            expect(p1.poster.channel.id).toStrictEqual(channel.id);
-            expect(p1.poster.channel.name).toStrictEqual(channel.name);
-
-            expect(p2.id).toStrictEqual(post2.id);
-            expect(p2.title).toStrictEqual(post2.title);
-            expect(p2.poster.user.id).toStrictEqual(creator.id);
-            expect(p2.poster.user.name).toStrictEqual(creator.username);
-            expect(p2.poster.channel.id).toStrictEqual(channel.id);
-            expect(p2.poster.channel.name).toStrictEqual(channel.name);
-        },
-        generatePosts
-    );
-
-    testWithDb(
-        'get posts { type: home, sort: date, filter: all }',
-        async ({ expect, db }, { post1, post2 }) => {
-            const [p1, p2, ...rest] = await getPosts(db, 0, {
-                type: 'home',
-                sort: 'date',
-                filter: 'all',
-            });
-
-            expect(rest).toHaveLength(0);
-
-            expect(p1.id).toStrictEqual(post2.id);
-            expect(p2.id).toStrictEqual(post1.id);
-        },
-        generatePosts
-    );
-
-    testWithDb(
-        'get posts { type: home, sort: date, filter: all, reverseSort: true }',
-        async ({ expect, db }, { post1, post2 }) => {
-            const [p1, p2, ...rest] = await getPosts(db, 0, {
-                type: 'home',
-                sort: 'date',
-                filter: 'all',
-                reverseSort: true,
-            });
-
-            expect(rest).toHaveLength(0);
-
-            expect(p1.id).toStrictEqual(post1.id);
-            expect(p2.id).toStrictEqual(post2.id);
-        },
-        generatePosts
-    );
-
-    testWithDb(
-        'get posts { type: user, sort: date, filter: all }',
-        async ({ expect, db }, { post11, post21, creator1 }) => {
-            const [p1, p2, ...rest] = await getPosts(db, 0, {
-                type: 'user',
-                sort: 'date',
-                filter: 'all',
-                username: creator1.username,
-            });
-
-            expect(rest).toHaveLength(0);
-
-            expect(p1.id).toStrictEqual(post21.id);
-            expect(p2.id).toStrictEqual(post11.id);
-        },
-        generateGroups
-    );
-
-    testWithDb(
-        'get posts { type: channel, sort: date, filter: all }',
-        async ({ expect, db }, { post11, post12, channel1 }) => {
-            const [p1, p2, ...rest] = await getPosts(db, 0, {
-                type: 'channel',
-                sort: 'date',
-                filter: 'all',
-                channelId: channel1.id,
-            });
-
-            expect(rest).toHaveLength(0);
-
-            expect(p1.id).toStrictEqual(post12.id);
-            expect(p2.id).toStrictEqual(post11.id);
-        },
-        generateGroups
-    );
-
-    testWithDb(
-        'get posts { type: home, sort: date, filter: subscribed }',
-        async ({ expect, db }, { post12, user }) => {
-            const [p1, ...rest] = await getPosts(db, 0, {
-                type: 'home',
-                sort: 'date',
-                filter: 'subscribed',
-                requesterId: user.id,
-            });
-
-            expect(rest).toHaveLength(0);
-
-            expect(p1.id).toStrictEqual(post12.id);
-        },
-        generateGroups
-    );
-
-    testWithDb(
-        'get posts { type: home, sort: date, filter: subscribed, after: posts/2 }',
-        async ({ expect, db }) => {
-            const users = await createUsers(db, 10);
-            const channels = await db
-                .insert(channelTable)
-                .values(
-                    users
-                        .slice(0, 5)
-                        .map((u) => ({ name: `${u.username}s-channel`, createdBy: u.id }))
-                )
-                .returning();
-            const d = sequentialDates();
-            const gen_posts = await db
-                .insert(postTable)
-                .values(
-                    Array(10)
-                        .fill(0)
-                        .flatMap((_, pi) =>
-                            users.map((u, ui) => ({
-                                channelId: channels[pi % channels.length].id,
-                                createdBy: u.id,
-                                createdOn: d.next(),
-                                title: `post${pi * 10 + ui}`,
-                                videoId: '',
-                            }))
-                        )
-                )
-                .returning();
-
-            const after = gen_posts[Math.floor(gen_posts.length / 2)].createdOn;
-            const posts = await getPosts(db, 0, {
-                type: 'user',
-                sort: 'date',
-                filter: 'subscribed',
-                reverseSort: true,
-                after,
-                username: users[0].username,
-            });
-
-            const exp = gen_posts.filter(
-                (p) => p.createdBy === users[0].id && p.createdOn >= after
-            );
-            expect(posts.map((p) => p.id)).toEqual(exp.map((p) => p.id));
-        }
-    );
-
-    testWithDb('get posts for user with many users/posts', async ({ expect, db }) => {
-        const [requester] = await createUsers(db, 1, `req-`);
-        const users = await createUsers(db, 10);
-        const channels = await db
-            .insert(channelTable)
-            .values(users.map((u) => ({ name: `${u.username}s-channel`, createdBy: u.id })))
-            .returning();
-        const d = sequentialDates();
-        const gen_posts = await db
-            .insert(postTable)
-            .values(
-                users.flatMap((u, ui) =>
-                    Array(10)
-                        .fill(0)
-                        .map((_, pi) => ({
-                            channelId: channels[pi].id,
-                            createdBy: u.id,
-                            createdOn: d.next(),
-                            title: `post${ui * 10 + pi}`,
-                            videoId: '',
-                        }))
-                )
-            )
-            .returning();
-
-        users.forEach(async (u) => {
-            const posts = await getPosts(db, 0, {
-                type: 'user',
-                sort: 'date',
-                filter: 'all',
-                reverseSort: true,
-                username: u.username,
-                requesterId: requester.id,
-            });
-
-            expect(posts).toHaveLength(10);
-            expect(posts.map((p) => p.id)).toEqual(
-                gen_posts.filter((p) => p.createdBy === u.id).map((p) => p.id)
-            );
-        });
-    });
-});

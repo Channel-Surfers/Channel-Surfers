@@ -32,6 +32,7 @@ import {
     type NewChannelPostReport,
 } from '../db/reports.channels.posts.sql';
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
+import type { IBunnyClient } from '../bunny';
 
 export const getPost = async (db: DB, post_id: uuid) => {
     const [a] = await db
@@ -346,7 +347,8 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
     return ret;
 };
 
-export const createPost = async (db: DB, post: NewPost) => {
-    const [ret] = await db.insert(postTable).values(post).returning();
-    return ret;
+export const createPost = async (db: DB, bunny: IBunnyClient, newPost: NewPost) => {
+    const [post] = await db.insert(postTable).values(newPost).returning();
+    const video = await bunny.createVideo(post);
+    return { post: newPost, video };
 };
