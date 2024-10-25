@@ -1,7 +1,9 @@
 import { getDb } from '$lib/server';
 import type { Channel } from '$lib/server/db/channels.sql';
-import { error } from '@sveltejs/kit';
+import { Type, type Static } from '@sinclair/typebox';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { AssertError, Value } from '@sinclair/typebox/value';
 
 export const load = (async ({ url }) => {
     const _db = await getDb();
@@ -14,8 +16,31 @@ export const load = (async ({ url }) => {
     };
 }) satisfies PageServerLoad;
 
+const createValidator = Type.Object({
+    title: Type.String({
+        minLength: 1,
+    }),
+    description: Type.String(),
+});
+
 export const actions = {
-    create: async ({ locals }) => {
+    create: async ({ locals, request }) => {
         if (!locals.user) throw error(401);
+        let body: Static<typeof createValidator>;
+        const formData = await request.formData();
+        try {
+            body = Value.Parse(createValidator, formData);
+        } catch (e: unknown) {
+            console.error(e);
+            if (e instanceof AssertError) {
+                const errors = [];
+                for (const err of e.Errors()) {
+                    errors.push(e.message);
+                }
+                return fail(400, { errors });
+            } else throw error(500, 'unknown error occurred');
+        }
+        console.log(body);
+        return redirect(303, '/');
     },
 };

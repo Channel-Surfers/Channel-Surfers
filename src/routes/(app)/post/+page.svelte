@@ -91,6 +91,7 @@
 
         <Label>Upload Video</Label>
         <Input type={'file'} />
+        <Button type={'submit'}>Create</Button>
     </form>
 {:else if formState === 'UPLOAD'}
     <Button on:click={dummyToast}>toast</Button>
