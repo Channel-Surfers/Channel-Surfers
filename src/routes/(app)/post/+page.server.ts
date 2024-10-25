@@ -31,11 +31,11 @@ export const actions = {
         try {
             body = Value.Parse(createValidator, formData);
         } catch (e: unknown) {
-            console.error(e);
             if (e instanceof AssertError) {
+                console.log(e.message);
                 const errors = [];
                 for (const err of e.Errors()) {
-                    errors.push(e.message);
+                    errors.push(err.message);
                 }
                 return fail(400, { errors });
             } else throw error(500, 'unknown error occurred');
