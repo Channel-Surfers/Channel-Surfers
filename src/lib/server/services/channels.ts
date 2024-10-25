@@ -42,6 +42,20 @@ export const getChannelById = async (db: DB, id: string): Promise<Channel> => {
 };
 
 /**
+ * Return if user is subscibed to a channel by channel_id
+ */
+
+export const userIsSubscribed = async (db: DB, userId: uuid, channelId: uuid) => {
+    const [ret] = await db
+        .select()
+        .from(subscriptionTable)
+        .where(
+            and(eq(subscriptionTable.userId, userId), eq(subscriptionTable.channelId, channelId))
+        );
+
+    return !!ret;
+};
+/**
  * Return channels that a user has subscribed to
  * @param db PostgreSQL db
  * @param userId identifies a particular user

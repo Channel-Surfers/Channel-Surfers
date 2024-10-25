@@ -1,5 +1,11 @@
 import { getDb } from '$lib/server';
-import { getPublicChannelByName, getChannelsByOwner, getUserSubscriptions, getChannelById } from '$lib/server/services/channels';
+import {
+    getPublicChannelByName,
+    getChannelsByOwner,
+    getUserSubscriptions,
+    getChannelById,
+    userIsSubscribed,
+} from '$lib/server/services/channels';
 import type { User } from '$lib/server/db/users.sql';
 import { getPostStatistics } from '$lib/server/services/content';
 import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
@@ -18,14 +24,22 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                 return { type: 'hide' } as const;
             }
             case '/(app)/c/[channel_name]': {
-                const channelData = await getPublicChannelByName(db, params.channel_name!);
+                const channel = await getPublicChannelByName(db, params.channel_name!);
+                if (!channel) {
+                    return {
+                        type: 'channel',
+                        exists: false,
+                    } as const;
+                }
                 return {
                     type: 'channel',
+                    exists: true,
                     data: {
-                        channelData,
-                        channel: channelData?.id
+                        channelData: channel,
+                        isSubscribed:
+                            locals.user && (await userIsSubscribed(db, locals.user.id, channel.id)),
                     },
-                } as const;
+                };
             }
             case '/(app)/c/private/[channel_id]': {
                 const channelData = await getChannelById(db, params.channel_id!);
@@ -33,9 +47,9 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                     type: 'channel',
                     data: {
                         channelData,
-                        channel: channelData?.name
-                    }
-                } 
+                        channel: channelData?.name,
+                    },
+                };
             }
             case '/(app)/u/[username]': {
                 const user = await getUserByUsername(db, params.username!);
@@ -58,12 +72,7 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                     },
                 } as const;
             }
-            //case '/(app)/c': {
-            // Use the getChannelInfo function to get required info
-            //    // return channel data
-            //    break;
-            //}
-            //case '/(app)/c/private': {
+            //case '/(app)/c/private/[channel_id]': {
             //    // return private channel data
             //    break;
             //}

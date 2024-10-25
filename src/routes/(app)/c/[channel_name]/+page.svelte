@@ -1,12 +1,12 @@
 <script lang="ts">
-    import InfiniteScroll from "$lib/components/InfiniteScroll.svelte";
+    import InfiniteScroll from '$lib/components/InfiniteScroll.svelte';
 
     export let data;
 
-    let filter = 'all'
-    let sort = 'date'
-    let reverseSort = 'false'
-    
+    let filter = 'all';
+    let sort = 'date';
+    let reverseSort = 'false';
+
     const now = new Date();
 
     const get_posts = async (page: number) => {
@@ -27,6 +27,5 @@
         return await res.json();
     };
 </script>
-
 
 <InfiniteScroll init_buffer={data.posts} {get_posts} signed_in={!!data.user} />

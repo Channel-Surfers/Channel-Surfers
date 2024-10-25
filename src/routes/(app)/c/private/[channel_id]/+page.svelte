@@ -1,13 +1,13 @@
 <script lang="ts">
     //TEST: 066ed576-645f-46a3-b8ee-8b6429d233cf
-    import InfiniteScroll from "$lib/components/InfiniteScroll.svelte";
+    import InfiniteScroll from '$lib/components/InfiniteScroll.svelte';
 
     export let data;
 
-    let filter = 'all'
-    let sort = 'date'
-    let reverseSort = 'false'
-    
+    let filter = 'all';
+    let sort = 'date';
+    let reverseSort = 'false';
+
     const now = new Date();
 
     const get_posts = async (page: number) => {
@@ -18,7 +18,7 @@
             filter,
             reverseSort: `${reverseSort}`,
         });
-        
+
         const res = await fetch(`/api/c//private${data.channel_id}/posts?${search}`);
 
         if (res.status !== 200) {
