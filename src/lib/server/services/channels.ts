@@ -1,6 +1,6 @@
-import type { DB } from '..';
+import { lower, type DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, like, isNull, or, sql, ilike } from 'drizzle-orm';
 import type { uuid } from '$lib/types';
 
 import { subscriptionTable } from '../db/subscriptions.sql';
@@ -8,6 +8,9 @@ import { publicChannelTable, type PublicChannel } from '../db/public.channels.sq
 import { channelTable, type Channel, type NewChannel } from '../db/channels.sql';
 import { roleTable } from '../db/roles.sql';
 import { userRoleTable } from '../db/roles.users.sql';
+import { CHANNEL_SEARCH_PAGE_SIZE } from '$lib';
+import type { User } from '../db/users.sql';
+import type { AuthUser } from '../auth';
 
 /**
  * Return a list of channels
@@ -119,4 +122,35 @@ export const getPublicChannelByName = async (db: DB, name: string): Promise<Chan
         .where(eq(publicChannelTable.name, name));
     if (!ret) return null;
     return ret.channel;
+};
+
+export const searchChannelsByName = async (
+    db: DB,
+    name: string,
+    isPrivate: boolean,
+    page: number,
+    requester?: (User & AuthUser) | null
+) => {
+    if (!isPrivate) {
+        return await db
+            .select()
+            .from(channelTable)
+            .innerJoin(publicChannelTable, eq(channelTable.id, publicChannelTable.channelId))
+            .where(ilike(publicChannelTable.name, `%${name}%`))
+            .limit(CHANNEL_SEARCH_PAGE_SIZE)
+            .offset(page * CHANNEL_SEARCH_PAGE_SIZE);
+    } else if (requester) {
+        return await db
+            .selectDistinct()
+            .from(channelTable)
+            .leftJoin(publicChannelTable, eq(channelTable.id, publicChannelTable.channelId))
+            .innerJoin(roleTable, eq(roleTable.channelId, channelTable.id))
+            .innerJoin(
+                userRoleTable,
+                and(eq(userRoleTable.roleId, roleTable.id), eq(userRoleTable.userId, requester.id))
+            )
+            .where(and(like(channelTable.name, name), isNull(publicChannelTable.name)))
+            .limit(CHANNEL_SEARCH_PAGE_SIZE)
+            .offset(page * CHANNEL_SEARCH_PAGE_SIZE);
+    } else throw new Error('private channels only accessible to user');
 };

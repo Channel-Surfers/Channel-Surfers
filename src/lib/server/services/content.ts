@@ -348,7 +348,15 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
 };
 
 export const createPost = async (db: DB, bunny: IBunnyClient, newPost: NewPost) => {
-    const [post] = await db.insert(postTable).values(newPost).returning();
-    const video = await bunny.createVideo(post);
-    return { post: newPost, video };
+    return await db.transaction(async (tx) => {
+        try {
+            const [post] = await db.insert(postTable).values(newPost).returning();
+            const video = await bunny.createVideo(post);
+            return { post: newPost, video };
+        } catch (e: unknown) {
+            console.error(e);
+            tx.rollback();
+            throw e;
+        }
+    });
 };

@@ -43,3 +43,12 @@ export const elapsed_time = (event: Date): string => {
     dayjs.extend(relativeTime);
     return dayjs(event).fromNow();
 };
+
+export const debounce = (callback: Function, wait = 300) => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    return (...args: any[]) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => callback(...args), wait);
+    };
+};

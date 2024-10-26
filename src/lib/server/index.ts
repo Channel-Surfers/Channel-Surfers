@@ -7,6 +7,8 @@ import db_init from './db_init';
 import { dev } from '$app/environment';
 
 import * as schema from './db/schema';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 export type DB = PostgresJsDatabase<typeof schema>;
 
@@ -34,6 +36,10 @@ export async function createDb(connectionString: string): Promise<DB> {
     const queryClient = postgres(connectionString);
     return drizzle(queryClient, { schema });
 }
+
+export const lower = (s: AnyPgColumn) => {
+    return sql`lower(${s})`;
+};
 
 /**
  * Represents constant access database for use in server functions.

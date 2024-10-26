@@ -40,6 +40,7 @@ describe.concurrent('content suite', () => {
             return { user, channel };
         }
     );
+
     testWithDb(
         'site statistics is calculated correctly',
         async ({ expect, db }, { votes }) => {
