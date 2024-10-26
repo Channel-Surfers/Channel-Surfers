@@ -1,6 +1,12 @@
 import { getDb } from '$lib/server';
+import {
+    getPublicChannelByName,
+    getChannelsByOwner,
+    getUserSubscriptions,
+    getChannelById,
+    userIsSubscribed,
+} from '$lib/server/services/channels';
 import type { User } from '$lib/server/db/users.sql';
-import { getChannelsByOwner, getUserSubscriptions } from '$lib/server/services/channels';
 import { getPostStatistics } from '$lib/server/services/content';
 import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
 import type { LayoutServerLoad } from './$types';
@@ -16,6 +22,34 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
             }
             case '/(app)/(auth)/signin': {
                 return { type: 'hide' } as const;
+            }
+            case '/(app)/c/[channelName]': {
+                const channel = await getPublicChannelByName(db, params.channelName!);
+                if (!channel) {
+                    return {
+                        type: 'channel',
+                        exists: false,
+                    } as const;
+                }
+                return {
+                    type: 'channel',
+                    exists: true,
+                    data: {
+                        channelData: channel,
+                        isSubscribed:
+                            locals.user && (await userIsSubscribed(db, locals.user.id, channel.id)),
+                    },
+                };
+            }
+            case '/(app)/c/private/[channelId]': {
+                const channelData = await getChannelById(db, params.channelId!);
+                return {
+                    type: 'channel',
+                    data: {
+                        channelData,
+                        channel: channelData?.name,
+                    },
+                };
             }
             case '/(app)/u/[username]': {
                 const user = await getUserByUsername(db, params.username!);
@@ -38,12 +72,7 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                     },
                 } as const;
             }
-            //case '/(app)/c': {
-            // Use the getChannelInfo function to get required info
-            //    // return channel data
-            //    break;
-            //}
-            //case '/(app)/c/private': {
+            //case '/(app)/c/private/[channel_id]': {
             //    // return private channel data
             //    break;
             //}
