@@ -1,7 +1,7 @@
 import { getDb } from '$lib/server';
 import { Type, type Static } from '@sinclair/typebox';
 import { error, fail, redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad, RequestEvent } from './$types';
 import { AssertError, Value } from '@sinclair/typebox/value';
 import { createPost, getPost } from '$lib/server/services/content';
 import { bunnyClient } from '$lib/server/bunny';
@@ -48,7 +48,7 @@ const createValidator = Type.Object({
 });
 
 export const actions = {
-    create: async ({ locals, request }) => {
+    create: async ({ locals, request }: RequestEvent) => {
         if (!locals.user) throw error(401, 'Must be logged in to create a post');
         const db = await getDb();
 
