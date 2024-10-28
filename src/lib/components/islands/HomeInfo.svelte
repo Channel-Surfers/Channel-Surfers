@@ -20,12 +20,12 @@
             Site Score: <Score
                 upvotes={stats.numberOfUpvotes}
                 downvotes={stats.numberOfDownvotes}
-                side={'bottom'}
+                side="bottom"
             />
         </div>
 
         {#if user}
-            <Button class="mt-2 w-full" href={'/post'}>Create Post</Button>
+            <Button class="mt-2 w-full" href="/post">Create Post</Button>
         {/if}
     </Card.Content>
 </Card.Root>
