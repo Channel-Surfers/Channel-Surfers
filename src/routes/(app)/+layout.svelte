@@ -13,22 +13,10 @@
     import UserInfo from '$lib/components/islands/UserInfo.svelte';
     import type { User } from '$lib/server/db/users.sql';
     import PlaylistInfo from '$lib/components/islands/PlaylistInfo.svelte';
+    import { page } from '$app/stores';
+    import type { Channel } from '$lib/server/db/channels.sql';
 
     export let data: LayoutServerData;
-
-    const dummyChannel = {
-        id: '',
-        icon: null,
-        bannerImage: null,
-        name: 'awww',
-        description: 'A place to appreciate cuteness',
-        guidelines:
-            "Don't post things that are not cute\nNo bigotry of any kind allowed\nNo promotion",
-        createdBy: '',
-        createdOn: new Date(),
-        updatedOn: new Date(),
-        subscriptionsCount: 2,
-    };
 
     $: dummyPlaylist = data.user
         ? {
@@ -43,6 +31,9 @@
 
     $: ({ myChannels, mySubscriptions } = data);
     $: userAsUser = data.user ? (data.user as User) : null;
+    $: channelAsChannel = data.island.data?.channelData
+        ? (data.island.data.channelData as Channel)
+        : null;
 </script>
 
 <!-- Enable dark-mode detection and switching -->
@@ -75,6 +66,8 @@
         {#if data.island.type === 'home' && data.island.data}
             <HomeInfo stats={data.island.data} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
+        {:else if data.island.type === 'channel' && data.island.data}
+            <ChannelInfo channel={channelAsChannel} isSubscribed={data.island.data.isSubscribed} />
         {:else if data.island.type === 'user' && data.island.exists && data.island.data}
             <UserInfo
                 isBlocking={data.island.data.isBlocking}
@@ -83,8 +76,6 @@
                 user={userAsUser}
             />
         {/if}
-
-        <ChannelInfo channel={dummyChannel} />
 
         <PlaylistInfo playlistInfo={dummyPlaylist} />
 
@@ -111,10 +102,20 @@
                     >
                 </Card.Header>
                 <Card.Content class="flex flex-col gap-2">
-                    <Button href="/signin/discord" variant="secondary" class="w-full"
-                        >Discord</Button
+                    <Button
+                        href="/signin/discord?redirect={encodeURI($page.url.pathname)}"
+                        variant="secondary"
+                        class="w-full"
                     >
-                    <Button href="/signin/github" variant="secondary" class="w-full">GitHub</Button>
+                        Discord
+                    </Button>
+                    <Button
+                        href="/signin/github?redirect={encodeURI($page.url.pathname)}"
+                        variant="secondary"
+                        class="w-full"
+                    >
+                        GitHub
+                    </Button>
                 </Card.Content>
             </Card.Root>
         {/if}
