@@ -160,54 +160,57 @@
 <!-- public.post -->
 <g id="node4" class="node">
 <title>public.post</title>
-<polygon fill="#efefef" stroke="none" points="842.64,-1658.8 842.64,-1694.4 1119.68,-1694.4 1119.68,-1658.8 842.64,-1658.8"/>
-<polygon fill="none" stroke="black" points="842.64,-1658.8 842.64,-1694.4 1119.68,-1694.4 1119.68,-1658.8 842.64,-1658.8"/>
-<text text-anchor="start" x="879.17" y="-1672.2" font-family="Arial Bold" font-size="18.00">public.post</text>
-<text text-anchor="start" x="958.67" y="-1672.2" font-family="Arial" font-size="14.00">    </text>
-<text text-anchor="start" x="989.78" y="-1672.2" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="black" points="842.64,-1628 842.64,-1658.8 1119.68,-1658.8 1119.68,-1628 842.64,-1628"/>
-<text text-anchor="start" x="849.64" y="-1640.2" font-family="Arial" font-size="14.00">id </text>
-<text text-anchor="start" x="864.43" y="-1640.2" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="842.64,-1597.2 842.64,-1628 1119.68,-1628 1119.68,-1597.2 842.64,-1597.2"/>
-<text text-anchor="start" x="849.64" y="-1609.4" font-family="Arial" font-size="14.00">name </text>
-<text text-anchor="start" x="888.55" y="-1609.4" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="842.64,-1566.4 842.64,-1597.2 1119.68,-1597.2 1119.68,-1566.4 842.64,-1566.4"/>
-<text text-anchor="start" x="849.64" y="-1578.6" font-family="Arial" font-size="14.00">description </text>
-<text text-anchor="start" x="921.24" y="-1578.6" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="842.64,-1535.6 842.64,-1566.4 1119.68,-1566.4 1119.68,-1535.6 842.64,-1535.6"/>
-<text text-anchor="start" x="849.64" y="-1547.8" font-family="Arial" font-size="14.00">alt_text </text>
-<text text-anchor="start" x="898.67" y="-1547.8" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="842.64,-1504.8 842.64,-1535.6 1119.68,-1535.6 1119.68,-1504.8 842.64,-1504.8"/>
-<text text-anchor="start" x="849.64" y="-1517" font-family="Arial" font-size="14.00">created_by </text>
-<text text-anchor="start" x="922.8" y="-1517" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="842.64,-1474 842.64,-1504.8 1119.68,-1504.8 1119.68,-1474 842.64,-1474"/>
-<text text-anchor="start" x="849.64" y="-1486.2" font-family="Arial" font-size="14.00">channel_id </text>
-<text text-anchor="start" x="921.26" y="-1486.2" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="842.64,-1443.2 842.64,-1474 1119.68,-1474 1119.68,-1443.2 842.64,-1443.2"/>
-<text text-anchor="start" x="849.64" y="-1455.4" font-family="Arial" font-size="14.00">video_id </text>
-<text text-anchor="start" x="905.68" y="-1455.4" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="842.64,-1412.4 842.64,-1443.2 1119.68,-1443.2 1119.68,-1412.4 842.64,-1412.4"/>
-<text text-anchor="start" x="849.64" y="-1424.6" font-family="Arial" font-size="14.00">created_on </text>
-<text text-anchor="start" x="923.59" y="-1424.6" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
-<polygon fill="none" stroke="black" points="842.64,-1381.6 842.64,-1412.4 1119.68,-1412.4 1119.68,-1381.6 842.64,-1381.6"/>
-<text text-anchor="start" x="849.64" y="-1393.8" font-family="Arial" font-size="14.00">updated_on </text>
-<text text-anchor="start" x="927.5" y="-1393.8" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
-<polygon fill="none" stroke="black" points="842.64,-1350.8 842.64,-1381.6 1119.68,-1381.6 1119.68,-1350.8 842.64,-1350.8"/>
-<text text-anchor="start" x="849.64" y="-1363" font-family="Arial" font-size="14.00">upvotes </text>
-<text text-anchor="start" x="902.57" y="-1363" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
-<polygon fill="none" stroke="black" points="842.64,-1320 842.64,-1350.8 1119.68,-1350.8 1119.68,-1320 842.64,-1320"/>
-<text text-anchor="start" x="849.64" y="-1332.2" font-family="Arial" font-size="14.00">downvotes </text>
-<text text-anchor="start" x="920.46" y="-1332.2" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
-<polygon fill="none" stroke="black" points="842.64,-1289.2 842.64,-1320 1119.68,-1320 1119.68,-1289.2 842.64,-1289.2"/>
-<text text-anchor="start" x="849.64" y="-1301.4" font-family="Arial" font-size="14.00">comments </text>
-<text text-anchor="start" x="918.11" y="-1301.4" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
+<polygon fill="#efefef" stroke="none" points="842.64,-1674.2 842.64,-1709.8 1119.68,-1709.8 1119.68,-1674.2 842.64,-1674.2"/>
+<polygon fill="none" stroke="black" points="842.64,-1674.2 842.64,-1709.8 1119.68,-1709.8 1119.68,-1674.2 842.64,-1674.2"/>
+<text text-anchor="start" x="879.17" y="-1687.6" font-family="Arial Bold" font-size="18.00">public.post</text>
+<text text-anchor="start" x="958.67" y="-1687.6" font-family="Arial" font-size="14.00">    </text>
+<text text-anchor="start" x="989.78" y="-1687.6" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="black" points="842.64,-1643.4 842.64,-1674.2 1119.68,-1674.2 1119.68,-1643.4 842.64,-1643.4"/>
+<text text-anchor="start" x="849.64" y="-1655.6" font-family="Arial" font-size="14.00">id </text>
+<text text-anchor="start" x="864.43" y="-1655.6" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="842.64,-1612.6 842.64,-1643.4 1119.68,-1643.4 1119.68,-1612.6 842.64,-1612.6"/>
+<text text-anchor="start" x="849.64" y="-1624.8" font-family="Arial" font-size="14.00">name </text>
+<text text-anchor="start" x="888.55" y="-1624.8" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="842.64,-1581.8 842.64,-1612.6 1119.68,-1612.6 1119.68,-1581.8 842.64,-1581.8"/>
+<text text-anchor="start" x="849.64" y="-1594" font-family="Arial" font-size="14.00">description </text>
+<text text-anchor="start" x="921.24" y="-1594" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="842.64,-1551 842.64,-1581.8 1119.68,-1581.8 1119.68,-1551 842.64,-1551"/>
+<text text-anchor="start" x="849.64" y="-1563.2" font-family="Arial" font-size="14.00">alt_text </text>
+<text text-anchor="start" x="898.67" y="-1563.2" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="842.64,-1520.2 842.64,-1551 1119.68,-1551 1119.68,-1520.2 842.64,-1520.2"/>
+<text text-anchor="start" x="849.64" y="-1532.4" font-family="Arial" font-size="14.00">created_by </text>
+<text text-anchor="start" x="922.8" y="-1532.4" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="842.64,-1489.4 842.64,-1520.2 1119.68,-1520.2 1119.68,-1489.4 842.64,-1489.4"/>
+<text text-anchor="start" x="849.64" y="-1501.6" font-family="Arial" font-size="14.00">channel_id </text>
+<text text-anchor="start" x="921.26" y="-1501.6" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="842.64,-1458.6 842.64,-1489.4 1119.68,-1489.4 1119.68,-1458.6 842.64,-1458.6"/>
+<text text-anchor="start" x="849.64" y="-1470.8" font-family="Arial" font-size="14.00">video_id </text>
+<text text-anchor="start" x="905.68" y="-1470.8" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="842.64,-1427.8 842.64,-1458.6 1119.68,-1458.6 1119.68,-1427.8 842.64,-1427.8"/>
+<text text-anchor="start" x="849.64" y="-1440" font-family="Arial" font-size="14.00">created_on </text>
+<text text-anchor="start" x="923.59" y="-1440" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
+<polygon fill="none" stroke="black" points="842.64,-1397 842.64,-1427.8 1119.68,-1427.8 1119.68,-1397 842.64,-1397"/>
+<text text-anchor="start" x="849.64" y="-1409.2" font-family="Arial" font-size="14.00">updated_on </text>
+<text text-anchor="start" x="927.5" y="-1409.2" font-family="Arial" font-size="14.00" fill="#666666">[timestamp without time zone]</text>
+<polygon fill="none" stroke="black" points="842.64,-1366.2 842.64,-1397 1119.68,-1397 1119.68,-1366.2 842.64,-1366.2"/>
+<text text-anchor="start" x="849.64" y="-1378.4" font-family="Arial" font-size="14.00">status </text>
+<text text-anchor="start" x="890.88" y="-1378.4" font-family="Arial" font-size="14.00" fill="#666666">[post_status]</text>
+<polygon fill="none" stroke="black" points="842.64,-1335.4 842.64,-1366.2 1119.68,-1366.2 1119.68,-1335.4 842.64,-1335.4"/>
+<text text-anchor="start" x="849.64" y="-1347.6" font-family="Arial" font-size="14.00">upvotes </text>
+<text text-anchor="start" x="902.57" y="-1347.6" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
+<polygon fill="none" stroke="black" points="842.64,-1304.6 842.64,-1335.4 1119.68,-1335.4 1119.68,-1304.6 842.64,-1304.6"/>
+<text text-anchor="start" x="849.64" y="-1316.8" font-family="Arial" font-size="14.00">downvotes </text>
+<text text-anchor="start" x="920.46" y="-1316.8" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
+<polygon fill="none" stroke="black" points="842.64,-1273.8 842.64,-1304.6 1119.68,-1304.6 1119.68,-1273.8 842.64,-1273.8"/>
+<text text-anchor="start" x="849.64" y="-1286" font-family="Arial" font-size="14.00">comments </text>
+<text text-anchor="start" x="918.11" y="-1286" font-family="Arial" font-size="14.00" fill="#666666">[integer]</text>
 </g>
 <!-- public.post&#45;&gt;public.channel -->
 <g id="edge3" class="edge">
 <title>public.post:channel_id&#45;&gt;public.channel:id</title>
-<path fill="none" stroke="black" d="M1130.85,-1488.16C1228.45,-1462.78 1100.09,-1055.34 1172.16,-968.8 1240.61,-886.62 1527.69,-835.6 1634.64,-835.6"/>
-<polygon fill="black" stroke="black" points="1130.94,-1488.15 1120.47,-1484.89 1125.65,-1488.79 1121.35,-1489.32 1121.35,-1489.32 1121.35,-1489.32 1125.65,-1488.79 1121.56,-1493.83 1130.94,-1488.15"/>
-<text text-anchor="start" x="995.92" y="-1473.4" font-family="Arial" font-size="10.00">FOREIGN KEY (channel_id) REFERENCES channel(id)</text>
+<path fill="none" stroke="black" d="M1130.84,-1503.6C1231.79,-1478.24 1098.03,-1058.07 1172.16,-968.8 1240.49,-886.52 1527.69,-835.6 1634.64,-835.6"/>
+<polygon fill="black" stroke="black" points="1130.95,-1503.59 1120.49,-1500.29 1125.65,-1504.21 1121.35,-1504.72 1121.35,-1504.72 1121.35,-1504.72 1125.65,-1504.21 1121.54,-1509.23 1130.95,-1503.59"/>
+<text text-anchor="start" x="995.92" y="-1488.8" font-family="Arial" font-size="10.00">FOREIGN KEY (channel_id) REFERENCES channel(id)</text>
 </g>
 <!-- public.public_channel -->
 <g id="node5" class="node">
