@@ -1,5 +1,4 @@
 import { type IBunnyClient, type Video, type CreateVideoArgs } from '.';
-import type { Post, NewPost } from '../db/posts.sql';
 
 export class MockBunnyClient implements IBunnyClient {
     public calls = {

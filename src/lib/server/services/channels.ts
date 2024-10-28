@@ -1,6 +1,6 @@
-import { lower, type DB } from '..';
+import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { eq, and, like, isNull, or, sql, ilike } from 'drizzle-orm';
+import { eq, and, like, isNull, or, ilike } from 'drizzle-orm';
 import type { uuid } from '$lib/types';
 
 import { subscriptionTable } from '../db/subscriptions.sql';
@@ -11,7 +11,6 @@ import { userRoleTable } from '../db/roles.users.sql';
 import { CHANNEL_SEARCH_PAGE_SIZE } from '$lib';
 import type { User } from '../db/users.sql';
 import type { AuthUser } from '../auth';
-import { dedupe_nonull_array } from './utils';
 
 /**
  * Return a list of channels

@@ -1,5 +1,4 @@
 import { getDb } from '$lib/server';
-import type { Channel } from '$lib/server/db/channels.sql';
 import { Type, type Static } from '@sinclair/typebox';
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';

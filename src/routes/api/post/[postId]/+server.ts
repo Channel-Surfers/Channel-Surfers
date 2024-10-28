@@ -1,7 +1,5 @@
 import { getDb } from '$lib/server';
 import { getPost, updatePost } from '$lib/server/services/content';
-import { Type, type Static } from '@sinclair/typebox';
-import { AssertError, Value } from '@sinclair/typebox/value';
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import type { Post } from '$lib/server/db/posts.sql';
@@ -24,13 +22,12 @@ export const PUT: RequestHandler = async ({ params: { postId }, request, locals 
     const db = await getDb();
     const body = await request.json();
 
-    let parsedBody = v.safeParse(postUpdateValidator, { id: postId, ...body });
+    const parsedBody = v.safeParse(postUpdateValidator, { id: postId, ...body });
     if (!parsedBody.success) {
-        parsedBody.issues;
         throw error(400, parsedBody.issues.map((i) => i.message).join(', '));
     }
 
-    let currentPost = await getPost(db, postId);
+    const currentPost = await getPost(db, postId);
     if (!currentPost) throw error(404, 'Post does not exist');
     if (currentPost.user.id != locals.user.id) throw error(403, 'Unauthorized to modify this post');
 
