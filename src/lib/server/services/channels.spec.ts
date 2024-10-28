@@ -131,7 +131,7 @@ describe.concurrent('channels suite', () => {
 
     testWithDb(
         'public channels can be searched',
-        async ({ expect, db }, { creator, createdChannelPublicInfo }) => {
+        async ({ expect, db }) => {
             const [n1, ...rest] = (await searchChannelsByName(db, 'surf', false, 0)).map(
                 (c) => c.name
             );
