@@ -31,7 +31,7 @@
 
     $: ({ myChannels, mySubscriptions } = data);
     $: userAsUser = data.user ? (data.user as User) : null;
-    $: channelAsChannel = data.island.data.channelData
+    $: channelAsChannel = data.island.data?.channelData
         ? (data.island.data.channelData as Channel)
         : null;
 </script>
