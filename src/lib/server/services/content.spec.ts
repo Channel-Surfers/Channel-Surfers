@@ -3,7 +3,14 @@ import { createUsers, sequentialDates, testWithDb, generateUsers } from '$lib/te
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
-import { createPost, getCommentTree, getPosts, getPostStatistics, updatePost } from './content';
+import {
+    createPost,
+    getCommentTree,
+    getPosts,
+    getPostsInProgress,
+    getPostStatistics,
+    updatePost,
+} from './content';
 import { postTable, type Post } from '../db/posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { commentTable } from '../db/comments.sql';
@@ -63,6 +70,16 @@ describe.concurrent('content suite', () => {
             expect(bunny.calls.deleteVideo).toStrictEqual(0);
             await expect(() => createPost(db, bunny, postWithBadUser)).rejects.toThrow();
             expect(bunny.calls.deleteVideo).toStrictEqual(1);
+        },
+        generateUserAndPost
+    );
+
+    testWithDb(
+        'in progress videos can be retrieved',
+        async ({ db, expect }, { user, post }) => {
+            const [p1, ...rest] = await getPostsInProgress(db, user.id);
+            expect(rest).toHaveLength(0);
+            expect(p1).toStrictEqual(post);
         },
         generateUserAndPost
     );

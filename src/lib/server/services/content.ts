@@ -385,3 +385,13 @@ export const updatePost = async (
 ) => {
     return await db.update(postTable).set(post).where(eq(postTable.id, post.id)).returning();
 };
+
+/**
+ * Returns posts whose videos have yet to be uploaded
+ */
+export const getPostsInProgress = async (db: DB, userId: string) => {
+    return await db
+        .select()
+        .from(postTable)
+        .where(and(eq(postTable.createdBy, userId), eq(postTable.status, 'UPLOADING')));
+};

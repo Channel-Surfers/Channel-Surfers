@@ -7,7 +7,7 @@ import {
     userIsSubscribed,
 } from '$lib/server/services/channels';
 import type { User } from '$lib/server/db/users.sql';
-import { getPostStatistics } from '$lib/server/services/content';
+import { getPostsInProgress, getPostStatistics } from '$lib/server/services/content';
 import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
 import type { LayoutServerLoad } from './$types';
 
@@ -93,5 +93,6 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
         mySubscriptions: locals.user ? await getUserSubscriptions(db, locals.user.id) : null,
         myChannels: locals.user ? await getChannelsByOwner(db, locals.user.id) : null,
         userStats: locals.user ? await getUserStats(db, locals.user.id) : null,
+        uploads: locals.user ? await getPostsInProgress(db, locals.user.id) : [],
     };
 };

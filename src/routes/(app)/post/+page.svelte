@@ -144,94 +144,101 @@
         uploadProgress = 0;
     };
 
-    const cancelUpload = () => {
-        if (upload) upload.abort(true);
+    const cancelUpload = async () => {
+        if (upload) await upload.abort(true);
+        uploadProgress = null;
+        upload = null;
     };
 </script>
 
 {#if formState === 'METADATA'}
-    <form method="POST" action="?/create" class="m-auto w-3/5">
-        <Label for={'title'} aria-required>Title</Label>
+    <div class="m-auto grid min-h-full w-3/5 place-items-center">
+        <form method="POST" action="?/create" class="w-full">
+            <Label for={'title'} aria-required>Title</Label>
 
-        <Input name="title" required />
-        <Label for="description">Description</Label>
-        <Textarea name="description" />
-        <div class="flex items-center space-x-2">
-            <Label class="my-2" aria-required>Channel:</Label>
-            {#if selectedChannel}
-                <p>{selectedChannel.name}</p>
-            {/if}
-        </div>
-        <Input class="hidden" name="channelId" value={selectedChannel?.id} />
-        <div>
-            <Dialog.Root bind:open>
-                <Dialog.Trigger
-                    on:click={() => {
-                        open = true;
-                    }}
-                    class={buttonVariants({ variant: 'outline' })}>Select Channel</Dialog.Trigger
-                >
-                <Dialog.Content class="sm:max-w-[625px]">
-                    <Dialog.Header>
-                        <Dialog.Title>Select Channel</Dialog.Title>
-                        <Dialog.Description>Select a channel</Dialog.Description>
-                    </Dialog.Header>
-                    <div class="flex space-x-2">
-                        <Checkbox
-                            id="terms"
-                            bind:checked={searchChannelIsPrivate}
-                            aria-labelledby="public-channel-label"
+            <Input name="title" required />
+            <Label for="description">Description</Label>
+            <Textarea name="description" />
+            <div class="flex items-center space-x-2">
+                <Label class="my-2" aria-required>Channel:</Label>
+                {#if selectedChannel}
+                    <p>{selectedChannel.name}</p>
+                {/if}
+            </div>
+            <Input class="hidden" name="channelId" value={selectedChannel?.id} />
+            <div>
+                <Dialog.Root bind:open>
+                    <Dialog.Trigger
+                        on:click={() => {
+                            open = true;
+                        }}
+                        class={buttonVariants({ variant: 'outline' })}
+                        >Select Channel</Dialog.Trigger
+                    >
+                    <Dialog.Content class="sm:max-w-[625px]">
+                        <Dialog.Header>
+                            <Dialog.Title>Select Channel</Dialog.Title>
+                            <Dialog.Description>Select a channel</Dialog.Description>
+                        </Dialog.Header>
+                        <div class="flex space-x-2">
+                            <Checkbox
+                                id="terms"
+                                bind:checked={searchChannelIsPrivate}
+                                aria-labelledby="public-channel-label"
+                            />
+                            <Label id="public-channel-label">Private Channel</Label>
+                        </div>
+                        <Label>Search</Label>
+                        <Input
+                            placeholder="Channel search by name"
+                            on:keyup={debounce(handleInputUpdate)}
+                            bind:value={channelSearchQuery}
                         />
-                        <Label id="public-channel-label">Private Channel</Label>
-                    </div>
-                    <Label>Search</Label>
-                    <Input
-                        placeholder="Channel search by name"
-                        on:keyup={debounce(handleInputUpdate)}
-                        bind:value={channelSearchQuery}
-                    />
 
-                    <Card.Root>
-                        <Card.Content>
-                            <div class="flex w-full flex-col space-y-2">
-                                <ScrollArea class="h-36 w-full space-y-2">
-                                    {#each channels as channel}
-                                        <div class="my-1 flex w-full flex-row justify-between pr-4">
-                                            <p>{channel.name}</p>
-                                            <Button
-                                                type="submit"
-                                                on:click={() => selectChannel(channel)}
-                                                >Select</Button
+                        <Card.Root>
+                            <Card.Content>
+                                <div class="flex w-full flex-col space-y-2">
+                                    <ScrollArea class="h-36 w-full space-y-2">
+                                        {#each channels as channel}
+                                            <div
+                                                class="my-1 flex w-full flex-row justify-between pr-4"
                                             >
-                                        </div>
-                                    {:else}
-                                        <p>No channels found</p>
-                                    {/each}
-                                </ScrollArea>
-                                {#if canLoadMore}
-                                    <Button on:click={loadMoreChannels}>Load More</Button>
-                                {/if}
-                                {#if channelSearchError}
-                                    <p class="text-red-500">{channelSearchError}</p>
-                                {/if}
-                            </div>
-                        </Card.Content>
-                    </Card.Root>
-                </Dialog.Content>
-            </Dialog.Root>
-        </div>
-        <Button class="mt-2" type="submit">Create Post</Button>
-    </form>
+                                                <p>{channel.name}</p>
+                                                <Button
+                                                    type="submit"
+                                                    on:click={() => selectChannel(channel)}
+                                                    >Select</Button
+                                                >
+                                            </div>
+                                        {:else}
+                                            <p>No channels found</p>
+                                        {/each}
+                                    </ScrollArea>
+                                    {#if canLoadMore}
+                                        <Button on:click={loadMoreChannels}>Load More</Button>
+                                    {/if}
+                                    {#if channelSearchError}
+                                        <p class="text-red-500">{channelSearchError}</p>
+                                    {/if}
+                                </div>
+                            </Card.Content>
+                        </Card.Root>
+                    </Dialog.Content>
+                </Dialog.Root>
+            </div>
+            <Button class="mt-2" type="submit">Create Post</Button>
+        </form>
+    </div>
 {:else if formState === 'UPLOAD'}
-    <div class="m-auto w-3/5">
+    <div class="m-auto grid min-h-full w-3/5 place-items-center">
         {#if !uploadProgress}
-            <form on:submit={uploadVideo}>
+            <form on:submit={uploadVideo} class="w-full">
                 <Label for="video" aria-required>Upload Video File</Label>
                 <Input name="video" type="file" required />
-                <Button class="mt-2" type="submit">Upload</Button>
+                <Button class="mt-2 w-full" type="submit">Upload</Button>
             </form>
         {:else}
-            <div class="flex flex-col space-y-2">
+            <div class="flex w-full flex-col space-y-2">
                 <h1>Uploading</h1>
                 <Progress value={uploadProgress} class="w-full"></Progress>
                 <Button on:click={cancelUpload} variant="destructive">Cancel</Button>
@@ -239,8 +246,10 @@
         {/if}
     </div>
 {:else if formState === 'COMPLETE' && data.post}
-    <div class="m-auto w-3/5">
-        <p>Congratulations! Your post has been uploaded.</p>
-        <Button class="m-auto" href={`/post/${data.post.id}`}>View Post</Button>
+    <div class="m-auto grid min-h-full w-3/5 place-items-center">
+        <div>
+            <p>Congratulations! Your post has been uploaded.</p>
+            <Button class="w-full" href={`/post/${data.post.id}`}>View Post</Button>
+        </div>
     </div>
 {/if}

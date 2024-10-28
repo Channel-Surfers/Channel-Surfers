@@ -80,16 +80,37 @@
 
         {#if data.user && data.userStats}
             <Card.Root>
-                <Card.Content>
+                <Card.Header>
                     <div class="flex flex-row items-center justify-between">
                         <ProfileIcon user={data.user} />
                         <h1>u/{data.user.username}</h1>
                     </div>
-                    Score: <Score
-                        upvotes={data.userStats.numberOfUpvotes}
-                        downvotes={data.userStats.numberOfDownvotes}
-                        side={'right'}
-                    />
+                </Card.Header>
+                <Card.Content>
+                    <p>
+                        Score: <Score
+                            upvotes={data.userStats.numberOfUpvotes}
+                            downvotes={data.userStats.numberOfDownvotes}
+                            side={'right'}
+                        />
+                    </p>
+                    {#if data.uploads.length !== 0}
+                        <p class="m-2 text-muted-foreground">
+                            These posts have been created, but you have yet to upload videos for
+                            them.
+                        </p>
+                        <div class="flex w-full flex-col space-y-2">
+                            {#each data.uploads as upload}
+                                <div class="mx-2 flex w-full flex-row rounded-sm border">
+                                    <Button
+                                        class="w-full"
+                                        href={`/post?postId=${upload.id}`}
+                                        variant="link">{upload.title}</Button
+                                    >
+                                </div>
+                            {/each}
+                        </div>
+                    {/if}
                 </Card.Content>
             </Card.Root>
         {:else}
