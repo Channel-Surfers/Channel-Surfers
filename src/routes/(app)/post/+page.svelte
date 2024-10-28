@@ -239,6 +239,8 @@
         {/if}
     </div>
 {:else if formState === 'COMPLETE' && data.post}
-    <p>Congratulations! Your post has been uploaded.</p>
-    <Button class="m-auto" href={`/post/${data.post.id}`}></Button>
+    <div class="m-auto w-3/5">
+        <p>Congratulations! Your post has been uploaded.</p>
+        <Button class="m-auto" href={`/post/${data.post.id}`}>View Post</Button>
+    </div>
 {/if}
