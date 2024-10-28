@@ -75,7 +75,6 @@
 
     let blockLoading = false;
     const toggleBlocking = async () => {
-        console.log({ isBlocking });
         const newBlockState = (isBlocking = !isBlocking);
         if (!userInfo || blockLoading) return;
 
