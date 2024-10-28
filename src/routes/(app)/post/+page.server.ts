@@ -83,7 +83,6 @@ export const actions = {
             createdBy: locals.user.id,
             status: 'UPLOADING',
         });
-        console.log(video);
         return redirect(303, `/post?postId=${post.id}`);
     },
 };

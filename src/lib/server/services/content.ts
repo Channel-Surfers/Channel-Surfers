@@ -355,20 +355,28 @@ export const createPost = async (
     bunny: IBunnyClient,
     newPost: Omit<NewPost, 'videoId'>
 ) => {
-    return await db.transaction(async (tx) => {
-        try {
-            const video = await bunny.createVideo(newPost);
-            const [post] = await tx
-                .insert(postTable)
-                .values({ ...newPost, videoId: video.videoId })
-                .returning();
-            return { post, video };
-        } catch (e: unknown) {
-            console.error(e);
-            tx.rollback();
-            throw e;
-        }
-    });
+    let video;
+    try {
+        video = await bunny.createVideo(newPost);
+    } catch (e: unknown) {
+        throw e;
+    }
+    let post;
+    try {
+        [post] = await db
+            .insert(postTable)
+            .values({ ...newPost, videoId: video.videoId })
+            .returning();
+    } catch (e) {
+        // delete video from bunny
+        const videoDeleted = await bunny.deleteVideo(video);
+        if (!videoDeleted)
+            throw new Error(
+                'Post failed to insert and we failed to delete video on Bunny leaving it orphaned'
+            );
+        else throw e;
+    }
+    return { post, video };
 };
 
 /**

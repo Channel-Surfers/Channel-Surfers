@@ -34,7 +34,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
             throw error(400, errors.join(', '));
         } else throw error(500, 'unexpected error occurred');
     }
-    console.log(body);
 
     if (body.isPrivate) {
         const channels = await searchChannelsByName(
@@ -56,6 +55,4 @@ export const GET: RequestHandler = async ({ locals, url }) => {
         );
         return json(channels);
     }
-
-    throw error(501, 'unimplemented');
 };
