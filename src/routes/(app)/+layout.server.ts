@@ -6,7 +6,6 @@ import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/se
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route, locals, params }) => {
-    console.log('RUNNIN', route.id);
     const db = await getDb();
     const getIslandData = async () => {
         switch (route.id) {

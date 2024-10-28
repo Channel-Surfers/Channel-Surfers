@@ -69,6 +69,7 @@
         "tailwind-merge": "^2.5.2",
         "tailwind-variants": "^0.2.1",
         "ts-results": "^3.3.0",
+        "tus-js-client": "^4.2.3",
         "vaul-svelte": "^0.3.2"
     }
 }

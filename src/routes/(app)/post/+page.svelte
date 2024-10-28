@@ -10,11 +10,15 @@
     import type { MiniChannel } from '$lib/server/services/channels';
     import { CHANNEL_SEARCH_PAGE_SIZE } from '$lib';
     import ScrollArea from '$lib/shadcn/components/ui/scroll-area/scroll-area.svelte';
+    import { toast } from 'svelte-sonner';
+    import * as tus from 'tus-js-client';
+    import { PUBLIC_LIBRARY_ID } from '$env/static/public';
+    import Progress from '$lib/shadcn/components/ui/progress/progress.svelte';
 
     export let data;
     export let form;
 
-    let formState: 'METADATA' | 'UPLOAD' = 'METADATA';
+    let { formState } = data;
 
     let channels: MiniChannel[] = [];
     let open = false;
@@ -23,6 +27,9 @@
     let channelSearchQuery = '';
     let channelSearchError: string | null = null;
     let selectedChannel: MiniChannel | null = null;
+
+    let upload: tus.Upload | null = null;
+    let uploadProgress: number | null = null;
 
     $: canLoadMore = channels.length !== 0 && channels.length % CHANNEL_SEARCH_PAGE_SIZE === 0;
 
@@ -49,11 +56,12 @@
         channels = await searchChannels(query);
     };
 
-    $: (async (_) => {
+    $: updateChannelPrivacy(searchChannelIsPrivate);
+    const updateChannelPrivacy = async (_: boolean) => {
         channelSearchPage = 0;
         channelSearchError = null;
         channels = channelSearchQuery === '' ? [] : await searchChannels(channelSearchQuery);
-    })(searchChannelIsPrivate);
+    };
 
     const searchChannels = async (query: string) => {
         const params = new URLSearchParams({
@@ -81,6 +89,52 @@
     const selectChannel = (channel: MiniChannel) => {
         selectedChannel = channel;
         resetState();
+    };
+
+    const uploadVideo = async (event: SubmitEvent) => {
+        if (!data.uploadKey || !data.expirationTime || !data.videoId) return;
+        event.preventDefault();
+        if (!event.target) throw new Error('Something went wrong');
+        const formData = new FormData(event.target as HTMLFormElement);
+        const videoFile = formData.get('video') as File;
+        console.log(videoFile);
+        if (!videoFile) {
+            toast.error('Please submit video');
+            console.error("Something went wrong submitting video. Ensure you've provided one.");
+            return;
+        }
+
+        upload = new tus.Upload(videoFile as File, {
+            endpoint: 'https://video.bunnycdn.com/tusupload',
+            retryDelays: [0, 3000, 5000, 10000, 20000, 60000, 60000],
+            headers: {
+                AuthorizationSignature: data.uploadKey,
+                AuthorizationExpire: data.expirationTime.toString(),
+                VideoId: data.videoId,
+                LibraryId: PUBLIC_LIBRARY_ID,
+            },
+            metadata: {
+                filetype: videoFile.type,
+                title: data.post.id,
+            },
+            onError: (error) => {
+                toast.error(`upload failed (${error.message}). Retrying...`);
+            },
+            onProgress: (bytesUploaded, bytesTotal) => {
+                uploadProgress = (bytesUploaded / bytesTotal) * 100;
+            },
+            onSuccess: () => {
+                // update post to be status=OK
+                uploadProgress = 100;
+                toast.success('Video uploaded!');
+            },
+        });
+        upload.start();
+        uploadProgress = 0;
+    };
+
+    const cancelUpload = () => {
+        if (upload) upload.abort(true);
     };
 </script>
 
@@ -158,5 +212,15 @@
         <Button class="mt-2" type="submit">Create Post</Button>
     </form>
 {:else if formState === 'UPLOAD'}
-    <p>{data.videoId}</p>
+    <div class="m-auto w-3/5">
+        <form on:submit={uploadVideo}>
+            <Label for="video" aria-required>Upload Video File</Label>
+            <Input name="video" type={'file'} required />
+            <Button class="mt-2" type={'submit'}>Upload</Button>
+        </form>
+        {#if uploadProgress}
+            <Progress value={uploadProgress} class="w-full"></Progress>
+            <Button on:click={cancelUpload} variant="destructive">Cancel</Button>
+        {/if}
+    </div>
 {/if}

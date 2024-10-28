@@ -1,5 +1,4 @@
 import { getDb } from '$lib/server';
-import { assertAuth } from '$lib/server/auth';
 import type { User } from '$lib/server/db/users.sql';
 import { searchChannelsByName } from '$lib/server/services/channels';
 import { Type } from '@sinclair/typebox';
@@ -45,7 +44,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
             body.page,
             locals.user as User | null
         );
-        console.log(channels);
         return json(channels);
     } else {
         if (!locals.user) throw error(403, 'Must be logged in to access private channels query');

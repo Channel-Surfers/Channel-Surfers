@@ -1,5 +1,5 @@
-import { type IBunnyClient, type Video } from '.';
-import type { Post } from '../db/posts.sql';
+import { type IBunnyClient, type Video, type CreateVideoArgs } from '.';
+import type { Post, NewPost } from '../db/posts.sql';
 
 export class MockBunnyClient implements IBunnyClient {
     public calls = {
@@ -10,7 +10,7 @@ export class MockBunnyClient implements IBunnyClient {
 
     constructor() {}
 
-    async createVideo(_post: Post): Promise<Video> {
+    async createVideo(_post: CreateVideoArgs): Promise<Video> {
         this.calls.createVideo++;
         return {
             videoId: '76dcef9d-2161-4706-a1a1-a87f20ad4504',

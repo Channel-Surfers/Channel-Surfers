@@ -4,19 +4,40 @@ import { Type, type Static } from '@sinclair/typebox';
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { AssertError, Value } from '@sinclair/typebox/value';
-import { createPost } from '$lib/server/services/content';
+import { createPost, getPost } from '$lib/server/services/content';
 import { bunnyClient } from '$lib/server/bunny';
+import { createTUSUploadKey } from '$lib/server/bunny/utils';
 
-export const load: PageServerLoad = async ({ url }) => {
-    const _db = await getDb();
+export const load: PageServerLoad = async ({ url, locals }) => {
+    const db = await getDb();
 
-    const videoId = url.searchParams.get('videoId');
+    const postId = url.searchParams.get('postId');
+
+    if (!postId) {
+        return {
+            formState: 'METADATA',
+        } as const;
+    }
+
+    const queryResult = await getPost(db, postId);
+
+    if (!queryResult) throw error(404, 'Post not found');
+
+    const { post, user } = queryResult;
+
+    if (user.id != locals.user?.id) throw error(403, 'Do not have access to this video');
+
+    const expirationTime = Date.now() + 12 * 60 * 60 * 1000;
+
+    const uploadKey = await createTUSUploadKey(expirationTime, post.videoId);
 
     return {
-        videoId,
-        channels: [] as Channel[],
-        formState: videoId ? 'UPLOAD' : 'METADATA',
-    };
+        post,
+        videoId: post.videoId,
+        formState: 'UPLOAD',
+        uploadKey,
+        expirationTime,
+    } as const;
 };
 
 const createValidator = Type.Object({
@@ -53,17 +74,15 @@ export const actions = {
             }
         }
 
-        // create video on bunny
-
-        // create video in our DB
-        const { video } = await createPost(db, bunnyClient, {
+        // create video (DB + Bunny)
+        const { post, video } = await createPost(db, bunnyClient, {
             title: body.title,
             description: body.description,
             channelId: body.channelId,
-            videoId: '',
             createdBy: locals.user.id,
             status: 'UPLOADING',
         });
-        return redirect(303, `/post?videoId=${video.videoId}`);
+        console.log(video);
+        return redirect(303, `/post?postId=${post.id}`);
     },
 };

@@ -44,7 +44,7 @@ export const elapsed_time = (event: Date): string => {
     return dayjs(event).fromNow();
 };
 
-export const debounce = (callback: Function, wait = 300) => {
+export const debounce = (callback: Function, wait = 500) => {
     let timeout: ReturnType<typeof setTimeout>;
 
     return (...args: any[]) => {

@@ -141,7 +141,7 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         .$dynamic();
 
     // List of conditions, eventually joined by `and`.
-    const conditions = [];
+    const conditions = [eq(postTable.status, 'OK')];
 
     const dirFn = filter.reverseSort ? asc : desc;
     switch (filter.filter) {
@@ -347,12 +347,19 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
     return ret;
 };
 
-export const createPost = async (db: DB, bunny: IBunnyClient, newPost: NewPost) => {
+export const createPost = async (
+    db: DB,
+    bunny: IBunnyClient,
+    newPost: Omit<NewPost, 'videoId'>
+) => {
     return await db.transaction(async (tx) => {
         try {
-            const [post] = await db.insert(postTable).values(newPost).returning();
-            const video = await bunny.createVideo(post);
-            return { post: newPost, video };
+            const video = await bunny.createVideo(newPost);
+            const [post] = await tx
+                .insert(postTable)
+                .values({ ...newPost, videoId: video.videoId })
+                .returning();
+            return { post, video };
         } catch (e: unknown) {
             console.error(e);
             tx.rollback();
