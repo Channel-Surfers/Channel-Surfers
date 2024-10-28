@@ -3,7 +3,7 @@ import { createUsers, sequentialDates, testWithDb, generateUsers } from '$lib/te
 import type { DB } from '..';
 import { userTable } from '../db/users.sql';
 import { channelTable } from '../db/channels.sql';
-import { createPost, getCommentTree, getPosts, getPostStatistics } from './content';
+import { createPost, getCommentTree, getPosts, getPostStatistics, updatePost } from './content';
 import { postTable, type Post } from '../db/posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { commentTable } from '../db/comments.sql';
@@ -17,7 +17,6 @@ describe.concurrent('content suite', () => {
                 title: 'Awesome post',
                 description: 'description of awesome post',
                 createdBy: user.id,
-                videoId: '',
                 channelId: channel.id,
                 status: 'UPLOADING',
             });
@@ -39,6 +38,20 @@ describe.concurrent('content suite', () => {
                 .returning();
             return { user, channel };
         }
+    );
+
+    testWithDb(
+        'posts can be updated',
+        async ({ db, expect }, { post }) => {
+            const [updatedPost] = await updatePost(db, {
+                id: post.id,
+                title: 'Awesome post updated',
+                status: 'OK',
+            });
+            expect(updatedPost.title).toStrictEqual('Awesome post updated');
+            expect(updatedPost.status).toStrictEqual('OK');
+        },
+        generateUserAndPost
     );
 
     testWithDb(
@@ -643,4 +656,25 @@ const generateComments = async (db: DB) => {
         comment3,
         comment4,
     };
+};
+
+const generateUserAndPost = async (db: DB) => {
+    const {
+        users: [user],
+    } = await generateUsers(1)(db);
+    const [channel] = await db
+        .insert(channelTable)
+        .values({ name: `${user.username}s-c`, createdBy: user.id })
+        .returning();
+    const [post] = await db
+        .insert(postTable)
+        .values({
+            channelId: channel.id,
+            title: 'Awesome post',
+            status: 'UPLOADING',
+            createdBy: user.id,
+            videoId: '',
+        })
+        .returning();
+    return { user, channel, post };
 };
