@@ -9,6 +9,7 @@ import { bunnyClient } from '$lib/server/bunny';
 import { createTUSUploadKey } from '$lib/server/bunny/utils';
 
 export const load: PageServerLoad = async ({ url, locals }) => {
+    if (!locals.user) throw error(401, 'Must be logged in to upload video');
     const db = await getDb();
 
     const postId = url.searchParams.get('postId');
@@ -26,6 +27,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     const { post, user } = queryResult;
 
     if (user.id != locals.user?.id) throw error(403, 'Do not have access to this video');
+    else if (post.status === 'OK') return redirect(303, `/post/${postId}`);
 
     const expirationTime = Date.now() + 12 * 60 * 60 * 1000;
 

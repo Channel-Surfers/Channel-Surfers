@@ -16,7 +16,6 @@
     import Progress from '$lib/shadcn/components/ui/progress/progress.svelte';
 
     export let data;
-    export let form;
 
     let { formState } = data;
 
@@ -97,7 +96,6 @@
         if (!event.target) throw new Error('Something went wrong');
         const formData = new FormData(event.target as HTMLFormElement);
         const videoFile = formData.get('video') as File;
-        console.log(videoFile);
         if (!videoFile) {
             toast.error('Please submit video');
             console.error("Something went wrong submitting video. Ensure you've provided one.");
@@ -119,14 +117,27 @@
             },
             onError: (error) => {
                 toast.error(`upload failed (${error.message}). Retrying...`);
+                console.error(error);
             },
             onProgress: (bytesUploaded, bytesTotal) => {
                 uploadProgress = (bytesUploaded / bytesTotal) * 100;
             },
-            onSuccess: () => {
+            onSuccess: async () => {
                 // update post to be status=OK
+                const res = await fetch(`/api/post/${data.post.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status: 'OK' }),
+                });
+
+                if (!res.ok) {
+                    toast.error('Something went wrong updating post status');
+                    console.error('Something went wrong updating post status');
+                }
+
                 uploadProgress = 100;
                 toast.success('Video uploaded!');
+
+                formState = 'COMPLETE';
             },
         });
         upload.start();
@@ -213,14 +224,21 @@
     </form>
 {:else if formState === 'UPLOAD'}
     <div class="m-auto w-3/5">
-        <form on:submit={uploadVideo}>
-            <Label for="video" aria-required>Upload Video File</Label>
-            <Input name="video" type={'file'} required />
-            <Button class="mt-2" type={'submit'}>Upload</Button>
-        </form>
-        {#if uploadProgress}
-            <Progress value={uploadProgress} class="w-full"></Progress>
-            <Button on:click={cancelUpload} variant="destructive">Cancel</Button>
+        {#if !uploadProgress}
+            <form on:submit={uploadVideo}>
+                <Label for="video" aria-required>Upload Video File</Label>
+                <Input name="video" type={'file'} required />
+                <Button class="mt-2" type={'submit'}>Upload</Button>
+            </form>
+        {:else}
+            <div class="flex flex-col space-y-2">
+                <h1>Uploading</h1>
+                <Progress value={uploadProgress} class="w-full"></Progress>
+                <Button on:click={cancelUpload} variant="destructive">Cancel</Button>
+            </div>
         {/if}
     </div>
+{:else if formState === 'COMPLETE' && data.post}
+    <p>Congratulations! Your post has been uploaded.</p>
+    <Button class="m-auto" href={`/post/${data.post.id}`}></Button>
 {/if}
