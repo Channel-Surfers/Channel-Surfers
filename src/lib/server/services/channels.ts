@@ -45,6 +45,20 @@ export const getChannelById = async (db: DB, id: string): Promise<Channel> => {
 };
 
 /**
+ * Return if user is subscibed to a channel by channel_id
+ */
+
+export const userIsSubscribed = async (db: DB, userId: uuid, channelId: uuid) => {
+    const [ret] = await db
+        .select()
+        .from(subscriptionTable)
+        .where(
+            and(eq(subscriptionTable.userId, userId), eq(subscriptionTable.channelId, channelId))
+        );
+
+    return !!ret;
+};
+/**
  * Return channels that a user has subscribed to
  * @param db PostgreSQL db
  * @param userId identifies a particular user
@@ -123,6 +137,7 @@ export const getPublicChannelByName = async (db: DB, name: string): Promise<Chan
     if (!ret) return null;
     return ret.channel;
 };
+export type PublicChannelByName = Awaited<ReturnType<typeof getPublicChannelByName>>;
 
 export const searchChannelsByName = async (
     db: DB,
