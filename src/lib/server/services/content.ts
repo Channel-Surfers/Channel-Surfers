@@ -20,7 +20,7 @@ import type { CommentData, PostData, uuid } from '$lib/types';
 import { channelTable } from '../db/channels.sql';
 import { channelTagsTable } from '../db/tags.channels.sql';
 import { commentTable } from '../db/comments.sql';
-import { postTable } from '../db/posts.sql';
+import { postTable, type NewPost, type Post } from '../db/posts.sql';
 import { postTagTable } from '../db/tags.posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { publicChannelTable } from '../db/public.channels.sql';
@@ -32,6 +32,7 @@ import {
     type NewChannelPostReport,
 } from '../db/reports.channels.posts.sql';
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
+import type { IBunnyClient } from '../bunny';
 
 export const getPost = async (db: DB, post_id: uuid) => {
     const [a] = await db
@@ -148,7 +149,7 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         .$dynamic();
 
     // List of conditions, eventually joined by `and`.
-    const conditions = [];
+    const conditions = [eq(postTable.status, 'OK')];
 
     const dirFn = filter.reverseSort ? asc : desc;
     switch (filter.filter) {
@@ -356,4 +357,53 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
         })
         .returning();
     return ret;
+};
+
+/**
+ * Create a new post in Bunny and in the DB
+ */
+export const createPost = async (
+    db: DB,
+    bunny: IBunnyClient,
+    newPost: Omit<NewPost, 'videoId'>
+) => {
+    // if we fail to create video on Bunny, the post will not be inserted
+    const video = await bunny.createVideo(newPost);
+    let post;
+    try {
+        [post] = await db
+            .insert(postTable)
+            .values({ ...newPost, videoId: video.videoId })
+            .returning();
+    } catch (e) {
+        // delete video from bunny
+        const videoDeleted = await bunny.deleteVideo(video);
+        if (!videoDeleted)
+            throw new Error(
+                'Post failed to insert and we failed to delete video on Bunny leaving it orphaned'
+            );
+        else throw e;
+    }
+    return { post, video };
+};
+
+/**
+ * Updates properties of a given post.
+ * The id must match an existing post
+ */
+export const updatePost = async (
+    db: DB,
+    post: Pick<Post, 'id'> & Omit<Partial<Post>, 'id' | 'updatedOn'>
+) => {
+    return await db.update(postTable).set(post).where(eq(postTable.id, post.id)).returning();
+};
+
+/**
+ * Returns posts whose videos have yet to be uploaded
+ */
+export const getPostsInProgress = async (db: DB, userId: string) => {
+    return await db
+        .select()
+        .from(postTable)
+        .where(and(eq(postTable.createdBy, userId), eq(postTable.status, 'UPLOADING')));
 };
