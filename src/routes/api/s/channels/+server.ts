@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
         );
         return json(channels);
     } else {
-        if (!locals.user) throw error(403, 'Must be logged in to access private channels query');
+        if (!locals.user) throw error(401, 'Must be logged in to access private channels query');
         const channels = await searchChannelsByName(
             db,
             body.name,
