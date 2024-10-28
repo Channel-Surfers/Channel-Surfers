@@ -130,6 +130,22 @@ describe.concurrent('channels suite', () => {
     );
 
     testWithDb(
+        'public channels can be searched',
+        async ({ expect, db }, { creator, createdChannelPublicInfo }) => {
+            const [n1, ...rest] = (await searchChannelsByName(db, 'surf', false, 0)).map(
+                (c) => c.name
+            );
+            expect(rest).toHaveLength(0);
+            expect(n1).toStrictEqual('Channel-Surfers');
+            const channels = (await searchChannelsByName(db, 'surfres', false, 0)).map(
+                (c) => c.name
+            );
+            expect(channels).toHaveLength(0);
+        },
+        generateUserAndPublicChannel
+    );
+
+    testWithDb(
         'Private channels can be searched',
         async ({ expect, db }, { creator, channels }) => {
             const caseOneExpected = [
