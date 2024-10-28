@@ -146,7 +146,6 @@ describe.concurrent('channels suite', () => {
             const caseThree = await searchChannelsByName(db, '0', true, 0, creator);
             expect(caseThree.map((c) => c.name)).toStrictEqual(caseThreeExpected);
             const caseFour = await searchChannelsByName(db, 'c-', true, 0, creator);
-            console.log(caseFour.map((c) => c.name));
             expect(caseFour.map((c) => c.name)).toStrictEqual(caseFourExpected);
         },
         generateUserAndChannels(20)
