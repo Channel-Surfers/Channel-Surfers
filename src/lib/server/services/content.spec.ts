@@ -58,13 +58,10 @@ describe.concurrent('content suite', () => {
         'bunny video should be deleted on failure to insert post',
         async ({ bunny, db, expect }, { post }) => {
             // try to insert post with invalid user
-            let postWithBadUser = structuredClone(post);
+            const postWithBadUser = structuredClone(post);
             postWithBadUser.createdBy = 'bad';
             expect(bunny.calls.deleteVideo).toStrictEqual(0);
-            try {
-                // should throw
-                await createPost(db, bunny, postWithBadUser);
-            } catch (_) {}
+            await expect(() => createPost(db, bunny, postWithBadUser)).rejects.toThrow();
             expect(bunny.calls.deleteVideo).toStrictEqual(1);
         },
         generateUserAndPost

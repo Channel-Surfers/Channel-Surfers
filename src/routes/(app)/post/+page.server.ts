@@ -6,6 +6,7 @@ import { AssertError, Value } from '@sinclair/typebox/value';
 import { createPost, getPost } from '$lib/server/services/content';
 import { bunnyClient } from '$lib/server/bunny';
 import { createTUSUploadKey } from '$lib/server/bunny/utils';
+import dayjs from 'dayjs';
 
 export const load: PageServerLoad = async ({ url, locals }) => {
     if (!locals.user) throw error(401, 'Must be logged in to upload video');
@@ -28,7 +29,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     if (user.id != locals.user?.id) throw error(403, 'Do not have access to this video');
     else if (post.status === 'OK') return redirect(303, `/post/${postId}`);
 
-    const expirationTime = Date.now() + 12 * 60 * 60 * 1000;
+    const expirationTime = dayjs().add(12, 'hours').unix();
 
     const uploadKey = await createTUSUploadKey(expirationTime, post.videoId);
 
@@ -76,7 +77,7 @@ export const actions = {
         }
 
         // create video (DB + Bunny)
-        const { post, video } = await createPost(db, bunnyClient, {
+        const { post } = await createPost(db, bunnyClient, {
             title: body.title,
             description: body.description,
             channelId: body.channelId,

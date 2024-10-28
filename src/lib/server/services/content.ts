@@ -355,12 +355,8 @@ export const createPost = async (
     bunny: IBunnyClient,
     newPost: Omit<NewPost, 'videoId'>
 ) => {
-    let video;
-    try {
-        video = await bunny.createVideo(newPost);
-    } catch (e: unknown) {
-        throw e;
-    }
+    // if we fail to create video on Bunny, the post will not be inserted
+    const video = await bunny.createVideo(newPost);
     let post;
     try {
         [post] = await db
