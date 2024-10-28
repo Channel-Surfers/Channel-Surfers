@@ -1,5 +1,6 @@
 import { getDb } from '$lib/server';
 import { assertAuth } from '$lib/server/auth';
+import type { User } from '$lib/server/db/users.sql';
 import { searchChannelsByName } from '$lib/server/services/channels';
 import { Type } from '@sinclair/typebox';
 import { AssertError, Value } from '@sinclair/typebox/value';
@@ -37,24 +38,24 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     console.log(body);
 
     if (body.isPrivate) {
-        const channels = (
-            await searchChannelsByName(db, body.name, body.isPrivate, body.page, null)
-        ).map(({ channel, public_channel }) => ({
-            channelId: channel.id,
-            name: public_channel?.name,
-            icon: channel.icon,
-        }));
+        const channels = await searchChannelsByName(
+            db,
+            body.name,
+            body.isPrivate,
+            body.page,
+            locals.user as User | null
+        );
         console.log(channels);
         return json(channels);
     } else {
         if (!locals.user) throw error(403, 'Must be logged in to access private channels query');
-        const channels = (
-            await searchChannelsByName(db, body.name, body.isPrivate, body.page, locals.user)
-        ).map(({ channel, public_channel }) => ({
-            channelId: channel.id,
-            name: public_channel?.name,
-            icon: channel.icon,
-        }));
+        const channels = await searchChannelsByName(
+            db,
+            body.name,
+            body.isPrivate,
+            body.page,
+            locals.user as User | null
+        );
         return json(channels);
     }
 

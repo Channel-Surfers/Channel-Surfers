@@ -6,32 +6,56 @@
     import Input from '$lib/shadcn/components/ui/input/input.svelte';
     import Label from '$lib/shadcn/components/ui/label/label.svelte';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
-    import type { Channel } from '$lib/server/db/channels.sql.js';
     import { debounce } from '$lib/util';
-
-    type miniChannel = { channelId: string; icon: string; name: string };
+    import type { MiniChannel } from '$lib/server/services/channels';
+    import { CHANNEL_SEARCH_PAGE_SIZE } from '$lib';
+    import ScrollArea from '$lib/shadcn/components/ui/scroll-area/scroll-area.svelte';
 
     export let data;
     export let form;
 
     let formState: 'METADATA' | 'UPLOAD' = 'METADATA';
 
-    let channels: miniChannel[] = [];
+    let channels: MiniChannel[] = [];
     let open = false;
     let searchChannelIsPrivate = false;
     let channelSearchPage = 0;
+    let channelSearchQuery = '';
     let channelSearchError: string | null = null;
-    let channelId = '';
+    let selectedChannel: MiniChannel | null = null;
 
-    const searchChannels = async (event: KeyboardEvent) => {
+    $: canLoadMore = channels.length !== 0 && channels.length % CHANNEL_SEARCH_PAGE_SIZE === 0;
+
+    const resetState = () => {
+        channels = [];
+        open = false;
+        searchChannelIsPrivate = false;
+        channelSearchPage = 0;
+        channelSearchQuery = '';
+        channelSearchError = null;
+    };
+
+    const handleInputUpdate = async (event: KeyboardEvent) => {
         const input = event.target as HTMLInputElement;
         if (!input) throw new Error('input does not exist');
         const query = input.value;
+
+        channelSearchPage = 0;
 
         if (!query || query.length === 0) {
             channels = [];
             return;
         }
+        channels = await searchChannels(query);
+    };
+
+    $: (async (_) => {
+        channelSearchPage = 0;
+        channelSearchError = null;
+        channels = channelSearchQuery === '' ? [] : await searchChannels(channelSearchQuery);
+    })(searchChannelIsPrivate);
+
+    const searchChannels = async (query: string) => {
         const params = new URLSearchParams({
             name: query,
             isPrivate: String(searchChannelIsPrivate),
@@ -41,17 +65,22 @@
         const res = await fetch(`api/s/channels?${params}`);
         if (!res.ok) {
             console.error(await res.text());
+            channelSearchError = 'failed to search';
+            return [];
         } else {
-            channels = await res.json();
+            return await res.json();
         }
     };
 
-    const selectChannel = (channel: miniChannel) => {
-        channelId = channel.channelId;
-        channelSearchError = null;
-        channelSearchPage = 0;
-        channels = [];
-        open = false;
+    const loadMoreChannels = async () => {
+        channelSearchPage++;
+        const more = await searchChannels(channelSearchQuery);
+        channels = channels.concat(more);
+    };
+
+    const selectChannel = (channel: MiniChannel) => {
+        selectedChannel = channel;
+        resetState();
     };
 </script>
 
@@ -64,11 +93,11 @@
         <Textarea name="description" />
         <div class="flex items-center space-x-2">
             <Label class="my-2" aria-required>Channel:</Label>
-            {#if channelId !== ''}
-                <p>{channelId}</p>
+            {#if selectedChannel}
+                <p>{selectedChannel.name}</p>
             {/if}
         </div>
-        <Input class="hidden" name={'channelId'} bind:value={channelId} />
+        <Input class="hidden" name={'channelId'} value={selectedChannel?.id} />
         <div>
             <Dialog.Root bind:open>
                 <Dialog.Trigger
@@ -93,23 +122,33 @@
                     <Label>Search</Label>
                     <Input
                         placeholder="Channel search by name"
-                        on:keyup={debounce(searchChannels)}
+                        on:keyup={debounce(handleInputUpdate)}
+                        bind:value={channelSearchQuery}
                     />
 
                     <Card.Root>
                         <Card.Content>
                             <div class="flex w-full flex-col space-y-2">
-                                {#each channels as channel}
-                                    <div class="flex w-full flex-row justify-between">
-                                        <p>{channel.name}</p>
-                                        <Button
-                                            type="submit"
-                                            on:click={() => selectChannel(channel)}>Select</Button
-                                        >
-                                    </div>
-                                {:else}
-                                    <p>No channels found</p>
-                                {/each}
+                                <ScrollArea class="h-36 w-full space-y-2">
+                                    {#each channels as channel}
+                                        <div class="my-1 flex w-full flex-row justify-between pr-4">
+                                            <p>{channel.name}</p>
+                                            <Button
+                                                type="submit"
+                                                on:click={() => selectChannel(channel)}
+                                                >Select</Button
+                                            >
+                                        </div>
+                                    {:else}
+                                        <p>No channels found</p>
+                                    {/each}
+                                </ScrollArea>
+                                {#if canLoadMore}
+                                    <Button on:click={loadMoreChannels}>Load More</Button>
+                                {/if}
+                                {#if channelSearchError}
+                                    <p class="text-red-500">{channelSearchError}</p>
+                                {/if}
                             </div>
                         </Card.Content>
                     </Card.Root>
