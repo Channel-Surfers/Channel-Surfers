@@ -1,6 +1,7 @@
 import { pgTable, uuid, text, timestamp, integer } from 'drizzle-orm/pg-core';
 import { userTable } from './users.sql';
 import { channelTable } from './channels.sql';
+import { postStatusEnum } from './types.sql';
 
 /**
  * @document public.post.md
@@ -20,6 +21,9 @@ export const postTable = pgTable('post', {
     videoId: text('video_id').notNull(),
     createdOn: timestamp('created_on').notNull().defaultNow(),
     updatedOn: timestamp('updated_on').notNull().defaultNow(),
+
+    // Status of post
+    status: postStatusEnum('status').notNull().default('OK'),
 
     // Denormalise common aggregations
     upvotes: integer('upvotes').notNull().default(0),
