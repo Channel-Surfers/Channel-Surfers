@@ -1,8 +1,8 @@
-import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { assertAuth } from '$lib/server/auth';
 
 export const load: PageServerLoad = async (event) => {
-    if (!event.locals.user) redirect(302, '/signin');
+    assertAuth(event);
 
     return {
         username: event.locals.user.username,
