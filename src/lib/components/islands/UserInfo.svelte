@@ -126,7 +126,11 @@
                     </Button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content class="w-56">
-                    <DropdownMenu.Item class="text-red-600" on:click={toggleBlocking} disabled={!user}>
+                    <DropdownMenu.Item
+                        class="text-red-600"
+                        on:click={toggleBlocking}
+                        disabled={!user}
+                    >
                         {#if isBlocking}
                             <CircleCheck class="mr-2 h-4 w-4" />
                             <span>Unblock</span>
