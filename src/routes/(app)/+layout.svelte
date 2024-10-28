@@ -70,6 +70,7 @@
             <ChannelInfo channel={channelAsChannel} isSubscribed={data.island.data.isSubscribed} />
         {:else if data.island.type === 'user' && data.island.exists && data.island.data}
             <UserInfo
+                isBlocking={data.island.data.isBlocking}
                 isFollowing={data.island.data.isFollowing}
                 userInfo={data.island.data.userData}
                 user={userAsUser}

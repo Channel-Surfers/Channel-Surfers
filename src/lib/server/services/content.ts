@@ -182,17 +182,20 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
     }
 
     if (filter.requesterId) {
-        conditions.push(
-            not(
-                inArray(
-                    userTable.id,
-                    db
-                        .select({ id: userBlockTable.blockedUserId })
-                        .from(userBlockTable)
-                        .where(eq(userBlockTable.userId, filter.requesterId))
+        if (filter.type !== 'user') {
+            // Only block user's posts if we're not on that user's page.
+            conditions.push(
+                not(
+                    inArray(
+                        userTable.id,
+                        db
+                            .select({ id: userBlockTable.blockedUserId })
+                            .from(userBlockTable)
+                            .where(eq(userBlockTable.userId, filter.requesterId))
+                    )
                 )
-            )
-        );
+            );
+        }
 
         if (filter.filter === 'subscribed') {
             const subscribed = db
