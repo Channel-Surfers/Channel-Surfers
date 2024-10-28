@@ -99,7 +99,9 @@ export interface HomePostFilter extends GenericPostFilter {
 export type PostFilter = ChannelPostFilter | UserPostFilter | HomePostFilter;
 
 export const getPosts = async (db: DB, page: number, filter: PostFilter): Promise<PostData[]> => {
-    const userVotes = db.select().from(postVoteTable)
+    const userVotes = db
+        .select()
+        .from(postVoteTable)
         .where(filter.requesterId ? eq(postVoteTable.userId, filter.requesterId) : sql`FALSE`)
         .as('user_votes');
     let q = db
@@ -141,7 +143,7 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
             userTable.profileImage,
             channelTable.id,
             channelTable.name,
-            userVotes.vote,
+            userVotes.vote
         )
         .$dynamic();
 

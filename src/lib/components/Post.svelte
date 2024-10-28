@@ -222,7 +222,7 @@
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
-                disabled={!post}
+                disabled={!post || !signed_in}
                 class="hover:text-upvote data-[state=on]:text-upvote"
                 pressed={userVote === 'UP'}
                 on:click={() => vote('UP')}
@@ -232,13 +232,13 @@
                 </div>
             </Toggle>
             {#if post}
-                <Score upvotes={post.upvotes} downvotes={post.downvotes} />
+                <Score {upvotes} {downvotes} />
             {:else}
                 <Skeleton class="h-6 w-6 rounded-full" />
             {/if}
             <Toggle
                 size="sm"
-                disabled={!post}
+                disabled={!post || !signed_in}
                 class="hover:text-downvote data-[state=on]:text-downvote"
                 pressed={userVote === 'DOWN'}
                 on:click={() => vote('DOWN')}
