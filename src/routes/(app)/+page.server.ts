@@ -3,7 +3,7 @@ import { getChannels } from '$lib/server/services/channels';
 import { getPosts } from '$lib/server/services/content';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async (event) => {
     const db = await getDb();
 
     return {
@@ -11,6 +11,7 @@ export const load: PageServerLoad = async () => {
             type: 'home',
             sort: 'date',
             filter: 'all',
+            requesterId: event.locals.user?.id,
         }),
         channels: await getChannels(db),
     };

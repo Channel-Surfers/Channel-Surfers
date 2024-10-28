@@ -100,6 +100,11 @@ export interface HomePostFilter extends GenericPostFilter {
 export type PostFilter = ChannelPostFilter | UserPostFilter | HomePostFilter;
 
 export const getPosts = async (db: DB, page: number, filter: PostFilter): Promise<PostData[]> => {
+    const userVotes = db
+        .select()
+        .from(postVoteTable)
+        .where(filter.requesterId ? eq(postVoteTable.userId, filter.requesterId) : sql`FALSE`)
+        .as('user_votes');
     let q = db
         .select({
             id: postTable.id,
@@ -119,6 +124,7 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
             tags: dedupe_nonull_array(array_agg(channelTagsTable.name)),
             upvotes: postTable.upvotes,
             downvotes: postTable.downvotes,
+            userVote: userVotes.vote,
             comments: count(commentTable.id),
         })
         .from(postTable)
@@ -128,6 +134,7 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         .leftJoin(postTagTable, eq(postTagTable.postId, postTable.id))
         .leftJoin(channelTagsTable, eq(channelTagsTable.id, postTagTable.tagId))
         .leftJoin(commentTable, eq(commentTable.postId, postTable.id))
+        .leftJoin(userVotes, eq(userVotes.postId, postTable.id))
         .groupBy(
             postTable.id,
             postTable.createdOn,
@@ -136,7 +143,8 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
             userTable.username,
             userTable.profileImage,
             channelTable.id,
-            channelTable.name
+            channelTable.name,
+            userVotes.vote
         )
         .$dynamic();
 
@@ -220,6 +228,7 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
         upvotes: p.upvotes,
         downvotes: p.downvotes,
         comments: p.comments,
+        userVote: p.userVote,
         poster: {
             user: {
                 ...p.user,
