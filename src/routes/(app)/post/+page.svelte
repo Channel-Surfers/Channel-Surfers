@@ -154,7 +154,7 @@
         <Label for={'title'} aria-required>Title</Label>
 
         <Input name="title" required />
-        <Label for={'description'}>Description</Label>
+        <Label for="description">Description</Label>
         <Textarea name="description" />
         <div class="flex items-center space-x-2">
             <Label class="my-2" aria-required>Channel:</Label>
@@ -162,7 +162,7 @@
                 <p>{selectedChannel.name}</p>
             {/if}
         </div>
-        <Input class="hidden" name={'channelId'} value={selectedChannel?.id} />
+        <Input class="hidden" name="channelId" value={selectedChannel?.id} />
         <div>
             <Dialog.Root bind:open>
                 <Dialog.Trigger
@@ -227,8 +227,8 @@
         {#if !uploadProgress}
             <form on:submit={uploadVideo}>
                 <Label for="video" aria-required>Upload Video File</Label>
-                <Input name="video" type={'file'} required />
-                <Button class="mt-2" type={'submit'}>Upload</Button>
+                <Input name="video" type="file" required />
+                <Button class="mt-2" type="submit">Upload</Button>
             </form>
         {:else}
             <div class="flex flex-col space-y-2">
