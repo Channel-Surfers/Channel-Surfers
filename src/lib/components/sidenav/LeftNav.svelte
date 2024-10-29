@@ -82,14 +82,11 @@
             </Accordion.Item>
         </Accordion.Root>
     </div>
-    <Separator class="my-2" />
-    <div class="flex flex-row">
-        <div class="grow">
-            <Button href="/settings" variant="outline">
+    <div class="flex flex-row space-x-4">
+            <Button class="grow" href="/settings" variant="outline" >
                 <Settings />
                 Settings
             </Button>
-        </div>
-        <DisplayMode />
+        <DisplayMode/>
     </div>
 </div>
