@@ -22,15 +22,15 @@
     </DropdownMenu.Trigger>
     <DropdownMenu.Content align="end">
         <DropdownMenu.Item on:click={() => setMode('light')}>
-            <Sun class="mr-2 h-4 w-4"/>
+            <Sun class="mr-2 h-4 w-4" />
             Light
         </DropdownMenu.Item>
         <DropdownMenu.Item on:click={() => setMode('dark')}>
-            <Moon class="mr-2 h-4 w-4"/>
+            <Moon class="mr-2 h-4 w-4" />
             Dark
         </DropdownMenu.Item>
         <DropdownMenu.Item on:click={() => resetMode()}>
-            <MonitorCog class="mr-2 h-4 w-4"/>
+            <MonitorCog class="mr-2 h-4 w-4" />
             System
         </DropdownMenu.Item>
     </DropdownMenu.Content>
