@@ -15,3 +15,5 @@ export type SiteRole = 'USER' | 'MODERATOR' | 'ADMIN' | 'SUPER';
  * The status of a report
  */
 export const reportStatusEnum = pgEnum('report_status', ['INVESTIGATING', 'RESOLVED', 'DELETED']);
+
+export const postStatusEnum = pgEnum('post_status', ['UPLOADING', 'HIDDEN', 'OK']);

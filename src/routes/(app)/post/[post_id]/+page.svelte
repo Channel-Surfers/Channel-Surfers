@@ -21,29 +21,41 @@
     import Elapsed from '$lib/components/Elapsed.svelte';
 
     export let data;
-    let user_vote: 'UP' | 'DOWN' | null = data.user_vote;
+    let {
+        userVote,
+        post: { upvotes, downvotes },
+    } = data;
 
     const vote = async (dir: 'UP' | 'DOWN') => {
-        if (user_vote === dir) {
-            user_vote = null;
-        } else {
-            user_vote = dir;
+        if (userVote === 'UP') {
+            upvotes -= 1;
+        } else if (userVote === 'DOWN') {
+            downvotes -= 1;
         }
-        console.log('user_vote', user_vote);
+
+        if (userVote === dir) {
+            userVote = null;
+        } else {
+            if (dir === 'UP') {
+                upvotes += 1;
+            } else {
+                downvotes += 1;
+            }
+            userVote = dir;
+        }
+
         const res = await fetch(`/api/post/${data.post.id}/vote`, {
             method: 'POST',
-            body: `${user_vote}`,
+            body: `${userVote}`,
         });
 
         if (res.ok) {
             const ret = await res.json();
-            data.post.upvotes = ret.upvotes;
-            data.post.downvotes = ret.downvotes;
-            user_vote = ret.vote;
-            console.log(ret);
-            console.log('user_vote', user_vote);
+            upvotes = ret.upvotes;
+            downvotes = ret.downvotes;
+            userVote = ret.vote;
         } else {
-            user_vote = data.user_vote;
+            userVote = data.userVote;
             toast.error('Unexpected error while submitting vote');
         }
     };
@@ -112,24 +124,20 @@
                     <Toggle
                         size="sm"
                         class="hover:text-upvote data-[state=on]:text-upvote"
-                        disabled={!data.signed_in}
-                        pressed={user_vote === 'UP'}
+                        disabled={!data.signedIn}
+                        pressed={userVote === 'UP'}
                         on:click={() => vote('UP')}
                     >
                         <ArrowUp />
                     </Toggle>
                     <span class="w-8 text-center">
-                        <Score
-                            side="top"
-                            upvotes={data.post.upvotes}
-                            downvotes={data.post.downvotes}
-                        />
+                        <Score side="top" {upvotes} {downvotes} />
                     </span>
                     <Toggle
                         size="sm"
                         class="hover:text-downvote data-[state=on]:text-downvote"
-                        disabled={!data.signed_in}
-                        pressed={user_vote === 'DOWN'}
+                        disabled={!data.signedIn}
+                        pressed={userVote === 'DOWN'}
                         on:click={() => vote('DOWN')}
                     >
                         <ArrowDown />
