@@ -3,15 +3,9 @@
     import UserIcon from 'lucide-svelte/icons/user';
     import LogOut from 'lucide-svelte/icons/log-out';
     import LogIn from 'lucide-svelte/icons/log-in';
-    import Palette from 'lucide-svelte/icons/palette';
-    import Sun from 'lucide-svelte/icons/sun';
-    import Moon from 'lucide-svelte/icons/moon';
-    import MonitorCog from 'lucide-svelte/icons/monitor-cog';
 
     import * as Avatar from '$lib/shadcn/components/ui/avatar';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
-
-    import { resetMode, setMode } from 'mode-watcher';
 
     export let user;
 </script>
