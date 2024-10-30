@@ -23,7 +23,6 @@
     import Elapsed from './Elapsed.svelte';
 
     import type { PostData } from '$lib/types';
-    import { createEventDispatcher } from 'svelte';
     import { toast } from 'svelte-sonner';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
     import { Flag, Share2 } from 'lucide-svelte';
@@ -31,23 +30,44 @@
     export let post: PostData | undefined = undefined;
     export let playing_video: boolean = false;
     export let signed_in: boolean = false;
-    const dispatch = createEventDispatcher();
 
-    let upvote_pressed = false;
-    let downvote_pressed = false;
+    let { userVote, upvotes, downvotes } = post || { userVote: null, upvotes: 0, downvotes: 0 };
     let report_dialog_open = false;
 
-    const vote = (dir: 'up' | 'down') => {
-        let new_state;
-        if (dir === 'up') {
-            downvote_pressed = false;
-            new_state = !upvote_pressed;
-        } else {
-            upvote_pressed = false;
-            new_state = !downvote_pressed;
+    const vote = async (dir: 'UP' | 'DOWN') => {
+        if (!post) return;
+
+        const resetUserVote = userVote;
+        if (userVote === 'UP') {
+            upvotes -= 1;
+        } else if (userVote === 'DOWN') {
+            downvotes -= 1;
         }
-        const voteChangeValue: 'up' | 'down' | 'none' = new_state ? dir : 'none';
-        dispatch('voteChange', voteChangeValue);
+
+        if (userVote === dir) {
+            userVote = null;
+        } else {
+            if (dir === 'UP') {
+                upvotes += 1;
+            } else {
+                downvotes += 1;
+            }
+            userVote = dir;
+        }
+
+        const res = await fetch(`/api/post/${post.id}/vote`, {
+            method: 'POST',
+            body: `${userVote}`,
+        });
+
+        if (res.ok) {
+            const ret = await res.json();
+            ({ upvotes, downvotes } = ret);
+            userVote = ret.vote;
+        } else {
+            userVote = resetUserVote;
+            toast.error('Unexpected error while submitting vote');
+        }
     };
 
     const reportData = {
@@ -202,26 +222,26 @@
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
-                disabled={!post}
+                disabled={!post || !signed_in}
                 class="hover:text-upvote data-[state=on]:text-upvote"
-                bind:pressed={upvote_pressed}
-                on:click={() => vote('up')}
+                pressed={userVote === 'UP'}
+                on:click={() => vote('UP')}
             >
                 <div class:animate-pulse={!post}>
                     <ArrowUp />
                 </div>
             </Toggle>
             {#if post}
-                <Score upvotes={post.upvotes} downvotes={post.downvotes} />
+                <Score {upvotes} {downvotes} />
             {:else}
                 <Skeleton class="h-6 w-6 rounded-full" />
             {/if}
             <Toggle
                 size="sm"
-                disabled={!post}
+                disabled={!post || !signed_in}
                 class="hover:text-downvote data-[state=on]:text-downvote"
-                bind:pressed={downvote_pressed}
-                on:click={() => vote('down')}
+                pressed={userVote === 'DOWN'}
+                on:click={() => vote('DOWN')}
             >
                 <div class:animate-pulse={!post}>
                     <ArrowDown />

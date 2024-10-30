@@ -31,7 +31,7 @@
 
     $: ({ myChannels, mySubscriptions } = data);
     $: userAsUser = data.user ? (data.user as User) : null;
-    $: channelAsChannel = data.island.data.channelData
+    $: channelAsChannel = data.island.data?.channelData
         ? (data.island.data.channelData as Channel)
         : null;
 </script>
@@ -64,12 +64,13 @@
     <!-- Right islands -->
     <div class="flex w-1/6 min-w-96 flex-col space-y-4 pr-4 pt-4">
         {#if data.island.type === 'home' && data.island.data}
-            <HomeInfo stats={data.island.data} />
+            <HomeInfo stats={data.island.data} user={userAsUser} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
         {:else if data.island.type === 'channel' && data.island.data}
             <ChannelInfo channel={channelAsChannel} isSubscribed={data.island.data.isSubscribed} />
         {:else if data.island.type === 'user' && data.island.exists && data.island.data}
             <UserInfo
+                isBlocking={data.island.data.isBlocking}
                 isFollowing={data.island.data.isFollowing}
                 userInfo={data.island.data.userData}
                 user={userAsUser}
@@ -80,16 +81,37 @@
 
         {#if data.user && data.userStats}
             <Card.Root>
-                <Card.Content>
+                <Card.Header>
                     <div class="flex flex-row items-center justify-between">
                         <ProfileIcon user={data.user} />
                         <h1>u/{data.user.username}</h1>
                     </div>
-                    Score: <Score
-                        upvotes={data.userStats.numberOfUpvotes}
-                        downvotes={data.userStats.numberOfDownvotes}
-                        side={'right'}
-                    />
+                </Card.Header>
+                <Card.Content>
+                    <p>
+                        Score: <Score
+                            upvotes={data.userStats.numberOfUpvotes}
+                            downvotes={data.userStats.numberOfDownvotes}
+                            side={'right'}
+                        />
+                    </p>
+                    {#if data.uploads.length !== 0}
+                        <p class="m-2 text-muted-foreground">
+                            These posts have been created, but you have yet to upload videos for
+                            them.
+                        </p>
+                        <div class="flex w-full flex-col space-y-2">
+                            {#each data.uploads as upload}
+                                <div class="mx-2 flex w-full flex-row rounded-sm border">
+                                    <Button
+                                        class="w-full"
+                                        href={`/post?postId=${upload.id}`}
+                                        variant="link">{upload.title}</Button
+                                    >
+                                </div>
+                            {/each}
+                        </div>
+                    {/if}
                 </Card.Content>
             </Card.Root>
         {:else}

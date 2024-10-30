@@ -6,13 +6,17 @@ import {
     getChannelById,
     userIsSubscribed,
 } from '$lib/server/services/channels';
+import {
+    getUserByUsername,
+    getUserStats,
+    userIsBlocking,
+    userIsFollowing,
+} from '$lib/server/services/users';
+import { getPostsInProgress, getPostStatistics } from '$lib/server/services/content';
 import type { User } from '$lib/server/db/users.sql';
-import { getPostStatistics } from '$lib/server/services/content';
-import { getUserByUsername, getUserStats, userIsFollowing } from '$lib/server/services/users';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ route, locals, params }) => {
-    console.log('RUNNIN', route.id);
     const db = await getDb();
     const getIslandData = async () => {
         switch (route.id) {
@@ -66,9 +70,10 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
                     data: {
                         userData: { ...user, ...userData },
                         user: locals.user as User,
-                        isFollowing: locals.user
-                            ? await userIsFollowing(db, user.id, locals.user.id)
-                            : false,
+                        isBlocking:
+                            locals.user && (await userIsBlocking(db, locals.user.id, user.id)),
+                        isFollowing:
+                            locals.user && (await userIsFollowing(db, user.id, locals.user.id)),
                     },
                 } as const;
             }
@@ -94,5 +99,6 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
         mySubscriptions: locals.user ? await getUserSubscriptions(db, locals.user.id) : null,
         myChannels: locals.user ? await getChannelsByOwner(db, locals.user.id) : null,
         userStats: locals.user ? await getUserStats(db, locals.user.id) : null,
+        uploads: locals.user ? await getPostsInProgress(db, locals.user.id) : [],
     };
 };
