@@ -7,6 +7,8 @@
     export let md: string;
 </script>
 
-<article class="prose prose-slate dark:prose-invert prose-code:before:content-[''] prose-code:after:content-['']">
+<article
+    class="prose prose-slate dark:prose-invert prose-code:before:content-[''] prose-code:after:content-['']"
+>
     <Markdown {md} {plugins} />
 </article>

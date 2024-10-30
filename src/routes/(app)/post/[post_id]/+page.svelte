@@ -15,7 +15,6 @@
     import { EllipsisVertical, Flag } from 'lucide-svelte';
     import { Button } from '$lib/shadcn/components/ui/button';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
-    import { gfmPlugin } from 'svelte-exmarkdown/gfm';
     import Elapsed from '$lib/components/Elapsed.svelte';
     import Markdown from '$lib/components/Markdown.svelte';
 
@@ -58,7 +57,6 @@
             toast.error('Unexpected error while submitting vote');
         }
     };
-
 </script>
 
 <svelte:head>
