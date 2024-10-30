@@ -8,7 +8,7 @@
     import type { UserSubscription } from '$lib/server/services/channels';
     import type { Playlist } from '$lib/server/db/playlists.sql';
     import Button from '$lib/shadcn/components/ui/button/button.svelte';
-    import DisplayMode from './DisplayMode.svelte';
+    import DisplayMode from '$lib/components/sidenav/DisplayMode.svelte';
 
     // type signature here is temporary
     export let channels: (Channel & { publicInfo: { displayName: string } | null })[] | null = null;
