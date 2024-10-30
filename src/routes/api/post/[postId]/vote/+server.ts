@@ -10,7 +10,7 @@ export const POST: RequestHandler = async (event) => {
 
     const db = await getDb();
 
-    const post = await getPost(db, event.params.post_id);
+    const post = await getPost(db, event.params.postId);
     if (!post) return error(404);
 
     if (!(await canViewChannel(db, event.locals.user.id, post.channel.id))) return error(401);
@@ -24,16 +24,16 @@ export const POST: RequestHandler = async (event) => {
 
     let retVote: 'UP' | 'DOWN' | null;
     if (vote) {
-        const ret = await addPostVote(db, event.params.post_id, event.locals.user.id, vote);
+        const ret = await addPostVote(db, event.params.postId, event.locals.user.id, vote);
         retVote = ret.vote;
     } else {
-        await deletePostVote(db, event.params.post_id, event.locals.user.id);
+        await deletePostVote(db, event.params.postId, event.locals.user.id);
         retVote = null;
     }
 
     const {
         post: { upvotes, downvotes },
-    } = (await getPost(db, event.params.post_id))!;
+    } = (await getPost(db, event.params.postId))!;
 
     return json({
         upvotes,

@@ -1,23 +1,7 @@
-import { testWithDb } from '$lib/testing/utils';
+import { generateUsers, testWithDb } from '$lib/testing/utils';
 import { describe } from 'vitest';
 import type { DB } from '..';
-import { userTable } from '../db/users.sql';
-import { followUser, unfollowUser } from './interactions';
-
-const generateUser = (count: number, nameGenerator?: (n: number) => string) => async (db: DB) => {
-    const users = await db
-        .insert(userTable)
-        .values(
-            Array(count)
-                .fill(0)
-                .map((_: number, idx) => ({
-                    username: nameGenerator ? nameGenerator(idx) : `user-${idx}`,
-                    discordId: BigInt(idx),
-                }))
-        )
-        .returning();
-    return { users };
-};
+import { blockUser, followUser, unblockUser, unfollowUser } from './interactions';
 
 /**
  * Create `count + 1` users where the first user is followed by the rest
@@ -29,7 +13,7 @@ const generateUserAndFollowers =
 
         const {
             users: [user, ...followers],
-        } = await generateUser(count + 1, nameGenerator)(db);
+        } = await generateUsers(count + 1, nameGenerator)(db);
 
         if (followers.length !== count)
             throw new Error(
@@ -50,7 +34,7 @@ describe.concurrent('interactions suite', () => {
             expect(following.followerId).toStrictEqual(user1.id);
             expect(following.userId).toStrictEqual(user2.id);
         },
-        generateUser(2)
+        generateUsers(2)
     );
 
     testWithDb(
@@ -70,7 +54,7 @@ describe.concurrent('interactions suite', () => {
                 'already following'
             );
         },
-        generateUser(2)
+        generateUsers(2)
     );
 
     testWithDb(
@@ -80,6 +64,27 @@ describe.concurrent('interactions suite', () => {
                 'not following'
             );
         },
-        generateUser(2)
+        generateUsers(2)
+    );
+
+    testWithDb(
+        'users cannot duplicate block',
+        async ({ expect, db }, { users: [user1, user2] }) => {
+            await blockUser(db, user1.id, user2.id);
+            await expect(() => blockUser(db, user1.id, user2.id)).rejects.toThrowError(
+                'already blocking'
+            );
+        },
+        generateUsers(2)
+    );
+
+    testWithDb(
+        'user not blocking',
+        async ({ expect, db }, { users: [user1, user2] }) => {
+            await expect(() => unblockUser(db, user1.id, user2.id)).rejects.toThrowError(
+                'not blocking'
+            );
+        },
+        generateUsers(2)
     );
 });

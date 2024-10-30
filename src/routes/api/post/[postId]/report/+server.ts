@@ -9,12 +9,12 @@ export const POST: RequestHandler = async (event) => {
     const db = await getDb();
     await createChannelReport(db, {
         description: data.details,
-        postId: event.params.post_id,
+        postId: event.params.postId,
     });
     if (data.reason.value === 'site') {
         await createPostReport(db, {
             description: data.details,
-            postId: event.params.post_id,
+            postId: event.params.postId,
         });
     }
     return new Response(null, {

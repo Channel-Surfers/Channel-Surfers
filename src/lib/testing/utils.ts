@@ -4,9 +4,10 @@ import { Mutex } from 'async-mutex';
 import { sql } from 'drizzle-orm';
 import { test, type ExtendedContext, type RunnerTestCase, type TestContext } from 'vitest';
 import * as schema from '$lib/server/db/schema';
+import { MockBunnyClient } from '$lib/server/bunny/mock';
 
 type DbStateGenerator<T> = (db: DB) => Promise<T>;
-type TestArgs = { db: DB } & ExtendedContext<RunnerTestCase> & TestContext;
+type TestArgs = { db: DB; bunny: MockBunnyClient } & ExtendedContext<RunnerTestCase> & TestContext;
 
 const container = new PostgreSqlContainer();
 const startedContainer = await container.start();
@@ -46,6 +47,7 @@ export function testWithDb<T>(
 
             const newArgs = testArgs as TestArgs;
             newArgs.db = db;
+            newArgs.bunny = new MockBunnyClient();
 
             if (generator) {
                 await testFunc(newArgs, mustGenerate(await generator(db)));
@@ -85,3 +87,19 @@ export const createUsers = async (
         .values(Array.from({ length: count }, (_, i) => ({ username: `${prefix}user${i + 1}` })))
         .returning();
 };
+
+export const generateUsers =
+    (count: number, nameGenerator?: (n: number) => string) => async (db: DB) => {
+        const users = await db
+            .insert(schema.userTable)
+            .values(
+                Array(count)
+                    .fill(0)
+                    .map((_: number, idx) => ({
+                        username: nameGenerator ? nameGenerator(idx) : `user-${idx}`,
+                        discordId: BigInt(idx),
+                    }))
+            )
+            .returning();
+        return { users };
+    };
