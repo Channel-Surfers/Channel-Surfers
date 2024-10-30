@@ -197,7 +197,7 @@ export const searchChannelsByName = async (
                 .offset(page * CHANNEL_SEARCH_PAGE_SIZE)
         )
             .map(({ owns, members }) => (owns ? owns : members))
-            .filter((c) => c != null);
+            .filter((c) => c !== null);
     } else throw new Error('private channels only accessible to user');
 };
 export type ChannelSearchResults = Awaited<ReturnType<typeof searchChannelsByName>>;
