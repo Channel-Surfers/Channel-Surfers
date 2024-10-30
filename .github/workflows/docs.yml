@@ -17,6 +17,7 @@ jobs:
             BASE_URL: 'localhost:5173'
             PUBLIC_PREVIEW_HOST: 'https://example.com/'
             PUBLIC_LIBRARY_ID: 000000
+            BUNNY_API_KEY: ''
             DISCORD_CLIENT_ID: ''
             DISCORD_CLIENT_SECRET: ''
             GITHUB_CLIENT_ID: ''
