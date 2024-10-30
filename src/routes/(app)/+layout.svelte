@@ -12,22 +12,10 @@
     import Score from '$lib/components/Score.svelte';
     import UserInfo from '$lib/components/islands/UserInfo.svelte';
     import type { User } from '$lib/server/db/users.sql';
-    import PlaylistInfo from '$lib/components/islands/PlaylistInfo.svelte';
     import { page } from '$app/stores';
     import type { Channel } from '$lib/server/db/channels.sql';
 
     export let data: LayoutServerData;
-
-    $: dummyPlaylist = data.user
-        ? {
-              creator: data.user as User,
-              id: 'DUMMY',
-              name: 'DummyPlaylist',
-              description: 'Playlist that goes dummy',
-              userId: data.user.id,
-              public: true,
-          }
-        : null;
 
     $: ({ myChannels, mySubscriptions } = data);
     $: userAsUser = data.user ? (data.user as User) : null;
@@ -75,8 +63,6 @@
                 user={userAsUser}
             />
         {/if}
-
-        <PlaylistInfo playlistInfo={dummyPlaylist} />
 
         {#if data.user && data.userStats}
             <Card.Root>
