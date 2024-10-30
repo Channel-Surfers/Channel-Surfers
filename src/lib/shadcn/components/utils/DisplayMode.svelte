@@ -5,6 +5,7 @@
     import { resetMode, setMode } from 'mode-watcher';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu/index.js';
     import { Button } from '$lib/shadcn/components/ui/button/index.js';
+    import { MonitorCog } from 'lucide-svelte';
 </script>
 
 <DropdownMenu.Root>
@@ -20,8 +21,17 @@
         </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content align="end">
-        <DropdownMenu.Item on:click={() => setMode('light')}>Light</DropdownMenu.Item>
-        <DropdownMenu.Item on:click={() => setMode('dark')}>Dark</DropdownMenu.Item>
-        <DropdownMenu.Item on:click={() => resetMode()}>System</DropdownMenu.Item>
+        <DropdownMenu.Item on:click={() => setMode('light')}>
+            <Sun class="size-5"/>
+            Light
+        </DropdownMenu.Item>
+        <DropdownMenu.Item on:click={() => setMode('dark')}>
+            <Moon class="size-5"/>
+            Dark
+        </DropdownMenu.Item>
+        <DropdownMenu.Item on:click={() => resetMode()}>
+            <MonitorCog class="size-5"/>
+            System
+        </DropdownMenu.Item>
     </DropdownMenu.Content>
 </DropdownMenu.Root>
