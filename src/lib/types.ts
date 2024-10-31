@@ -6,6 +6,8 @@ import type { Comment } from './server/db/comments.sql';
  */
 export type uuid = string;
 
+export type Vote = 'UP' | 'DOWN';
+
 /**
  * Data required for the Post component
  */
@@ -19,6 +21,7 @@ export interface PostData {
     upvotes: number;
     downvotes: number;
     comments: number;
+    userVote: Vote | null;
 }
 
 export interface PosterData {

@@ -1,6 +1,6 @@
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, like, isNull, or, ilike } from 'drizzle-orm';
 import type { uuid } from '$lib/types';
 
 import { subscriptionTable } from '../db/subscriptions.sql';
@@ -8,6 +8,9 @@ import { publicChannelTable, type PublicChannel } from '../db/public.channels.sq
 import { channelTable, type Channel, type NewChannel } from '../db/channels.sql';
 import { roleTable } from '../db/roles.sql';
 import { userRoleTable } from '../db/roles.users.sql';
+import { CHANNEL_SEARCH_PAGE_SIZE } from '$lib';
+import type { User } from '../db/users.sql';
+import type { AuthUser } from '../auth';
 
 /**
  * Return a list of channels
@@ -155,3 +158,67 @@ export const getPrivateChannel = async (
         .limit(1);
     return existingChannel || null;
 };
+
+export const searchChannelsByName = async (
+    db: DB,
+    name: string,
+    isPrivate: boolean,
+    page: number,
+    requester?: (User & AuthUser) | null
+) => {
+    if (!isPrivate) {
+        return await db
+            .select({
+                id: channelTable.id,
+                name: publicChannelTable.name,
+                description: channelTable.description,
+                icon: channelTable.icon,
+            })
+            .from(channelTable)
+            .innerJoin(publicChannelTable, eq(channelTable.id, publicChannelTable.channelId))
+            .where(ilike(publicChannelTable.name, `%${name}%`))
+            .limit(CHANNEL_SEARCH_PAGE_SIZE)
+            .offset(page * CHANNEL_SEARCH_PAGE_SIZE);
+    } else if (requester) {
+        const owns = db
+            .select({
+                id: channelTable.id,
+                name: channelTable.name,
+                description: channelTable.description,
+                icon: channelTable.icon,
+            })
+            .from(channelTable)
+            .leftJoin(publicChannelTable, eq(channelTable.id, publicChannelTable.channelId))
+            .where(and(eq(channelTable.createdBy, requester.id), isNull(publicChannelTable.name)))
+            .as('owns');
+        const members = db
+            .selectDistinct({
+                id: channelTable.id,
+                name: channelTable.name,
+                description: channelTable.description,
+                icon: channelTable.icon,
+            })
+            .from(channelTable)
+            .leftJoin(publicChannelTable, eq(channelTable.id, publicChannelTable.channelId))
+            .innerJoin(roleTable, eq(roleTable.channelId, channelTable.id))
+            .innerJoin(
+                userRoleTable,
+                and(eq(userRoleTable.roleId, roleTable.id), eq(userRoleTable.userId, requester.id))
+            )
+            .where(and(like(channelTable.name, name), isNull(publicChannelTable.name)))
+            .as('members');
+        return (
+            await db
+                .select()
+                .from(owns)
+                .fullJoin(members, eq(owns.id, members.id))
+                .where(or(ilike(owns.name, `%${name}%`), ilike(members.name, `%${name}%`)))
+                .limit(CHANNEL_SEARCH_PAGE_SIZE)
+                .offset(page * CHANNEL_SEARCH_PAGE_SIZE)
+        )
+            .map(({ owns, members }) => (owns ? owns : members))
+            .filter((c) => c != null);
+    } else throw new Error('private channels only accessible to user');
+};
+export type ChannelSearchResults = Awaited<ReturnType<typeof searchChannelsByName>>;
+export type MiniChannel = ChannelSearchResults[number];
