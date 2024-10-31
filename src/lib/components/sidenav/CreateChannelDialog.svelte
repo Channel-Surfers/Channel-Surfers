@@ -9,56 +9,59 @@
     import { createEventDispatcher } from 'svelte';
     import { toast } from 'svelte-sonner';
     import type { CreateChannel } from '$lib/types';
-    import { validateUrl } from '$lib/util';
     import type { Channel } from '$lib/server/db/channels.sql';
+    import * as v from 'valibot';
+    import { createChannelSchema } from '$lib/validation';
 
     const dispatch = createEventDispatcher();
 
-    const formData: {
-        [k in keyof CreateChannel]-?: { value: NonNullable<CreateChannel[k]>; error: string };
+    const formData: v.InferInput<typeof createChannelSchema> = {
+        name: '',
+        description: '',
+        guidelines: '',
+        bannerImage: '',
+        icon: '',
+        publishNow: false,
+    };
+
+    let errors: {
+        [k in keyof v.InferInput<typeof createChannelSchema>]: string[];
     } = {
-        name: { value: '', error: '' },
-        description: { value: '', error: '' },
-        guidelines: { value: '', error: '' },
-        bannerImage: { value: '', error: '' },
-        icon: { value: '', error: '' },
-        publishNow: { value: false, error: '' },
+        name: [],
+        description: [],
+        guidelines: [],
+        bannerImage: [],
+        icon: [],
+        publishNow: [],
     };
 
     const validate = () => {
-        let valid = true;
-        if (!formData.name.value) {
-            formData.name.error = 'Name must be provided';
-            valid = false;
-        }
+        const { success, issues } = v.safeParse(createChannelSchema, formData);
 
-        if (formData.description.value.length > 4000) {
-            formData.description.error = 'Description must be fewer than 4000 characters';
-            valid = false;
+        console.log({ success, issues });
+        if (issues) {
+            errors = {
+                name: [],
+                description: [],
+                guidelines: [],
+                bannerImage: [],
+                icon: [],
+                publishNow: [],
+            };
+            for (const issue of issues) {
+                errors[issue.path![0].key as keyof typeof errors].push(issue.message);
+            }
+            errors = { ...errors };
         }
+        console.log(errors);
 
-        if (formData.guidelines.value.length > 4000) {
-            formData.guidelines.error = 'Guidelines must be fewer than 4000 characters';
-            valid = false;
-        }
-
-        if (formData.bannerImage.value && !validateUrl(formData.bannerImage.value)) {
-            formData.bannerImage.error = 'Not a valid URL';
-            valid = false;
-        }
-
-        if (formData.icon.value && !validateUrl(formData.icon.value)) {
-            formData.icon.error = 'Must be a valid URL';
-            valid = false;
-        }
-
-        return valid;
+        return success;
     };
 
     const submit = async () => {
         if (!validate()) return;
 
-        const body = Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, v.value]));
+        const body = Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, v]));
         console.log({ formData, body });
 
         const res = await fetch('/api/c', {
@@ -67,10 +70,7 @@
         });
 
         if (res.status === 400 || res.status === 409) {
-            const json = await res.json();
-            for (const [k, v] of Object.entries(json) as [keyof CreateChannel, string][]) {
-                formData[k].error = v;
-            }
+            errors = await res.json();
             return;
         } else if (!res.ok) {
             console.error(res);
@@ -81,7 +81,7 @@
 
         const channel: Channel = await res.json();
 
-        if (formData.publishNow.value) {
+        if (formData.publishNow) {
             goto(`/c/${channel.name}`);
         } else {
             goto(`/c/private/${channel.id}`);
@@ -105,11 +105,11 @@
                     placeholder=""
                     type="text"
                     class="my-1"
-                    bind:value={formData.name.value}
+                    bind:value={formData.name}
                 />
-                {#if formData.name.error}
-                    <p class="pl-2 text-sm text-red-400">{formData.name.error}</p>
-                {/if}
+                {#each errors.name as m}
+                    <p class="pl-2 text-sm text-red-400">{m}</p>
+                {/each}
             </div>
 
             <div class="">
@@ -118,11 +118,11 @@
                     id="description"
                     placeholder="Enter some text..."
                     class="my-1"
-                    bind:value={formData.description.value}
+                    bind:value={formData.description}
                 />
-                {#if formData.description.error}
-                    <p class="pl-2 text-sm text-red-400">{formData.description.error}</p>
-                {/if}
+                {#each errors.description as m}
+                    <p class="pl-2 text-sm text-red-400">{m}</p>
+                {/each}
             </div>
 
             <div class="">
@@ -131,11 +131,11 @@
                     id="guidelines"
                     placeholder="Enter some text..."
                     class="my-1"
-                    bind:value={formData.guidelines.value}
+                    bind:value={formData.guidelines}
                 />
-                {#if formData.guidelines.error}
-                    <p class="pl-2 text-sm text-red-400">{formData.guidelines.error}</p>
-                {/if}
+                {#each errors.guidelines as m}
+                    <p class="pl-2 text-sm text-red-400">{m}</p>
+                {/each}
             </div>
 
             <div class="">
@@ -145,11 +145,11 @@
                     placeholder="https://example.com"
                     type="text"
                     class="my-1"
-                    bind:value={formData.bannerImage.value}
+                    bind:value={formData.bannerImage}
                 />
-                {#if formData.bannerImage.error}
-                    <p class="pl-2 text-sm text-red-400">{formData.bannerImage.error}</p>
-                {/if}
+                {#each errors.bannerImage as m}
+                    <p class="pl-2 text-sm text-red-400">{m}</p>
+                {/each}
             </div>
 
             <div class="">
@@ -159,15 +159,15 @@
                     placeholder="https://example.com"
                     type="text"
                     class="my-1"
-                    bind:value={formData.icon.value}
+                    bind:value={formData.icon}
                 />
-                {#if formData.icon.error}
-                    <p class="pl-2 text-sm text-red-400">{formData.icon.error}</p>
-                {/if}
+                {#each errors.icon as m}
+                    <p class="pl-2 text-sm text-red-400">{m}</p>
+                {/each}
             </div>
 
             <div class="flex flex-row items-center gap-2">
-                <Switch id="public" bind:checked={formData.publishNow.value} />
+                <Switch id="public" bind:checked={formData.publishNow} />
                 <Label for="public">Publish Now</Label>
             </div>
         </div>
