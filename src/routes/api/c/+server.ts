@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { assertAuth } from '$lib/server/auth';
-import { type CreateChannel } from '$lib/types';
 import type { NewChannel } from '$lib/server/db/channels.sql';
 import {
     createChannel,
@@ -23,7 +22,7 @@ export const POST: RequestHandler = async (event) => {
     let { success } = parsed;
 
     console.log({ success, issues: parsed.issues });
-    const errors: { [k in keyof v.InferInput<typeof createChannelSchema>]: string[]; } = {
+    const errors: { [k in keyof v.InferInput<typeof createChannelSchema>]: string[] } = {
         name: [],
         description: [],
         guidelines: [],

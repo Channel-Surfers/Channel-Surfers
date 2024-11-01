@@ -8,7 +8,6 @@
     import { goto } from '$app/navigation';
     import { createEventDispatcher } from 'svelte';
     import { toast } from 'svelte-sonner';
-    import type { CreateChannel } from '$lib/types';
     import type { Channel } from '$lib/server/db/channels.sql';
     import * as v from 'valibot';
     import { createChannelSchema } from '$lib/validation';
