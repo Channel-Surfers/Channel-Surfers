@@ -15,7 +15,7 @@ const generateUserAndFollowers =
             users: [user, ...followers],
         } = await generateUsers(count + 1, nameGenerator)(db);
 
-        if (followers.length != count)
+        if (followers.length !== count)
             throw new Error(
                 `Something went wrong generating followers. Have ${followers.length}, need ${count}`
             );
