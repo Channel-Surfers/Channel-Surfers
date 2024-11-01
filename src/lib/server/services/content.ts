@@ -33,6 +33,7 @@ import {
 } from '../db/reports.channels.posts.sql';
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
 import type { IBunnyClient } from '../bunny';
+import { commentVoteTable } from '../db/votes.comments.sql';
 
 export const getPost = async (db: DB, post_id: uuid) => {
     const [a] = await db
@@ -397,6 +398,10 @@ export const updatePost = async (
 ) => {
     return await db.update(postTable).set(post).where(eq(postTable.id, post.id)).returning();
 };
+
+export const deletePost = async (db: DB, id: uuid) => {
+    return await db.delete(postTable).where(eq(postTable.id, id)).returning();
+}
 
 /**
  * Returns posts whose videos have yet to be uploaded
