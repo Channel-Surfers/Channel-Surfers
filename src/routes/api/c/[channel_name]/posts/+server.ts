@@ -20,7 +20,7 @@ export const GET: RequestHandler = async (event) => {
     const reverseSort = (event.url.searchParams.get('reverseSort') || 'false') === 'true';
 
     const channel = await getPublicChannelByName(db, event.params.channel_name);
-    if (channel == null) return error(404);
+    if (channel === null) return error(404);
 
     const posts = await getPosts(db, page, {
         requesterId: event.locals.user?.id,

@@ -27,7 +27,7 @@ describe.concurrent('content suite', () => {
                 channelId: channel.id,
                 status: 'UPLOADING',
             });
-            expect(video != null).toStrictEqual(true);
+            expect(video !== null).toStrictEqual(true);
             expect(post.title).toStrictEqual('Awesome post');
             expect(post.description).toStrictEqual('description of awesome post');
             expect(post.createdBy).toStrictEqual(user.id);
@@ -257,7 +257,7 @@ describe.concurrent('content suite', () => {
                 )
                 .returning();
             const d = sequentialDates();
-            const gen_posts = await db
+            const genPosts = await db
                 .insert(postTable)
                 .values(
                     Array(10)
@@ -274,7 +274,7 @@ describe.concurrent('content suite', () => {
                 )
                 .returning();
 
-            const after = gen_posts[Math.floor(gen_posts.length / 2)].createdOn;
+            const after = genPosts[Math.floor(genPosts.length / 2)].createdOn;
             const posts = await getPosts(db, 0, {
                 type: 'user',
                 sort: 'date',
@@ -284,9 +284,7 @@ describe.concurrent('content suite', () => {
                 username: users[0].username,
             });
 
-            const exp = gen_posts.filter(
-                (p) => p.createdBy === users[0].id && p.createdOn >= after
-            );
+            const exp = genPosts.filter((p) => p.createdBy === users[0].id && p.createdOn >= after);
             expect(posts.map((p) => p.id)).toEqual(exp.map((p) => p.id));
         }
     );
@@ -299,7 +297,7 @@ describe.concurrent('content suite', () => {
             .values(users.map((u) => ({ name: `${u.username}s-channel`, createdBy: u.id })))
             .returning();
         const d = sequentialDates();
-        const gen_posts = await db
+        const genPosts = await db
             .insert(postTable)
             .values(
                 users.flatMap((u, ui) =>
@@ -328,7 +326,7 @@ describe.concurrent('content suite', () => {
 
             expect(posts).toHaveLength(10);
             expect(posts.map((p) => p.id)).toEqual(
-                gen_posts.filter((p) => p.createdBy === u.id).map((p) => p.id)
+                genPosts.filter((p) => p.createdBy === u.id).map((p) => p.id)
             );
         });
     });
@@ -559,9 +557,9 @@ const generateGroups = async (db: DB) => {
         ])
         .returning();
 
-    const vote = async (post: Post, up_count: number, down_count: number) => {
-        const up = await createUsers(db, up_count, `${post.title}-up-`);
-        const down = await createUsers(db, down_count, `${post.title}-down-`);
+    const vote = async (post: Post, upCount: number, downCount: number) => {
+        const up = await createUsers(db, upCount, `${post.title}-up-`);
+        const down = await createUsers(db, downCount, `${post.title}-down-`);
 
         await db.insert(postVoteTable).values(
             up.map((u) => ({
@@ -578,7 +576,7 @@ const generateGroups = async (db: DB) => {
                 vote: 'DOWN' as const,
             }))
         );
-        return { upvotes: up_count, downvotes: down_count };
+        return { upvotes: upCount, downvotes: downCount };
     };
 
     const votes = {

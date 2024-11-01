@@ -21,6 +21,7 @@
     import Elapsed from '$lib/components/Elapsed.svelte';
 
     export let data;
+
     let {
         userVote,
         post: { upvotes, downvotes },
@@ -51,16 +52,14 @@
 
         if (res.ok) {
             const ret = await res.json();
-            upvotes = ret.upvotes;
-            downvotes = ret.downvotes;
-            userVote = ret.vote;
+            ({ upvotes, downvotes, vote: userVote } = ret);
         } else {
-            userVote = data.userVote;
+            ({ userVote } = data);
             toast.error('Unexpected error while submitting vote');
         }
     };
 
-    const md_plugins = [gfmPlugin()];
+    const mdPlugins = [gfmPlugin()];
 </script>
 
 <svelte:head>
@@ -115,7 +114,7 @@
                             channel: {
                                 name: data.channel.name,
                                 id: data.channel.id,
-                                private: data.private_channel,
+                                private: data.privateChannel,
                             },
                         }}
                     />
@@ -136,7 +135,7 @@
                     <Toggle
                         size="sm"
                         class="hover:text-downvote data-[state=on]:text-downvote"
-                        disabled={!data.signedIn}
+                        disabled={!data.signed_in}
                         pressed={userVote === 'DOWN'}
                         on:click={() => vote('DOWN')}
                     >
@@ -148,7 +147,7 @@
             <!-- Description -->
             {#if data.post.description}
                 <p class="markdown">
-                    <Markdown md={data.post.description} plugins={md_plugins} />
+                    <Markdown md={data.post.description} plugins={mdPlugins} />
                 </p>
             {/if}
         </Card.Content>

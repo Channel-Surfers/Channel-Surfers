@@ -11,6 +11,7 @@
     import { Button } from '$lib/shadcn/components/ui/button';
     import CreateChannelDialog from './CreateChannelDialog.svelte';
     import { createEventDispatcher } from 'svelte';
+    import DisplayMode from '$lib/components/sidenav/DisplayMode.svelte';
 
     // type signature here is temporary
     export let channels: (Channel & { publicInfo: { displayName: string } | null })[] | null = null;
@@ -101,8 +102,11 @@
             </Accordion.Item>
         </Accordion.Root>
     </div>
-    <div class="flex flex-col">
-        <Separator class="my-2" />
-        <Route href="/settings" title="Settings" icon={Settings} />
+    <div class="flex flex-row space-x-4">
+        <Button class="flex grow justify-start" href="/settings" variant="outline">
+            <Settings />
+            <span class="text-base">Settings</span>
+        </Button>
+        <DisplayMode />
     </div>
 </div>
