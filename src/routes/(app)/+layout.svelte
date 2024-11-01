@@ -71,6 +71,7 @@
                     <div class="flex flex-row items-center justify-between">
                         <ProfileIcon user={data.user} />
                         <h1>u/{data.user.username}</h1>
+                        
                     </div>
                 </Card.Header>
                 <Card.Content>
