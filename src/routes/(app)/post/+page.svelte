@@ -55,12 +55,12 @@
         channels = await searchChannels(query);
     };
 
-    $: updateChannelPrivacy(searchChannelIsPrivate);
-    const updateChannelPrivacy = async (_: boolean) => {
+    const updateChannelPrivacy = async () => {
         channelSearchPage = 0;
         channelSearchError = null;
         channels = channelSearchQuery === '' ? [] : await searchChannels(channelSearchQuery);
     };
+    $: updateChannelPrivacy();
 
     const searchChannels = async (query: string) => {
         const params = new URLSearchParams({

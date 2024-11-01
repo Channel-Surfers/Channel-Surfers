@@ -4,9 +4,9 @@
 
     export let data;
 
-    let filter = 'all';
-    let sort = 'date';
-    let reverseSort = 'false';
+    const filter = 'all';
+    const sort = 'date';
+    const reverseSort = 'false';
 
     const now = new Date();
 
