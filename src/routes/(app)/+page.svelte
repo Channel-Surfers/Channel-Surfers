@@ -3,12 +3,12 @@
 
     export let data;
 
-    let filter = 'all';
-    let sort = 'date';
-    let reverseSort = false;
+    const filter = 'all';
+    const sort = 'date';
+    const reverseSort = false;
     const now = new Date();
 
-    const get_posts = async (page: number) => {
+    const getPosts = async (page: number) => {
         const search = new URLSearchParams({
             page: `${page}`,
             type: 'home',
@@ -32,5 +32,5 @@
 </svelte:head>
 
 <div class="h-[100vh] w-full">
-    <InfiniteScroll init_buffer={data.initial_posts} {get_posts} signed_in={!!data.user} />
+    <InfiniteScroll initBuffer={data.initialPosts} {getPosts} signedIn={!!data.user} />
 </div>
