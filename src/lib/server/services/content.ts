@@ -34,13 +34,13 @@ import {
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
 import type { IBunnyClient } from '../bunny';
 
-export const getPost = async (db: DB, post_id: uuid) => {
+export const getPost = async (db: DB, postId: uuid) => {
     const [a] = await db
         .select()
         .from(postTable)
         .innerJoin(channelTable, eq(channelTable.id, postTable.channelId))
         .innerJoin(userTable, eq(userTable.id, postTable.createdBy))
-        .where(eq(postTable.id, post_id));
+        .where(eq(postTable.id, postId));
 
     if (!a) return null;
 
@@ -50,14 +50,14 @@ export const getPost = async (db: DB, post_id: uuid) => {
         .select({ name: channelTagsTable.name, color: channelTagsTable.color })
         .from(postTagTable)
         .innerJoin(channelTagsTable, eq(channelTagsTable.id, postTagTable.tagId))
-        .where(eq(postTagTable.postId, post_id));
+        .where(eq(postTagTable.postId, postId));
 
     return {
         post,
         user,
         channel,
         tags,
-        private_channel: false,
+        privateChannel: false,
     };
 };
 
@@ -284,11 +284,11 @@ export const getPostStatistics = async (db: DB) => {
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
 
-export const getCommentTree = async (db: DB, post_id: string): Promise<CommentData[]> => {
+export const getCommentTree = async (db: DB, postId: string): Promise<CommentData[]> => {
     const firstLevelComments = await db
         .select()
         .from(postTable)
-        .where(and(eq(postTable.id, post_id), isNull(commentTable.replyTo)))
+        .where(and(eq(postTable.id, postId), isNull(commentTable.replyTo)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
         .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
         .orderBy(commentTable.createdOn)
@@ -299,7 +299,7 @@ export const getCommentTree = async (db: DB, post_id: string): Promise<CommentDa
     const secondLevelComments = await db
         .select()
         .from(postTable)
-        .where(and(eq(postTable.id, post_id), inArray(commentTable.replyTo, firstLevelCommentsIds)))
+        .where(and(eq(postTable.id, postId), inArray(commentTable.replyTo, firstLevelCommentsIds)))
         .innerJoin(commentTable, eq(commentTable.postId, postTable.id))
         .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
         .orderBy(commentTable.createdOn)
@@ -353,7 +353,7 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
         .values({ postId, userId, vote })
         .onConflictDoUpdate({
             target: [postVoteTable.postId, postVoteTable.userId],
-            set: { vote: vote },
+            set: { vote },
         })
         .returning();
     return ret;

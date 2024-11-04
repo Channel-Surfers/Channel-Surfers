@@ -31,7 +31,8 @@ export const PUT: RequestHandler = async ({ params: { postId }, request, locals 
 
     const currentPost = await getPost(db, postId);
     if (!currentPost) throw error(404, 'Post does not exist');
-    if (currentPost.user.id != locals.user.id) throw error(403, 'Unauthorized to modify this post');
+    if (currentPost.user.id !== locals.user.id)
+        throw error(403, 'Unauthorized to modify this post');
 
     let updatedPost: Post;
     try {

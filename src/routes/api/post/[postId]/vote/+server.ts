@@ -22,13 +22,13 @@ export const POST: RequestHandler = async (event) => {
 
     const vote = voteStr === 'null' ? null : voteStr;
 
-    let ret_vote: 'UP' | 'DOWN' | null;
+    let retVote: 'UP' | 'DOWN' | null;
     if (vote) {
         const ret = await addPostVote(db, event.params.postId, event.locals.user.id, vote);
-        ret_vote = ret.vote;
+        retVote = ret.vote;
     } else {
         await deletePostVote(db, event.params.postId, event.locals.user.id);
-        ret_vote = null;
+        retVote = null;
     }
 
     const {
@@ -38,6 +38,6 @@ export const POST: RequestHandler = async (event) => {
     return json({
         upvotes,
         downvotes,
-        vote: ret_vote,
+        vote: retVote,
     });
 };

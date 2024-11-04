@@ -33,13 +33,13 @@
     import { createEventDispatcher } from 'svelte';
 
     export let post: PostData | undefined = undefined;
-    export let playing_video: boolean = false;
-    export let signed_in: User = false;
+    export let playingVideo: boolean = false;
+    export let signedIn: User = false;
 
     const dispatch = createEventDispatcher();
 
     let { userVote, upvotes, downvotes } = post || { userVote: null, upvotes: 0, downvotes: 0 };
-    let report_dialog_open = false;
+    let reportDialogOpen = false;
 
     const vote = async (dir: 'UP' | 'DOWN') => {
         if (!post) return;
@@ -94,7 +94,7 @@
 
         if (res.ok) {
             toast.success('Report submitted sucessfully!');
-            report_dialog_open = false;
+            reportDialogOpen = false;
         } else {
             toast.error('Unexpected error while submitting report.');
         }
@@ -127,7 +127,7 @@
     <Dialog.Description>This action cannot be undone</Dialog.Description>
 </Confirm>
 
-<Dialog.Root bind:open={report_dialog_open}>
+<Dialog.Root bind:open={reportDialogOpen}>
     <Dialog.Portal>
         <Dialog.Content>
             <Dialog.Header>
@@ -172,13 +172,13 @@
     >
         {#if !post}
             <Skeleton class="h-full w-full rounded-lg" />
-        {:else if playing_video}
+        {:else if playingVideo}
             <Player videoId={post.videoId} autoplay />
         {:else}
             <button
                 class="absolute flex h-full w-full items-center justify-center rounded-lg bg-black/50"
                 class:hidden={!hovering}
-                on:click={() => (playing_video = true)}
+                on:click={() => (playingVideo = true)}
             >
                 <Play fill="white" size="48" />
             </button>
@@ -236,7 +236,7 @@
                     <Share2 fill="currentColor" class="mr-2 h-4 w-4" />
                     <span>Share</span>
                 </DropdownMenu.Item>
-                {#if post && signed_in.id === post.poster.user.id}
+                {#if post && signedIn.id === post.poster.user.id}
                     <DropdownMenu.Item href="/post/{post.id}/edit">
                         <Pencil class="mr-2 h-4 w-4" />
                         <span>Edit</span>
@@ -249,8 +249,8 @@
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
                     class="text-red-600"
-                    on:click={() => (report_dialog_open = true)}
-                    disabled={!signed_in}
+                    on:click={() => (reportDialogOpen = true)}
+                    disabled={!signedIn}
                 >
                     <Flag fill="currentColor" class="mr-2 h-4 w-4" />
                     <span>Report</span>
@@ -261,7 +261,7 @@
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"
-                disabled={!post || !signed_in}
+                disabled={!post || !signedIn}
                 class="hover:text-upvote data-[state=on]:text-upvote"
                 pressed={userVote === 'UP'}
                 on:click={() => vote('UP')}
@@ -277,7 +277,7 @@
             {/if}
             <Toggle
                 size="sm"
-                disabled={!post || !signed_in}
+                disabled={!post || !signedIn}
                 class="hover:text-downvote data-[state=on]:text-downvote"
                 pressed={userVote === 'DOWN'}
                 on:click={() => vote('DOWN')}
