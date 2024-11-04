@@ -26,7 +26,9 @@ export const load: PageServerLoad = async (event) => {
 
     let canDelete = false;
     if (event.locals.user) {
-        canDelete = event.locals.user.id === data.post.createdBy || await canDeletePostInChannel(db, event.locals.user.id, data.post.channelId);
+        canDelete =
+            event.locals.user.id === data.post.createdBy ||
+            (await canDeletePostInChannel(db, event.locals.user.id, data.post.channelId));
     }
 
     return {

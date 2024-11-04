@@ -1,11 +1,11 @@
-import { getDb } from "$lib/server";
-import { deletePost, getPost, updatePost } from "$lib/server/services/content";
-import { error, fail, redirect } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
-import { assertAuth } from "$lib/server/auth";
+import { getDb } from '$lib/server';
+import { deletePost, getPost, updatePost } from '$lib/server/services/content';
+import { error, fail, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import { assertAuth } from '$lib/server/auth';
 import * as v from 'valibot';
-import { canDeletePostInChannel } from "$lib/server/services/channels";
-import { bunnyClient } from "$lib/server/bunny";
+import { canDeletePostInChannel } from '$lib/server/services/channels';
+import { bunnyClient } from '$lib/server/bunny';
 
 export const load: PageServerLoad = async (event) => {
     assertAuth(event);
@@ -24,8 +24,15 @@ export const load: PageServerLoad = async (event) => {
 };
 
 const updateSchema = v.object({
-    title: v.pipe(v.string(), v.minLength(1, 'Post title must be at least 1 character long.'), v.maxLength(200, 'Post title must be fewer than 200 characters')),
-    description: v.pipe(v.string(), v.maxLength(4000, 'Post description must be fewer than 4000 characters')),
+    title: v.pipe(
+        v.string(),
+        v.minLength(1, 'Post title must be at least 1 character long.'),
+        v.maxLength(200, 'Post title must be fewer than 200 characters')
+    ),
+    description: v.pipe(
+        v.string(),
+        v.maxLength(4000, 'Post description must be fewer than 4000 characters')
+    ),
 });
 
 export const actions: Actions = {
@@ -41,9 +48,9 @@ export const actions: Actions = {
             description: formData.get('description'),
         });
 
-        const errors: { [k in keyof v.InferInput<typeof updateSchema>]: string[]; } = {
+        const errors: { [k in keyof v.InferInput<typeof updateSchema>]: string[] } = {
             description: [],
-            title: []
+            title: [],
         };
 
         if (!success) {
@@ -62,7 +69,7 @@ export const actions: Actions = {
 
         const update = await updatePost(db, {
             id: postId,
-            ...output
+            ...output,
         });
         if (!update) return fail(500);
         return redirect(302, `/post/${postId}`);
@@ -75,7 +82,11 @@ export const actions: Actions = {
 
         if (!post) return fail(404);
 
-        if (event.locals.user.id !== post.user.id && !canDeletePostInChannel(db, event.locals.user.id, post.channel.id)) return fail(403);
+        if (
+            event.locals.user.id !== post.user.id &&
+            !canDeletePostInChannel(db, event.locals.user.id, post.channel.id)
+        )
+            return fail(403);
 
         const update = await deletePost(db, bunnyClient, postId);
         if (!update) return fail(500);

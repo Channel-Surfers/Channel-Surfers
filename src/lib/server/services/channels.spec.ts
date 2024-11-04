@@ -188,25 +188,41 @@ describe.concurrent('channels suite', () => {
     testWithDb(
         'Can delete posts in channel',
         async ({ expect, db }, { createdChannel }) => {
-            const [role] = await db.insert(roleTable).values({ channelId: createdChannel.id, title: 'hello', ranking: 0, canDeletePosts: true }).returning();
+            const [role] = await db
+                .insert(roleTable)
+                .values({
+                    channelId: createdChannel.id,
+                    title: 'hello',
+                    ranking: 0,
+                    canDeletePosts: true,
+                })
+                .returning();
             const [user] = await createUsers(db, 1);
             await db.insert(userRoleTable).values({ userId: user.id, roleId: role.id });
 
             expect(await canDeletePostInChannel(db, user.id, createdChannel.id)).toBeTruthy();
         },
-        generateUserAndChannel,
+        generateUserAndChannel
     );
 
     testWithDb(
         'Can not delete posts in channel',
         async ({ expect, db }, { createdChannel }) => {
-            const [role] = await db.insert(roleTable).values({ channelId: createdChannel.id, title: 'hello', ranking: 0, canDeletePosts: false }).returning();
+            const [role] = await db
+                .insert(roleTable)
+                .values({
+                    channelId: createdChannel.id,
+                    title: 'hello',
+                    ranking: 0,
+                    canDeletePosts: false,
+                })
+                .returning();
             const [user] = await createUsers(db, 1);
             await db.insert(userRoleTable).values({ userId: user.id, roleId: role.id });
 
             expect(await canDeletePostInChannel(db, user.id, createdChannel.id)).toBeFalsy();
         },
-        generateUserAndChannel,
+        generateUserAndChannel
     );
 });
 

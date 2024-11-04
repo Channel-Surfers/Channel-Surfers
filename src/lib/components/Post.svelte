@@ -237,14 +237,14 @@
                     <span>Share</span>
                 </DropdownMenu.Item>
                 {#if post && signed_in.id === post.poster.user.id}
-                <DropdownMenu.Item href="/post/{post.id}/edit">
-                    <Pencil class="mr-2 h-4 w-4" />
-                    <span>Edit</span>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item class="text-red-600" on:click={deletePost}>
-                    <Trash2 class="mr-2 h-4 w-4" />
-                    <span>Delete</span>
-                </DropdownMenu.Item>
+                    <DropdownMenu.Item href="/post/{post.id}/edit">
+                        <Pencil class="mr-2 h-4 w-4" />
+                        <span>Edit</span>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item class="text-red-600" on:click={deletePost}>
+                        <Trash2 class="mr-2 h-4 w-4" />
+                        <span>Delete</span>
+                    </DropdownMenu.Item>
                 {/if}
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item

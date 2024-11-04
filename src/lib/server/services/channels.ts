@@ -1,6 +1,6 @@
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { eq, and, like, isNull, or, ilike, sum, count } from 'drizzle-orm';
+import { eq, and, like, isNull, or, ilike, count } from 'drizzle-orm';
 import type { uuid } from '$lib/types';
 
 import { subscriptionTable } from '../db/subscriptions.sql';
@@ -206,7 +206,7 @@ export type MiniChannel = ChannelSearchResults[number];
 export const canDeletePostInChannel = async (db: DB, userId: uuid, channelId: uuid) => {
     const [{ c }] = await db
         .select({
-            c: count(roleTable.id)
+            c: count(roleTable.id),
         })
         .from(roleTable)
         .innerJoin(userRoleTable, eq(roleTable.id, userRoleTable.roleId))
@@ -214,8 +214,8 @@ export const canDeletePostInChannel = async (db: DB, userId: uuid, channelId: uu
             and(
                 eq(userRoleTable.userId, userId),
                 eq(roleTable.channelId, channelId),
-                roleTable.canDeletePosts,
-            ),
+                roleTable.canDeletePosts
+            )
         );
     return c > 0;
 };

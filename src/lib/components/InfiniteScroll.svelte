@@ -50,7 +50,7 @@
     }
 
     const postDeleted = (post: PostData) => {
-        buffer = buffer.filter(p => p.id !== post.id);
+        buffer = buffer.filter((p) => p.id !== post.id);
     };
 </script>
 
