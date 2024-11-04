@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     const { post, user } = queryResult;
 
-    if (user.id != locals.user?.id) throw error(403, 'Do not have access to this video');
+    if (user.id !== locals.user?.id) throw error(403, 'Do not have access to this video');
     else if (post.status === 'OK') return redirect(303, `/post/${postId}`);
 
     const expirationTime = dayjs().add(12, 'hours').unix();

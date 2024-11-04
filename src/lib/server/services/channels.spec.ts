@@ -233,7 +233,7 @@ const generateUserAndChannelsAndOtherUser = async (db: DB) => {
 };
 
 const generateUser = async (db: DB) => {
-    const creator = (await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning())[0];
+    const [creator] = await db.insert(userTable).values({ username: 'AwesomeGuy' }).returning();
 
     return { creator };
 };

@@ -19,6 +19,7 @@
     import Markdown from '$lib/components/Markdown.svelte';
 
     export let data;
+
     let {
         userVote,
         post: { upvotes, downvotes },
@@ -49,11 +50,9 @@
 
         if (res.ok) {
             const ret = await res.json();
-            upvotes = ret.upvotes;
-            downvotes = ret.downvotes;
-            userVote = ret.vote;
+            ({ upvotes, downvotes, vote: userVote } = ret);
         } else {
-            userVote = data.userVote;
+            ({ userVote } = data);
             toast.error('Unexpected error while submitting vote');
         }
     };
@@ -111,7 +110,7 @@
                             channel: {
                                 name: data.channel.name,
                                 id: data.channel.id,
-                                private: data.private_channel,
+                                private: data.privateChannel,
                             },
                         }}
                     />
@@ -143,7 +142,9 @@
 
             <!-- Description -->
             {#if data.post.description}
-                <Markdown md={data.post.description} />
+                <p class="markdown">
+                    <Markdown md={data.post.description} />
+                </p>
             {/if}
         </Card.Content>
     </Card.Root>
