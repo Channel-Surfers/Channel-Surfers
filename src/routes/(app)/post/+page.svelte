@@ -250,7 +250,7 @@
             <form on:submit={uploadVideo} class="w-full">
                 <Label for="video" aria-required>Upload Video File</Label>
                 <Input name="video" type="file" required />
-                <div class="flex mt-2 gap-2">
+                <div class="mt-2 flex gap-2">
                     <!-- Nested forms is needed here to do delete since we can't `action="?/delete"` with the `Button` component. -->
                     <form method="POST" action="?/delete" use:enhance={onDelete}>
                         <Button variant="destructive" type="submit">Delete</Button>
