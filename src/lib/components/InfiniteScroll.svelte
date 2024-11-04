@@ -12,7 +12,7 @@
     export let initBuffer: PostData[];
 
     export let getPosts: (pageNumber: number) => Promise<PostData[]>;
-    export let signedIn: boolean = false;
+    export let signedIn: User = false;
 
     let page: number;
     let state: 'loading' | 'error' | 'active' | 'no-posts';

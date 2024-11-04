@@ -11,9 +11,9 @@ export const load: PageServerLoad = async (event) => {
     assertAuth(event);
     const db = await getDb();
 
-    const { post_id } = event.params;
+    const { post_id: postId } = event.params;
 
-    const data = await getPost(db, post_id);
+    const data = await getPost(db, postId);
     if (!data) return error(404);
 
     if (data.user.id !== event.locals.user.id) return error(403);
