@@ -1,5 +1,12 @@
 import { test } from 'vitest';
-import { objectBooleanSum } from './permissions';
+import {
+    channelMgmtPermissions,
+    channelModPermissions,
+    eventMgmtPermissions,
+    objectBooleanSum,
+    roleMgmtPermissions,
+    sumPermissions,
+} from './permissions';
 
 test('sum function works', ({ expect }) => {
     const one = { a: false, b: false, c: false };
@@ -15,4 +22,34 @@ test('sum function works', ({ expect }) => {
     expect(onePlusTwo).toStrictEqual(twoPlusOne);
     // associativity
     expect(objectBooleanSum(one, twoPlusThree)).toStrictEqual({ a: false, b: true, c: true });
+});
+
+test('permisisons can be summed', ({ expect }) => {
+    const roles = [
+        {
+            ...roleMgmtPermissions(),
+            ...channelMgmtPermissions(),
+            ...channelModPermissions(),
+            ...eventMgmtPermissions(),
+        },
+        {
+            ...roleMgmtPermissions({ canEditRoles: true }),
+            ...channelMgmtPermissions(),
+            ...channelModPermissions(),
+            ...eventMgmtPermissions(),
+        },
+        {
+            ...roleMgmtPermissions(),
+            ...channelMgmtPermissions(),
+            ...channelModPermissions({ canDeletePosts: true }),
+            ...eventMgmtPermissions(),
+        },
+    ];
+
+    expect(sumPermissions(roles)).toStrictEqual({
+        ...roleMgmtPermissions({ canEditRoles: true }),
+        ...channelMgmtPermissions(),
+        ...channelModPermissions({ canDeletePosts: true }),
+        ...eventMgmtPermissions(),
+    });
 });
