@@ -7,11 +7,12 @@
 
     import Post from './Post.svelte';
     import { ScrollArea } from '$lib/shadcn/components/ui/scroll-area';
+    import type { User } from '$lib/server/db/users.sql';
 
     export let init_buffer: PostData[];
 
     export let get_posts: (page_number: number) => Promise<PostData[]>;
-    export let signed_in: boolean = false;
+    export let signed_in: User = false;
 
     let page: number;
     let state: 'loading' | 'error' | 'active' | 'no-posts';
@@ -47,11 +48,15 @@
         state = 'active';
         page = Math.floor(posts.length / PAGE_SIZE);
     }
+
+    const postDeleted = (post: PostData) => {
+        buffer = buffer.filter(p => p.id !== post.id);
+    };
 </script>
 
 <ScrollArea class="mx-2 flex h-full max-h-full flex-col items-center">
     {#each buffer as post}
-        <Post {post} {signed_in} />
+        <Post {post} {signed_in} on:delete={() => postDeleted(post)} />
     {/each}
     {#if state === 'loading'}
         <Post />

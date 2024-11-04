@@ -71,7 +71,7 @@
         });
 
         if (res.ok) {
-            history.back();
+            goto('/');
         } else {
             toast.error('Unexpected error while deleting post.');
         }

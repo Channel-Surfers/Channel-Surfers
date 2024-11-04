@@ -5,6 +5,7 @@ import type { Actions, PageServerLoad } from "./$types";
 import { assertAuth } from "$lib/server/auth";
 import * as v from 'valibot';
 import { canDeletePostInChannel } from "$lib/server/services/channels";
+import { bunnyClient } from "$lib/server/bunny";
 
 export const load: PageServerLoad = async (event) => {
     assertAuth(event);
@@ -76,7 +77,7 @@ export const actions: Actions = {
 
         if (event.locals.user.id !== post.user.id && !canDeletePostInChannel(db, event.locals.user.id, post.channel.id)) return fail(403);
 
-        const update = await deletePost(db, postId);
+        const update = await deletePost(db, bunnyClient, postId);
         if (!update) return fail(500);
         return redirect(302, '/');
     },
