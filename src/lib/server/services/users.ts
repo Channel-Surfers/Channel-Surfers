@@ -6,6 +6,8 @@ import { postTable } from '../db/posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { followTable } from '../db/follows.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
+import type { Role } from '../db/roles.sql';
+import type { Permissions } from '$lib/utils/permissions';
 
 export const getUserById = async (db: DB, id: string): Promise<User> => {
     const [ret] = await db.select().from(userTable).where(eq(userTable.id, id));
@@ -116,4 +118,18 @@ export const userIsBlocking = async (db: DB, userId: string, blockedUserId: stri
 export const getUserByUsername = async (db: DB, username: string) => {
     const [user] = await db.select().from(userTable).where(eq(userTable.username, username));
     return user;
+};
+
+export type UserPermissionInfo = {
+    userId: string;
+    channelId: string;
+    highestRole: Role;
+    permissions: Permissions;
+};
+export const getUserPermissionInfo = async (
+    db: DB,
+    userId: string,
+    channelId: string
+): Promise<UserPermissionInfo> => {
+    throw new Error('Unimplemented');
 };

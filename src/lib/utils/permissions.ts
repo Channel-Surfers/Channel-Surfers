@@ -39,17 +39,26 @@ export type RoleMgmtPermissions = Pick<
  * Create role management permissions with defaults
  */
 export const roleMgmtPermissions = (
-    permissions: Partial<RoleMgmtPermissions> = {}
-): RoleMgmtPermissions => ({
-    ...permissions,
-    ...{
-        canCreateRoles: false,
-        canViewRoles: false,
-        canEditRoles: false,
-        canDeleteRoles: false,
-        canAssignRoles: false,
-    },
-});
+    permissions: Partial<RoleMgmtPermissions> | 'all' = {}
+): RoleMgmtPermissions =>
+    permissions === 'all'
+        ? {
+              canCreateRoles: true,
+              canViewRoles: true,
+              canEditRoles: true,
+              canDeleteRoles: true,
+              canAssignRoles: true,
+          }
+        : {
+              ...permissions,
+              ...{
+                  canCreateRoles: false,
+                  canViewRoles: false,
+                  canEditRoles: false,
+                  canDeleteRoles: false,
+                  canAssignRoles: false,
+              },
+          };
 
 /**
  * Represents permissions relating to channel management
@@ -63,17 +72,26 @@ export type ChannelMgmtPermissions = Pick<
  * Create channel management permissions with defaults
  */
 export const channelMgmtPermissions = (
-    permissions: Partial<ChannelMgmtPermissions> = {}
-): ChannelMgmtPermissions => ({
-    ...permissions,
-    ...{
-        canSetMessageOfTheDay: false,
-        canEditName: false,
-        canSetImage: false,
-        canViewUserTable: false,
-        canEditTags: false,
-    },
-});
+    permissions: Partial<ChannelMgmtPermissions> | 'all' = {}
+): ChannelMgmtPermissions =>
+    permissions === 'all'
+        ? {
+              canSetMessageOfTheDay: true,
+              canEditName: true,
+              canSetImage: true,
+              canViewUserTable: true,
+              canEditTags: true,
+          }
+        : {
+              ...permissions,
+              ...{
+                  canSetMessageOfTheDay: false,
+                  canEditName: false,
+                  canSetImage: false,
+                  canViewUserTable: false,
+                  canEditTags: false,
+              },
+          };
 
 /**
  * Represents permissions relating to channel moderation
@@ -97,23 +115,38 @@ export type ChannelModPermissions = Pick<
  * Create channel moderation permissions with defaults
  */
 export const channelModPermissions = (
-    permissions: Partial<ChannelModPermissions> = {}
-): ChannelModPermissions => ({
-    ...permissions,
-    ...{
-        canSetGuidelines: false,
-        canTimeoutUsers: false,
-        canBanUsers: false,
-        canViewBannedUsers: false,
-        canUnbanUsers: false,
-        canDeletePosts: false,
-        canDeleteComments: false,
-        canEditPostTags: false,
-        canViewReports: false,
-        canUpdateReports: false,
-        canResolveReports: false,
-    },
-});
+    permissions: Partial<ChannelModPermissions> | 'all' = {}
+): ChannelModPermissions =>
+    permissions === 'all'
+        ? {
+              canSetGuidelines: true,
+              canTimeoutUsers: true,
+              canBanUsers: true,
+              canViewBannedUsers: true,
+              canUnbanUsers: true,
+              canDeletePosts: true,
+              canDeleteComments: true,
+              canEditPostTags: true,
+              canViewReports: true,
+              canUpdateReports: true,
+              canResolveReports: true,
+          }
+        : {
+              ...permissions,
+              ...{
+                  canSetGuidelines: false,
+                  canTimeoutUsers: false,
+                  canBanUsers: false,
+                  canViewBannedUsers: false,
+                  canUnbanUsers: false,
+                  canDeletePosts: false,
+                  canDeleteComments: false,
+                  canEditPostTags: false,
+                  canViewReports: false,
+                  canUpdateReports: false,
+                  canResolveReports: false,
+              },
+          };
 
 /**
  * Represents permissions relating to event management
@@ -127,13 +160,80 @@ export type EventMgmtPermissions = Pick<
  * Create event managment permissions with defaults
  */
 export const eventMgmtPermissions = (
-    permissions: Partial<EventMgmtPermissions> = {}
-): EventMgmtPermissions => ({
-    ...permissions,
+    permissions: Partial<EventMgmtPermissions> | 'all' = {}
+): EventMgmtPermissions =>
+    permissions === 'all'
+        ? {
+              canRegisterEvents: true,
+              canViewEvents: true,
+              canEditEvents: true,
+              canUnregisterEvents: true,
+          }
+        : {
+              ...permissions,
+              ...{
+                  canRegisterEvents: false,
+                  canViewEvents: false,
+                  canEditEvents: false,
+                  canUnregisterEvents: false,
+              },
+          };
+
+export const defaultPermissions = (overrides: Partial<Permissions> = {}): Permissions => ({
+    ...overrides,
     ...{
-        canRegisterEvents: false,
-        canViewEvents: false,
-        canEditEvents: false,
-        canUnregisterEvents: false,
+        ...roleMgmtPermissions(),
+        ...channelMgmtPermissions(),
+        ...channelModPermissions(),
+        ...eventMgmtPermissions(),
     },
 });
+
+/**
+ * Utility for building a set of permissions using the builder pattern
+ */
+export class PermissionsBuilder {
+    private permissions: Permissions;
+    constructor(permissions: Partial<Permissions> | null = null) {
+        this.permissions = defaultPermissions(permissions ?? {});
+    }
+    withAll() {
+        this.permissions = {
+            ...roleMgmtPermissions('all'),
+            ...channelMgmtPermissions('all'),
+            ...channelModPermissions('all'),
+            ...eventMgmtPermissions('all'),
+        };
+        return this;
+    }
+    withRoleMgmt(permissions: Partial<RoleMgmtPermissions> | null = null) {
+        this.permissions = {
+            ...roleMgmtPermissions(permissions ?? 'all'),
+            ...this.permissions,
+        };
+        return this;
+    }
+    withChannelMgmt(permissions: Partial<ChannelMgmtPermissions> | null = null) {
+        this.permissions = { ...channelMgmtPermissions(permissions ?? 'all'), ...this.permissions };
+        return this;
+    }
+    withChannelMod(permissions: Partial<ChannelModPermissions> | null = null) {
+        this.permissions = { ...channelModPermissions(permissions ?? 'all'), ...this.permissions };
+        return this;
+    }
+    withEventMgmt(permissions: Partial<EventMgmtPermissions> | null = null) {
+        this.permissions = { ...eventMgmtPermissions(permissions ?? 'all'), ...this.permissions };
+        return this;
+    }
+    with(permission: keyof Permissions, setting: boolean = true) {
+        this.permissions[permission] = setting;
+        return this;
+    }
+    build() {
+        return this.permissions;
+    }
+}
+
+export const permissionsBuilder = (permissions: Partial<Permissions> | null = null) => {
+    return new PermissionsBuilder(permissions);
+};

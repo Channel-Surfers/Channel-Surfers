@@ -5,6 +5,8 @@ import type { DB } from '..';
 import { getOrCreateUser, getUserById, getUserPermissionInfo } from './users';
 import { channelTable } from '../db/channels.sql';
 import { roleTable } from '../db/roles.sql';
+import { permissionsBuilder, sumPermissions } from '$lib/utils/permissions';
+import { userRoleTable } from '../db/roles.users.sql';
 
 const generateUser = async (db: DB) => {
     const [newUser] = await db
@@ -66,8 +68,16 @@ describe.concurrent('users suite', () => {
 
     testWithDb(
         'user permissions can be summed',
-        async ({ expect, db }, { user, channel }) => {
-            const { permissions, topRole } = await getUserPermissionInfo(user.id, channel.id);
+        async ({ expect, db }, { user, channel, roles }) => {
+            const { userId, channelId, permissions, highestRole } = await getUserPermissionInfo(
+                db,
+                user.id,
+                channel.id
+            );
+            expect(userId).toStrictEqual(user.id);
+            expect(channelId).toStrictEqual(channel.id);
+            expect(permissions).toStrictEqual(sumPermissions(roles));
+            expect(highestRole).toStrictEqual(roles[0]);
         },
         async (db: DB) => {
             const {
@@ -78,15 +88,43 @@ describe.concurrent('users suite', () => {
                 .values({ name: `${user.username}s-c`, createdBy: user.id })
                 .returning();
             // create permissions
-            const permission = await db
+            const [_ownerRole, adminRole, modRole, _userRole] = await db
                 .insert(roleTable)
                 .values([
-                    { title: 'Owner', channelId: channel.id, ranking: 0, isOwner: true },
-                    { title: 'Admin', channelId: channel.id, ranking: 1 },
-                    { title: 'Moderator', channelId: channel.id, ranking: 2 },
+                    {
+                        title: 'Owner',
+                        channelId: channel.id,
+                        ranking: 0,
+                        isOwner: true,
+                        ...permissionsBuilder().withAll().build(),
+                    },
+                    {
+                        title: 'Admin',
+                        channelId: channel.id,
+                        ranking: 1,
+                        ...permissionsBuilder()
+                            .withRoleMgmt()
+                            .withEventMgmt()
+                            .withChannelMod()
+                            .build(),
+                    },
+                    {
+                        title: 'Moderator',
+                        channelId: channel.id,
+                        ranking: 2,
+                        ...permissionsBuilder().withChannelMod().build(),
+                    },
+                    { title: 'User', channelId: channel.id, ranking: 2 },
                 ])
                 .returning();
-            return { user, channel };
+            const _ = await db
+                .insert(userRoleTable)
+                .values([
+                    { userId: user.id, roleId: adminRole.id },
+                    { userId: user.id, roleId: modRole.id },
+                ])
+                .returning();
+            return { user, channel, roles: [adminRole, modRole] };
         }
     );
 });

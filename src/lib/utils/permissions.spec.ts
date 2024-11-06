@@ -1,10 +1,9 @@
 import { test } from 'vitest';
 import {
-    channelMgmtPermissions,
     channelModPermissions,
-    eventMgmtPermissions,
+    defaultPermissions,
     objectBooleanSum,
-    roleMgmtPermissions,
+    permissionsBuilder,
     sumPermissions,
 } from './permissions';
 
@@ -26,30 +25,22 @@ test('sum function works', ({ expect }) => {
 
 test('permisisons can be summed', ({ expect }) => {
     const roles = [
-        {
-            ...roleMgmtPermissions(),
-            ...channelMgmtPermissions(),
-            ...channelModPermissions(),
-            ...eventMgmtPermissions(),
-        },
-        {
-            ...roleMgmtPermissions({ canEditRoles: true }),
-            ...channelMgmtPermissions(),
-            ...channelModPermissions(),
-            ...eventMgmtPermissions(),
-        },
-        {
-            ...roleMgmtPermissions(),
-            ...channelMgmtPermissions(),
-            ...channelModPermissions({ canDeletePosts: true }),
-            ...eventMgmtPermissions(),
-        },
+        defaultPermissions(),
+        defaultPermissions({ canEditRoles: true }),
+        defaultPermissions({ canDeletePosts: true }),
     ];
 
-    expect(sumPermissions(roles)).toStrictEqual({
-        ...roleMgmtPermissions({ canEditRoles: true }),
-        ...channelMgmtPermissions(),
-        ...channelModPermissions({ canDeletePosts: true }),
-        ...eventMgmtPermissions(),
+    expect(sumPermissions(roles)).toStrictEqual(
+        defaultPermissions({
+            canEditRoles: true,
+            canDeletePosts: true,
+        })
+    );
+});
+
+test('permissions builder works', ({ expect }) => {
+    expect(permissionsBuilder().withChannelMod().build()).toStrictEqual({
+        ...channelModPermissions('all'),
+        ...defaultPermissions(),
     });
 });
