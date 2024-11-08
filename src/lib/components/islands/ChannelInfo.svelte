@@ -29,11 +29,13 @@
     <Card.Content>
         <p>{channel.description}</p>
         {#if isPrivate}
-            <Button class="w-full mt-2" disabled={!signedIn}>Leave</Button>
+            <Button class="mt-2 w-full" disabled={!signedIn}>Leave</Button>
         {:else if isSubscribed}
-            <Button type="submit" variant="destructive" class="w-full mt-2" disabled={!signedIn}>Unsubscribe</Button>
+            <Button type="submit" variant="destructive" class="mt-2 w-full" disabled={!signedIn}
+                >Unsubscribe</Button
+            >
         {:else}
-            <Button type="submit" class="w-full mt-2" disabled={!signedIn}>Subscribe</Button>
+            <Button type="submit" class="mt-2 w-full" disabled={!signedIn}>Subscribe</Button>
         {/if}
     </Card.Content>
     {#if channel.guidelines}

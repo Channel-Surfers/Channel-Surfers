@@ -55,7 +55,11 @@
             <HomeInfo stats={data.island.data} user={userAsUser} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
         {:else if data.island.type === 'channel' && data.island.data}
-            <ChannelInfo channel={channelAsChannel} isSubscribed={data.island.data.isSubscribed} signedIn={!!userAsUser} />
+            <ChannelInfo
+                channel={channelAsChannel}
+                isSubscribed={data.island.data.isSubscribed}
+                signedIn={!!userAsUser}
+            />
         {:else if data.island.type === 'user' && data.island.exists && data.island.data}
             <UserInfo
                 isBlocking={data.island.data.isBlocking}
