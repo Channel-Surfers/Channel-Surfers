@@ -7,6 +7,7 @@
     import Separator from '$lib/shadcn/components/ui/separator/separator.svelte';
 
     export let channel: ChannelInfo;
+    export let signedIn: boolean;
     export let isPrivate: boolean = false;
     export let isSubscribed: boolean = false;
 
@@ -16,26 +17,24 @@
 <Card.Root>
     <Card.Header>
         <div class="flex flex-row items-center justify-between">
-            <div class="flex flex-row items-center space-x-4">
-                <Avatar.Root class="h-12 w-12">
-                    <!--<Avatar.Image src={ channel.avatar || ''} alt={user.username} />-->
-                    <Avatar.Fallback class="font-bold"
-                        >{channel.name[0]?.toUpperCase() || '?'}</Avatar.Fallback
-                    >
-                </Avatar.Root>
-                <h1 class="text-xl font-bold">{isPrivate ? 'c/private/' : 'c/'}{channel.name}</h1>
-            </div>
-            {#if isPrivate}
-                <Button>Leave</Button>
-            {:else if isSubscribed}
-                <Button type="submit" variant="destructive">Unsubscribe</Button>
-            {:else}
-                <Button type="submit">Subscribe</Button>
-            {/if}
+            <Avatar.Root class="h-12 w-12">
+                <Avatar.Image src={channel.icon || ''} alt={channel.name} />
+                <Avatar.Fallback class="font-bold">
+                    {channel.name[0]?.toUpperCase() || '?'}
+                </Avatar.Fallback>
+            </Avatar.Root>
+            <h1 class="text-xl font-bold">c/{channel.name}</h1>
         </div>
     </Card.Header>
     <Card.Content>
         <p>{channel.description}</p>
+        {#if isPrivate}
+            <Button class="w-full mt-2" disabled={!signedIn}>Leave</Button>
+        {:else if isSubscribed}
+            <Button type="submit" variant="destructive" class="w-full mt-2" disabled={!signedIn}>Unsubscribe</Button>
+        {:else}
+            <Button type="submit" class="w-full mt-2" disabled={!signedIn}>Subscribe</Button>
+        {/if}
     </Card.Content>
     {#if channel.guidelines}
         <Card.Footer>
