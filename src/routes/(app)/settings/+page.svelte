@@ -3,8 +3,9 @@
     import Profile from "$lib/components/settings/Profile.svelte";
     import * as Tabs from "$lib/shadcn/components/ui/tabs"; 
 
-
+    export let data;
 </script>
+
 Settings
 <Tabs.Root>
     <Tabs.List class="flex flex-row grow">
@@ -12,7 +13,7 @@ Settings
         <Tabs.Trigger value="blocked"class="flex flex-row grow">Blocked</Tabs.Trigger>
     </Tabs.List>
     <Tabs.Content value="profile">
-        <Profile />
+        <Profile userInfo={data.user}/>
     </Tabs.Content>
     <Tabs.Content value="blocked">
         <Blocked />

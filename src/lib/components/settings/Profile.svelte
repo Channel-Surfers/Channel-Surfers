@@ -1,13 +1,18 @@
 <script lang="ts">
+    import * as Avatar from '$lib/shadcn/components/ui/avatar';
     import Button from "$lib/shadcn/components/ui/button/button.svelte";
     import * as Card from "$lib/shadcn/components/ui/card";
     import Input from "$lib/shadcn/components/ui/input/input.svelte";
     import Label from "$lib/shadcn/components/ui/label/label.svelte";
+    import Skeleton from "$lib/shadcn/components/ui/skeleton/skeleton.svelte";
 
+    export let userInfo;
+    
     const userUpdate = {
-        username: "Quentavius115",
+        username: userInfo.username,
         bio: "N/A",
     }
+
     const saveChanges = async () => {
         console.log(userUpdate.username)
         console.log(userUpdate.bio)
@@ -27,7 +32,7 @@
         </div>
         <div class="space-y-1">
             <Label for="bio">Bio</Label>
-            <Input id="bio" placeholder="Biography" bind:value={userUpdate.bio}/>
+            <Input id="bio" placeholder="Biography" disabled bind:value={userUpdate.bio}/>
         </div>
         <div class="space-y-1">
             <form class="w-full">
@@ -36,6 +41,17 @@
             </form>
         </div>
     </Card.Content> 
+    <Card.Root>
+        <div class="flex flex-row justify-between">
+            <div class="flex flex-row items-center space-x-4">
+                    <Avatar.Root class="h-12 w-12">
+                        <Avatar.Image src={userInfo.profileImage || ''} alt={userInfo.username} />
+                        <Avatar.Fallback class="font-bold">
+                            {userInfo.username[0]?.toUpperCase() || '?'}
+                        </Avatar.Fallback>
+                    </Avatar.Root>
+                    <h1 class="text-xl font-bold">u/{userUpdate.username}</h1>
+    </Card.Root>
     <Card.Footer class="justify-end">
         <Button type="submit" on:click={saveChanges}>Save Changes</Button>
     </Card.Footer>
