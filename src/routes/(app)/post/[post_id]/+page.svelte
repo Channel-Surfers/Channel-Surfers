@@ -21,7 +21,10 @@
     import { gfmPlugin } from 'svelte-exmarkdown/gfm';
     import Elapsed from '$lib/components/Elapsed.svelte';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
+    import { getDb } from '$lib/server/index.js';
+    import { commentTable } from '$lib/server/db/comments.sql.js';
     //import { commentTable } from '$lib/server/db/comments.sql.js';
+
 
     export let data;
 
@@ -66,7 +69,9 @@
     };
 
     const leaveComment = async() => {
-        console.log(newComment);
+        const db = await getDb();
+        console.log("Trying to add comment: " + newComment);
+        // db.insert(commentTable).values({id:  crypto.randomUUID(), content: newComment, creatorId: })
     }
 
     const mdPlugins = [gfmPlugin()];
@@ -175,25 +180,24 @@
 	        {/each}
         </Card.Content>
 
+        <Card.Header>
+            <Card.Title>Leave a Comment</Card.Title>
+        </Card.Header>
+    
+        <Card.Content>
+            <Textarea
+                placeholder="Write your comment here..."
+                bind:value={newComment}
+                class="w-full mb-4"
+            />
+            <Button variant="secondary" on:click={leaveComment}>
+                Post Comment
+            </Button>
+        </Card.Content>
     </Card.Root>
 
     <!-- Leave a Comment Section -->
-<Card.Root class="mx-auto my-4 p-4">
-    <Card.Header>
-        <Card.Title>Leave a Comment</Card.Title>
-    </Card.Header>
 
-    <Card.Content>
-        <Textarea
-            placeholder="Write your comment here..."
-            bind:value={newComment}
-            class="w-full mb-4"
-        />
-        <Button variant="secondary" on:click={leaveComment}>
-            Post Comment
-        </Button>
-    </Card.Content>
-</Card.Root>
 
 </ScrollArea>
 
