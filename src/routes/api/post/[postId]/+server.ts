@@ -1,9 +1,11 @@
 import { getDb } from '$lib/server';
-import { getPost, updatePost } from '$lib/server/services/content';
+import { deletePost, getPost, updatePost } from '$lib/server/services/content';
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import type { Post } from '$lib/server/db/posts.sql';
 import * as v from 'valibot';
+import { canDeletePostInChannel } from '$lib/server/services/channels';
+import { bunnyClient } from '$lib/server/bunny';
 
 const postUpdateValidator = v.object({
     id: v.string(),
@@ -41,4 +43,23 @@ export const PUT: RequestHandler = async ({ params: { postId }, request, locals 
     }
 
     return json(updatedPost);
+};
+
+export const DELETE: RequestHandler = async ({ params: { postId }, locals }) => {
+    if (!locals.user) throw error(401);
+
+    const db = await getDb();
+    const post = await getPost(db, postId);
+
+    if (!post) throw error(404);
+
+    if (
+        locals.user.id !== post.user.id &&
+        !canDeletePostInChannel(db, locals.user.id, post.channel.id)
+    )
+        return error(403);
+
+    const update = await deletePost(db, bunnyClient, postId);
+    if (!update) throw error(500);
+    return new Response(null, { status: 200 });
 };

@@ -50,6 +50,13 @@
       "when": 1729889948538,
       "tag": "0006_friendly_korvac",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1730433053944,
+      "tag": "0007_absent_frog_thor",
+      "breakpoints": true
     }
   ]
 }

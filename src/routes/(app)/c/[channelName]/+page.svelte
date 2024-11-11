@@ -27,4 +27,4 @@
     };
 </script>
 
-<InfiniteScroll initBuffer={data.posts} {getPosts} signedIn={!!data.user} />
+<InfiniteScroll initBuffer={data.posts} {getPosts} signedIn={data.user} />
