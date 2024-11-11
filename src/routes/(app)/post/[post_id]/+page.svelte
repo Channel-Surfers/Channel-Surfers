@@ -6,8 +6,6 @@
     import * as Card from '$lib/shadcn/components/ui/card';
     import { Toggle } from '$lib/shadcn/components/ui/toggle';
 
-    import Markdown from 'svelte-exmarkdown';
-
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import UserChannel from '$lib/components/UserChannel.svelte';
@@ -17,8 +15,8 @@
     import { EllipsisVertical, Flag } from 'lucide-svelte';
     import { Button } from '$lib/shadcn/components/ui/button';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
-    import { gfmPlugin } from 'svelte-exmarkdown/gfm';
     import Elapsed from '$lib/components/Elapsed.svelte';
+    import Markdown from '$lib/components/Markdown.svelte';
 
     export let data;
 
@@ -58,8 +56,6 @@
             toast.error('Unexpected error while submitting vote');
         }
     };
-
-    const mdPlugins = [gfmPlugin()];
 </script>
 
 <svelte:head>
@@ -135,7 +131,7 @@
                     <Toggle
                         size="sm"
                         class="hover:text-downvote data-[state=on]:text-downvote"
-                        disabled={!data.signed_in}
+                        disabled={!data.signedIn}
                         pressed={userVote === 'DOWN'}
                         on:click={() => vote('DOWN')}
                     >
@@ -147,7 +143,7 @@
             <!-- Description -->
             {#if data.post.description}
                 <p class="markdown">
-                    <Markdown md={data.post.description} plugins={mdPlugins} />
+                    <Markdown md={data.post.description} />
                 </p>
             {/if}
         </Card.Content>
@@ -162,15 +158,3 @@
         </Card.Content>
     </Card.Root>
 </ScrollArea>
-
-<style>
-    .markdown :global(h1) {
-        font-size: 1.2em;
-        font-weight: bold;
-    }
-
-    .markdown :global(a) {
-        color: blue;
-        text-decoration: underline;
-    }
-</style>
