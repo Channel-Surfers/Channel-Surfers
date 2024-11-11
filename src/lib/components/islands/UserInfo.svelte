@@ -15,6 +15,8 @@
     export let isBlocking: boolean = false;
     let followLoading = false;
 
+    $: isSelf = user && userInfo && user.id === userInfo.id;
+
     const updateFollow = (action: 'follow' | 'unfollow') => async () => {
         if (!userInfo) {
             const message = `Attempted to ${action} an unknown user`;
@@ -152,14 +154,14 @@
         {#if isFollowing}
             <Button
                 class="w-full"
-                disabled={followLoading}
+                disabled={followLoading || isSelf}
                 variant="outline"
                 on:click={updateFollow('unfollow')}>Unfollow</Button
             >
         {:else}
             <Button
                 class="w-full"
-                disabled={followLoading || !user}
+                disabled={followLoading || !user || isSelf}
                 on:click={updateFollow('follow')}>Follow</Button
             >
         {/if}
