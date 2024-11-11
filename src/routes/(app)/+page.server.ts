@@ -5,7 +5,6 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
     const db = await getDb();
-
     return {
         initialPosts: await getPosts(db, 0, {
             type: 'home',

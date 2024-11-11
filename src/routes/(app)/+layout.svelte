@@ -17,6 +17,12 @@
 
     export let data: LayoutServerData;
 
+    const updateChannels = async () => {
+        const res = await fetch('/api/channels');
+        data.myChannels = await res.json();
+        console.log(data.myChannels);
+    };
+
     $: ({ myChannels, mySubscriptions } = data);
     $: userAsUser = data.user ? (data.user as User) : null;
     $: channelAsChannel = data.island.data?.channelData
@@ -38,6 +44,7 @@
                     publicInfo: { displayName: channel.name },
                 }))}
                 subscriptions={mySubscriptions}
+                on:updateChannels={updateChannels}
             />
         {:else}
             <LeftNav />
