@@ -90,8 +90,8 @@ export const actions = {
     delete: async (event: RequestEvent) => {
         assertAuth(event);
 
-        let url = new URL(event.request.headers.get('referer')!);
-        let postId = url.searchParams.get('postId')!;
+        const url = new URL(event.request.headers.get('referer')!);
+        const postId = url.searchParams.get('postId')!;
 
         const db = await getDb();
         const post = await getPost(db, postId);
