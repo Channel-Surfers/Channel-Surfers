@@ -46,3 +46,7 @@ export interface CommentData {
     comment: Comment;
     children: CommentData[];
 }
+
+// NOTE: This must match the contents of /static/theme/
+export const themes = ['green', 'rose', 'blue'] as const;
+export type Theme = typeof themes[number];

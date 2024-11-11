@@ -1,5 +1,6 @@
 <script lang="ts">
     import '../../app.css';
+
     import { Toaster } from '$lib/shadcn/components/ui/sonner';
     import { ModeWatcher } from 'mode-watcher';
     import LeftNav from '$lib/components/sidenav/LeftNav.svelte';
@@ -14,6 +15,10 @@
     import type { User } from '$lib/server/db/users.sql';
     import { page } from '$app/stores';
     import type { Channel } from '$lib/server/db/channels.sql';
+    import { selectedTheme } from '$lib/stores';
+    import { themes } from '$lib/types';
+
+    if (!$selectedTheme) $selectedTheme = 'blue';
 
     export let data: LayoutServerData;
 
@@ -24,6 +29,10 @@
         : null;
 </script>
 
+<svelte:head>
+    <link rel="stylesheet" href="/theme/{$selectedTheme}.css" />
+</svelte:head>
+
 <!-- Enable dark-mode detection and switching -->
 <ModeWatcher />
 <Toaster richColors />
@@ -31,6 +40,10 @@
 <div class="flex max-h-screen min-h-screen flex-row justify-between">
     <!-- Left navigation -->
     <div class="w-1/6 min-w-96 p-4">
+        <Button
+            on:click={() =>
+                ($selectedTheme = themes[(themes.indexOf($selectedTheme) + 1) % themes.length])}
+        ></Button>
         {#if data.user && myChannels}
             <LeftNav
                 channels={myChannels.map((channel) => ({
