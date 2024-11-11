@@ -17,7 +17,7 @@ export const commentTable = pgTable(
             .references(() => userTable.id),
         postId: uuid('post_id')
             .notNull()
-            .references(() => postTable.id),
+            .references(() => postTable.id, { onDelete: 'cascade' }),
         replyTo: uuid('reply_to'),
         createdOn: timestamp('created_on').notNull().defaultNow(),
         updatedOn: timestamp('updated_on').notNull().defaultNow(),
@@ -31,7 +31,7 @@ export const commentTable = pgTable(
             columns: [table.replyTo],
             foreignColumns: [table.id],
             name: 'comments_parent_id_fkey',
-        }),
+        }).onDelete('cascade'),
     })
 );
 

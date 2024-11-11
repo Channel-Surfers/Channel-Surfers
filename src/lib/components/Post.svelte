@@ -16,6 +16,8 @@
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import Play from 'lucide-svelte/icons/play';
     import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical';
+    import Pencil from 'lucide-svelte/icons/pencil';
+    import Trash2 from 'lucide-svelte/icons/trash-2';
 
     import Score from './Score.svelte';
     import UserChannel from './UserChannel.svelte';
@@ -26,10 +28,15 @@
     import { toast } from 'svelte-sonner';
     import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
     import { Flag, Share2 } from 'lucide-svelte';
+    import type { User } from '$lib/server/db/users.sql';
+    import Confirm from './Confirm.svelte';
+    import { createEventDispatcher } from 'svelte';
 
     export let post: PostData | undefined = undefined;
     export let playingVideo: boolean = false;
-    export let signedIn: boolean = false;
+    export let signedIn: User = false;
+
+    const dispatch = createEventDispatcher();
 
     let { userVote, upvotes, downvotes } = post || { userVote: null, upvotes: 0, downvotes: 0 };
     let reportDialogOpen = false;
@@ -93,11 +100,32 @@
         }
     };
 
+    let confirmDelete: () => Promise<boolean>;
+    const deletePost = async () => {
+        if (!post) return;
+        if (!(await confirmDelete())) return;
+        const res = await fetch(`/api/post/${post.id}`, {
+            method: 'DELETE',
+        });
+
+        if (res.ok) {
+            dispatch('delete');
+            toast.success('Post deleted successfully.');
+        } else {
+            toast.error('Unexpected error while deleting post.');
+        }
+    };
+
     let hovering = false;
     $: src = post
         ? `${PUBLIC_PREVIEW_HOST}/${post.videoId}/${hovering ? 'preview.webp' : 'thumbnail.jpg'}`
         : '';
 </script>
+
+<Confirm bind:confirm={confirmDelete}>
+    <Dialog.Title>Are you sure you want to delete this post?</Dialog.Title>
+    <Dialog.Description>This action cannot be undone</Dialog.Description>
+</Confirm>
 
 <Dialog.Root bind:open={reportDialogOpen}>
     <Dialog.Portal>
@@ -208,6 +236,17 @@
                     <Share2 fill="currentColor" class="mr-2 h-4 w-4" />
                     <span>Share</span>
                 </DropdownMenu.Item>
+                {#if post && signedIn.id === post.poster.user.id}
+                    <DropdownMenu.Item href="/post/{post.id}/edit">
+                        <Pencil class="mr-2 h-4 w-4" />
+                        <span>Edit</span>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item class="text-red-600" on:click={deletePost}>
+                        <Trash2 class="mr-2 h-4 w-4" />
+                        <span>Delete</span>
+                    </DropdownMenu.Item>
+                {/if}
+                <DropdownMenu.Separator />
                 <DropdownMenu.Item
                     class="text-red-600"
                     on:click={() => (reportDialogOpen = true)}

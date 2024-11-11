@@ -2,7 +2,7 @@ import { getDb } from '$lib/server';
 import { getPost, getUserPostVote } from '$lib/server/services/content';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { canViewChannel } from '$lib/server/services/channels';
+import { canDeletePostInChannel, canViewChannel } from '$lib/server/services/channels';
 import { assertAuth } from '$lib/server/auth';
 
 export const load: PageServerLoad = async (event) => {
@@ -24,9 +24,17 @@ export const load: PageServerLoad = async (event) => {
         ? await getUserPostVote(db, event.locals.user.id, postId)
         : null;
 
+    let canDelete = false;
+    if (event.locals.user) {
+        canDelete =
+            event.locals.user.id === data.post.createdBy ||
+            (await canDeletePostInChannel(db, event.locals.user.id, data.post.channelId));
+    }
+
     return {
         userVote,
-        signedIn: !!event.locals.user,
+        canDelete,
+        signedIn: event.locals.user,
         ...data,
     };
 };
