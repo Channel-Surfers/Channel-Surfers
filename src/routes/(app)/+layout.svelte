@@ -39,10 +39,7 @@
     <div class="w-1/6 min-w-96 p-4">
         {#if data.user && myChannels}
             <LeftNav
-                channels={myChannels.map((channel) => ({
-                    ...channel,
-                    publicInfo: { displayName: channel.name },
-                }))}
+                channels={myChannels}
                 subscriptions={mySubscriptions}
                 on:updateChannels={updateChannels}
             />

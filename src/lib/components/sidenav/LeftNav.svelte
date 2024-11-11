@@ -14,7 +14,7 @@
     import DisplayMode from '$lib/components/sidenav/DisplayMode.svelte';
 
     // type signature here is temporary
-    export let channels: (Channel & { publicInfo: { displayName: string } | null })[] | null = null;
+    export let channels: (Channel & { private: boolean })[] | null = null;
     export let subscriptions: UserSubscription[] | null = null;
     export let playlists: Playlist[] | null = null;
 
@@ -40,13 +40,16 @@
                     <ScrollArea class="grow">
                         {#if channels}
                             {#each channels as channel}
-                                {#if channel.publicInfo}
+                                {#if channel.private}
                                     <Route
-                                        href={`/c/${channel.publicInfo.displayName}`}
-                                        title={channel.publicInfo.displayName}
+                                        href='/c/private/{channel.id}'
+                                        title='c/{channel.name}'
                                     />
                                 {:else}
-                                    <a href={`/c/private/${channel.id}`}>{channel.name}</a>
+                                    <Route
+                                        href='/c/{channel.name}'
+                                        title='c/{channel.name}'
+                                    />
                                 {/if}
                             {:else}
                                 <p class="pl-2">You have no channels</p>
@@ -72,8 +75,8 @@
                         {#if subscriptions}
                             {#each subscriptions as sub}
                                 <Route
-                                    href={`/c/${sub.channelDisplayName}`}
-                                    title={sub.channelDisplayName}
+                                    href='/c/{sub.channelDisplayName}'
+                                    title='c/{sub.channelDisplayName}'
                                 />
                             {:else}
                                 <p class="pl-2">You have no subscriptions</p>
