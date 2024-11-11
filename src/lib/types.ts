@@ -1,5 +1,5 @@
-import type { User } from 'lucia';
 import type { Comment } from './server/db/comments.sql';
+import type { User } from './server/db/users.sql';
 
 /**
  * An alias for a string that hints to the developer that this is a uuid
@@ -46,3 +46,5 @@ export interface CommentData {
     comment: Comment;
     children: CommentData[];
 }
+
+

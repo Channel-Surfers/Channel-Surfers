@@ -33,6 +33,7 @@ import {
 } from '../db/reports.channels.posts.sql';
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
 import type { IBunnyClient } from '../bunny';
+import { userReportTable, type NewUserReport, type UserReport } from '../db/reports.users.sql';
 
 export const getPost = async (db: DB, postId: uuid) => {
     const [a] = await db
@@ -284,6 +285,7 @@ export const getPostStatistics = async (db: DB) => {
 };
 export type PostStatistics = Awaited<ReturnType<typeof getPostStatistics>>;
 
+
 export const getCommentTree = async (db: DB, postId: string): Promise<CommentData[]> => {
     const firstLevelComments = await db
         .select()
@@ -305,16 +307,37 @@ export const getCommentTree = async (db: DB, postId: string): Promise<CommentDat
         .orderBy(commentTable.createdOn)
         .limit(Math.floor(PAGE_SIZE / 2));
 
-    const commentTree = firstLevelComments.map((c) => ({
-        user: c.user,
-        comment: c.comment,
+    const commentTree = firstLevelComments.map((a) => ({
+        user: a.user,
+        comment: a.comment,
         children: secondLevelComments
-            .filter((b) => b.comment.replyTo === c.comment.id)
+            .filter((b) => b.comment.replyTo === a.comment.id)
             .map((b) => ({
                 user: b.user,
                 comment: b.comment,
-                children: [],
+                children:  []
             })),
+    }));
+
+    return commentTree;
+};
+
+export const loadMoreRepliesToComment = async (db: DB, commentId: string, page: number): Promise<CommentData[]> => {
+    
+    const replies = await db
+        .select()
+        .from(commentTable)
+        .where(eq(commentTable.replyTo, commentId))
+        .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
+        .orderBy(commentTable.createdOn)
+        .limit(PAGE_SIZE)
+        .offset(PAGE_SIZE * page);
+
+
+    const commentTree = replies.map((commentDataElement) => ({
+        user: commentDataElement.user,
+        comment: commentDataElement.comment,
+        children:[],
     }));
 
     return commentTree;
@@ -334,6 +357,15 @@ export const createPostReport = async (
     newPostReport: NewPostReport
 ): Promise<PostReport> => {
     const [ret] = await db.insert(postReportTable).values(newPostReport).returning();
+
+    return ret;
+};
+
+export const createUserReport = async (
+    db: DB,
+    newUserReport: UserReport
+): Promise<UserReport> => {
+    const [ret] = await db.insert(userReportTable).values(newUserReport).returning();
 
     return ret;
 };
