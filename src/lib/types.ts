@@ -47,6 +47,18 @@ export interface CommentData {
     children: CommentData[];
 }
 
+/**
+ * Data used for creating a channel
+ */
+export interface CreateChannel {
+    name: string;
+    description?: string;
+    guidelines?: string;
+    bannerImage?: string;
+    icon?: string;
+    publishNow: boolean;
+}
+
 // NOTE: This must match the contents of /static/theme/
 export const themes = ['green', 'rose', 'blue'] as const;
 export type Theme = typeof themes[number];

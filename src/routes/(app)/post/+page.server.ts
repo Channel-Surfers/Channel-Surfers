@@ -3,10 +3,11 @@ import { Type, type Static } from '@sinclair/typebox';
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, RequestEvent } from './$types';
 import { AssertError, Value } from '@sinclair/typebox/value';
-import { createPost, getPost } from '$lib/server/services/content';
+import { createPost, deletePost, getPost } from '$lib/server/services/content';
 import { bunnyClient } from '$lib/server/bunny';
 import { createTUSUploadKey } from '$lib/server/bunny/utils';
 import dayjs from 'dayjs';
+import { assertAuth } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ url, locals }) => {
     if (!locals.user) throw error(401, 'Must be logged in to upload video');
@@ -26,7 +27,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     const { post, user } = queryResult;
 
-    if (user.id != locals.user?.id) throw error(403, 'Do not have access to this video');
+    if (user.id !== locals.user?.id) throw error(403, 'Do not have access to this video');
     else if (post.status === 'OK') return redirect(303, `/post/${postId}`);
 
     const expirationTime = dayjs().add(12, 'hours').unix();
@@ -85,5 +86,21 @@ export const actions = {
             status: 'UPLOADING',
         });
         return redirect(303, `/post?postId=${post.id}`);
+    },
+    delete: async (event: RequestEvent) => {
+        assertAuth(event);
+
+        const url = new URL(event.request.headers.get('referer')!);
+        const postId = url.searchParams.get('postId')!;
+
+        const db = await getDb();
+        const post = await getPost(db, postId);
+
+        if (!post) return fail(404);
+        if (event.locals.user.id !== post.user.id) return fail(403);
+
+        const update = await deletePost(db, bunnyClient, postId);
+        if (!update) return fail(500);
+        return redirect(302, '/');
     },
 };

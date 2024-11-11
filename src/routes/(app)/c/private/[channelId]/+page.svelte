@@ -4,9 +4,9 @@
 
     export let data;
 
-    let filter = 'all';
-    let sort = 'date';
-    let reverseSort = 'false';
+    const filter = 'all';
+    const sort = 'date';
+    const reverseSort = 'false';
 
     const now = new Date();
 
@@ -29,4 +29,4 @@
     };
 </script>
 
-<InfiniteScroll init_buffer={data.posts} get_posts={getPosts} signed_in={!!data.user} />
+<InfiniteScroll initBuffer={data.posts} {getPosts} signedIn={data.user} />
