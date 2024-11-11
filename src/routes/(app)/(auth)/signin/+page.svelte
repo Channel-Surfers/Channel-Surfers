@@ -5,6 +5,10 @@
     export let data;
 </script>
 
+<svelte:head>
+    <title>Sign In | Channel Surfers</title>
+</svelte:head>
+
 <Card.Root class="m-auto w-96">
     <Card.Header>
         <Card.Title>Sign In</Card.Title>

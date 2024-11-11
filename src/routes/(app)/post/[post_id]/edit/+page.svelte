@@ -28,6 +28,10 @@
     };
 </script>
 
+<svelte:head>
+    <title>Edit Post | Channel Surfers</title>
+</svelte:head>
+
 <Confirm bind:confirm={confirmDelete}>
     <Dialog.Title>Are you sure you want to delete this post?</Dialog.Title>
     <Dialog.Description>This action cannot be undone</Dialog.Description>

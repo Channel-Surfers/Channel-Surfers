@@ -29,4 +29,8 @@
     };
 </script>
 
+<svelte:head>
+    <title>c/{data.channelName} | Channel Surfers</title>
+</svelte:head>
+
 <InfiniteScroll initBuffer={data.posts} {getPosts} signedIn={data.user} />
