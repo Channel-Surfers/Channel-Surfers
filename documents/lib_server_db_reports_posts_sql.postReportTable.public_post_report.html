@@ -70,7 +70,7 @@
 <tr>
 <td>post_report_post_id_post_id_fk</td>
 <td>FOREIGN KEY</td>
-<td>FOREIGN KEY (post_id) REFERENCES post(id)</td>
+<td>FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE SET NULL</td>
 </tr>
 <tr>
 <td>post_report_pkey</td>

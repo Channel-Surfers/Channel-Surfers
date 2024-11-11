@@ -52,7 +52,7 @@
 <tr>
 <td>comment_vote_comment_id_comment_id_fk</td>
 <td>FOREIGN KEY</td>
-<td>FOREIGN KEY (comment_id) REFERENCES comment(id)</td>
+<td>FOREIGN KEY (comment_id) REFERENCES comment(id) ON DELETE CASCADE</td>
 </tr>
 <tr>
 <td>comment_vote_user_id_user_id_fk</td>

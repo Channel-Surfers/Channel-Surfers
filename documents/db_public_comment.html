@@ -111,12 +111,12 @@
 <tr>
 <td>comments_parent_id_fkey</td>
 <td>FOREIGN KEY</td>
-<td>FOREIGN KEY (reply_to) REFERENCES comment(id)</td>
+<td>FOREIGN KEY (reply_to) REFERENCES comment(id) ON DELETE CASCADE</td>
 </tr>
 <tr>
 <td>comment_post_id_post_id_fk</td>
 <td>FOREIGN KEY</td>
-<td>FOREIGN KEY (post_id) REFERENCES post(id)</td>
+<td>FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE</td>
 </tr>
 <tr>
 <td>comment_creator_id_user_id_fk</td>

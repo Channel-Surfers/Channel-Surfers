@@ -52,7 +52,7 @@
 <tr>
 <td>post_vote_post_id_post_id_fk</td>
 <td>FOREIGN KEY</td>
-<td>FOREIGN KEY (post_id) REFERENCES post(id)</td>
+<td>FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE</td>
 </tr>
 <tr>
 <td>post_vote_user_id_user_id_fk</td>
