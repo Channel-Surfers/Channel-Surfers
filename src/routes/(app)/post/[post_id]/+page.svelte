@@ -6,8 +6,6 @@
     import * as Card from '$lib/shadcn/components/ui/card';
     import { Toggle } from '$lib/shadcn/components/ui/toggle';
 
-    import Markdown from 'svelte-exmarkdown';
-
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import UserChannel from '$lib/components/UserChannel.svelte';
@@ -18,10 +16,10 @@
     import { Button } from '$lib/shadcn/components/ui/button';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
     import * as Dialog from '$lib/shadcn/components/ui/dialog';
-    import { gfmPlugin } from 'svelte-exmarkdown/gfm';
     import Elapsed from '$lib/components/Elapsed.svelte';
     import Confirm from '$lib/components/Confirm.svelte';
     import { goto } from '$app/navigation';
+    import Markdown from '$lib/components/Markdown.svelte';
 
     export let data;
 
@@ -75,8 +73,6 @@
             toast.error('Unexpected error while deleting post.');
         }
     };
-
-    const mdPlugins = [gfmPlugin()];
 </script>
 
 <svelte:head>
@@ -181,7 +177,7 @@
             <!-- Description -->
             {#if data.post.description}
                 <p class="markdown">
-                    <Markdown md={data.post.description} plugins={mdPlugins} />
+                    <Markdown md={data.post.description} />
                 </p>
             {/if}
         </Card.Content>
@@ -196,15 +192,3 @@
         </Card.Content>
     </Card.Root>
 </ScrollArea>
-
-<style>
-    .markdown :global(h1) {
-        font-size: 1.2em;
-        font-weight: bold;
-    }
-
-    .markdown :global(a) {
-        color: blue;
-        text-decoration: underline;
-    }
-</style>
