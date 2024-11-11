@@ -16,7 +16,6 @@
     import { page } from '$app/stores';
     import type { Channel } from '$lib/server/db/channels.sql';
     import { selectedTheme } from '$lib/stores';
-    import { themes } from '$lib/types';
 
     if (!$selectedTheme) $selectedTheme = 'blue';
 
@@ -46,10 +45,6 @@
 <div class="flex max-h-screen min-h-screen flex-row justify-between">
     <!-- Left navigation -->
     <div class="w-1/6 min-w-96 p-4">
-        <Button
-            on:click={() =>
-                ($selectedTheme = themes[(themes.indexOf($selectedTheme) + 1) % themes.length])}
-        ></Button>
         {#if data.user && myChannels}
             <LeftNav
                 channels={myChannels.map((channel) => ({
