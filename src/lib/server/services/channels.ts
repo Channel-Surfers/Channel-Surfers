@@ -94,12 +94,19 @@ export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channe
 };
 
 export const canViewChannel = async (db: DB, userId: uuid, channelId: uuid): Promise<boolean> => {
-    const [ret] = await db
+    const [publicChannel] = await db
         .select()
         .from(publicChannelTable)
         .where(eq(publicChannelTable.channelId, channelId));
 
-    if (ret) return true;
+    if (publicChannel) return true;
+
+    const [channel] = await db
+        .select()
+        .from(channelTable)
+        .where(and(eq(channelTable.id, channelId), eq(channelTable.createdBy, userId)));
+
+    if (channel) return true;
 
     const [userPerm] = await db
         .select()

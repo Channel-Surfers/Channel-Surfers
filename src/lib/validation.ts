@@ -4,7 +4,8 @@ export const createChannelSchema = v.object({
     name: v.pipe(
         v.string(),
         v.minLength(3, 'Name must be at least 3 characters long'),
-        v.maxLength(32, 'Name must be fewer than 32 characters')
+        v.maxLength(32, 'Name must be fewer than 32 characters'),
+        v.regex(/^[a-zA-Z0-9_-]+$/, 'Name must contain only letters, digits, and - or _'),
     ),
     description: v.optional(
         v.pipe(v.string(), v.maxLength(4000, 'Description must be fewer than 4000 characters'))
