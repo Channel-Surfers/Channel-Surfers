@@ -1,5 +1,6 @@
 import { test } from 'vitest';
 import {
+    channelMgmtPermissions,
     channelModPermissions,
     defaultPermissions,
     objectBooleanSum,
@@ -40,7 +41,7 @@ test('permisisons can be summed', ({ expect }) => {
 
 test('permissions builder works', ({ expect }) => {
     expect(permissionsBuilder().withChannelMod().build()).toStrictEqual({
-        ...channelModPermissions('all'),
         ...defaultPermissions(),
+        ...channelModPermissions('all'),
     });
 });

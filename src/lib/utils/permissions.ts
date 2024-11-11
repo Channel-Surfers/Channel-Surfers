@@ -208,21 +208,21 @@ export class PermissionsBuilder {
     }
     withRoleMgmt(permissions: Partial<RoleMgmtPermissions> | null = null) {
         this.permissions = {
-            ...roleMgmtPermissions(permissions ?? 'all'),
             ...this.permissions,
+            ...roleMgmtPermissions(permissions ?? 'all'),
         };
         return this;
     }
     withChannelMgmt(permissions: Partial<ChannelMgmtPermissions> | null = null) {
-        this.permissions = { ...channelMgmtPermissions(permissions ?? 'all'), ...this.permissions };
+        this.permissions = { ...this.permissions, ...channelMgmtPermissions(permissions ?? 'all') };
         return this;
     }
     withChannelMod(permissions: Partial<ChannelModPermissions> | null = null) {
-        this.permissions = { ...channelModPermissions(permissions ?? 'all'), ...this.permissions };
+        this.permissions = { ...this.permissions, ...channelModPermissions(permissions ?? 'all') };
         return this;
     }
     withEventMgmt(permissions: Partial<EventMgmtPermissions> | null = null) {
-        this.permissions = { ...eventMgmtPermissions(permissions ?? 'all'), ...this.permissions };
+        this.permissions = { ...this.permissions, ...eventMgmtPermissions(permissions ?? 'all') };
         return this;
     }
     with(permission: keyof Permissions, setting: boolean = true) {
