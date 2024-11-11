@@ -5,6 +5,7 @@ import {
     defaultPermissions,
     objectBooleanSum,
     permissionsBuilder,
+    roleMgmtPermissions,
     sumPermissions,
 } from './permissions';
 
@@ -42,6 +43,20 @@ test('permisisons can be summed', ({ expect }) => {
 test('permissions builder works', ({ expect }) => {
     expect(permissionsBuilder().withChannelMod().build()).toStrictEqual({
         ...defaultPermissions(),
+        ...channelModPermissions('all'),
+    });
+    expect(permissionsBuilder().withChannelMgmt().build()).toStrictEqual({
+        ...defaultPermissions(),
+        ...channelMgmtPermissions('all'),
+    });
+    expect(permissionsBuilder().withChannelMgmt().withChannelMod().build()).toStrictEqual({
+        ...defaultPermissions(),
+        ...channelMgmtPermissions('all'),
+        ...channelModPermissions('all'),
+    });
+    expect(permissionsBuilder().withChannelMgmt().withChannelMod().build()).not.toStrictEqual({
+        ...defaultPermissions(),
+        ...roleMgmtPermissions('all'),
         ...channelModPermissions('all'),
     });
 });
