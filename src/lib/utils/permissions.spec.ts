@@ -3,6 +3,7 @@ import {
     channelMgmtPermissions,
     channelModPermissions,
     defaultPermissions,
+    eventMgmtPermissions,
     objectBooleanSum,
     permissionsBuilder,
     roleMgmtPermissions,
@@ -58,5 +59,28 @@ test('permissions builder works', ({ expect }) => {
         ...defaultPermissions(),
         ...roleMgmtPermissions('all'),
         ...channelModPermissions('all'),
+    });
+    expect(
+        permissionsBuilder().withChannelMgmt({ canEditName: true }).withChannelMod().build()
+    ).toStrictEqual({
+        ...defaultPermissions(),
+        ...channelMgmtPermissions({ canEditName: true }),
+        ...channelModPermissions('all'),
+    });
+    expect(
+        permissionsBuilder().withChannelMgmt({ canEditName: true }).withChannelMod().build()
+    ).not.toStrictEqual({
+        ...defaultPermissions(),
+        ...channelMgmtPermissions({ canEditTags: true }),
+        ...channelModPermissions('all'),
+    });
+    expect(permissionsBuilder().withAll().build()).toStrictEqual({
+        ...roleMgmtPermissions('all'),
+        ...channelModPermissions('all'),
+        ...eventMgmtPermissions('all'),
+        ...channelMgmtPermissions('all'),
+    });
+    expect(permissionsBuilder().build()).toStrictEqual({
+        ...defaultPermissions(),
     });
 });

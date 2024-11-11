@@ -50,7 +50,6 @@ export const roleMgmtPermissions = (
               canAssignRoles: true,
           }
         : {
-              ...permissions,
               ...{
                   canCreateRoles: false,
                   canViewRoles: false,
@@ -58,6 +57,7 @@ export const roleMgmtPermissions = (
                   canDeleteRoles: false,
                   canAssignRoles: false,
               },
+              ...permissions,
           };
 
 /**
@@ -83,7 +83,6 @@ export const channelMgmtPermissions = (
               canEditTags: true,
           }
         : {
-              ...permissions,
               ...{
                   canSetMessageOfTheDay: false,
                   canEditName: false,
@@ -91,6 +90,7 @@ export const channelMgmtPermissions = (
                   canViewUserTable: false,
                   canEditTags: false,
               },
+              ...permissions,
           };
 
 /**
@@ -132,7 +132,6 @@ export const channelModPermissions = (
               canResolveReports: true,
           }
         : {
-              ...permissions,
               ...{
                   canSetGuidelines: false,
                   canTimeoutUsers: false,
@@ -146,6 +145,7 @@ export const channelModPermissions = (
                   canUpdateReports: false,
                   canResolveReports: false,
               },
+              ...permissions,
           };
 
 /**
@@ -170,13 +170,13 @@ export const eventMgmtPermissions = (
               canUnregisterEvents: true,
           }
         : {
-              ...permissions,
               ...{
                   canRegisterEvents: false,
                   canViewEvents: false,
                   canEditEvents: false,
                   canUnregisterEvents: false,
               },
+              ...permissions,
           };
 
 export const defaultPermissions = (overrides: Partial<Permissions> = {}): Permissions => ({
