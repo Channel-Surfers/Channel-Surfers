@@ -42,14 +42,11 @@
                             {#each channels as channel}
                                 {#if channel.private}
                                     <Route
-                                        href='/c/private/{channel.id}'
-                                        title='c/{channel.name}'
+                                        href="/c/private/{channel.id}"
+                                        title="c/{channel.name}"
                                     />
                                 {:else}
-                                    <Route
-                                        href='/c/{channel.name}'
-                                        title='c/{channel.name}'
-                                    />
+                                    <Route href="/c/{channel.name}" title="c/{channel.name}" />
                                 {/if}
                             {:else}
                                 <p class="pl-2">You have no channels</p>
@@ -75,8 +72,8 @@
                         {#if subscriptions}
                             {#each subscriptions as sub}
                                 <Route
-                                    href='/c/{sub.channelDisplayName}'
-                                    title='c/{sub.channelDisplayName}'
+                                    href="/c/{sub.channelDisplayName}"
+                                    title="c/{sub.channelDisplayName}"
                                 />
                             {:else}
                                 <p class="pl-2">You have no subscriptions</p>
