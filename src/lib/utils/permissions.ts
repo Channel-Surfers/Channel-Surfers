@@ -76,13 +76,11 @@ export const roleMgmtPermissions = (
               canAssignRoles: true,
           }
         : {
-              ...{
-                  canCreateRoles: false,
-                  canViewRoles: false,
-                  canEditRoles: false,
-                  canDeleteRoles: false,
-                  canAssignRoles: false,
-              },
+              canCreateRoles: false,
+              canViewRoles: false,
+              canEditRoles: false,
+              canDeleteRoles: false,
+              canAssignRoles: false,
               ...permissions,
           };
 
@@ -109,13 +107,11 @@ export const channelMgmtPermissions = (
               canEditTags: true,
           }
         : {
-              ...{
-                  canSetMessageOfTheDay: false,
-                  canEditName: false,
-                  canSetImage: false,
-                  canViewUserTable: false,
-                  canEditTags: false,
-              },
+              canSetMessageOfTheDay: false,
+              canEditName: false,
+              canSetImage: false,
+              canViewUserTable: false,
+              canEditTags: false,
               ...permissions,
           };
 
@@ -158,19 +154,17 @@ export const channelModPermissions = (
               canResolveReports: true,
           }
         : {
-              ...{
-                  canSetGuidelines: false,
-                  canTimeoutUsers: false,
-                  canBanUsers: false,
-                  canViewBannedUsers: false,
-                  canUnbanUsers: false,
-                  canDeletePosts: false,
-                  canDeleteComments: false,
-                  canEditPostTags: false,
-                  canViewReports: false,
-                  canUpdateReports: false,
-                  canResolveReports: false,
-              },
+              canSetGuidelines: false,
+              canTimeoutUsers: false,
+              canBanUsers: false,
+              canViewBannedUsers: false,
+              canUnbanUsers: false,
+              canDeletePosts: false,
+              canDeleteComments: false,
+              canEditPostTags: false,
+              canViewReports: false,
+              canUpdateReports: false,
+              canResolveReports: false,
               ...permissions,
           };
 
@@ -196,23 +190,19 @@ export const eventMgmtPermissions = (
               canUnregisterEvents: true,
           }
         : {
-              ...{
-                  canRegisterEvents: false,
-                  canViewEvents: false,
-                  canEditEvents: false,
-                  canUnregisterEvents: false,
-              },
+              canRegisterEvents: false,
+              canViewEvents: false,
+              canEditEvents: false,
+              canUnregisterEvents: false,
               ...permissions,
           };
 
 export const defaultPermissions = (overrides: Partial<Permissions> = {}): Permissions => ({
+    ...roleMgmtPermissions(),
+    ...channelMgmtPermissions(),
+    ...channelModPermissions(),
+    ...eventMgmtPermissions(),
     ...overrides,
-    ...{
-        ...roleMgmtPermissions(),
-        ...channelMgmtPermissions(),
-        ...channelModPermissions(),
-        ...eventMgmtPermissions(),
-    },
 });
 
 /**
