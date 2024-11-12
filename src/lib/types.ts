@@ -58,3 +58,27 @@ export interface CreateChannel {
     icon?: string;
     publishNow: boolean;
 }
+
+// NOTE: This must match the contents of /static/theme/
+export const themes = [
+    'zinc',
+    'red',
+    'rose',
+    'orange',
+    'green',
+    'blue',
+    'yellow',
+    'violet',
+] as const;
+// These are all taken from shadcn-svelte's site: https://www.shadcn-svelte.com/themes
+export const colours: Record<Theme, string> = {
+    zinc: 'hsl(240 5.2% 33.9%)',
+    red: 'hsl(0 72.2% 50.6%)',
+    rose: 'hsl(346.8 77.2% 49.8%)',
+    orange: 'hsl(20.5 90.2% 48.2%)',
+    green: 'hsl(142.1 70.6% 45.3%)',
+    blue: 'hsl(217.2 91.2% 59.8%)',
+    yellow: 'hsl(47.9 95.8% 53.1%)',
+    violet: 'hsl(263.4 70% 50.4%)',
+};
+export type Theme = (typeof themes)[number];
