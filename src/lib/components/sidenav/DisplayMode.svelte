@@ -9,11 +9,12 @@
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu/index.js';
     import { Button } from '$lib/shadcn/components/ui/button/index.js';
     import { Circle, MonitorCog } from 'lucide-svelte';
+    import dayjs from 'dayjs';
 
     let prevTheme: Theme | null = null;
-    // TODO: Save this to user configuration
+    // TODO: Save this to user configuration so it's consistent across devices
     const setTheme = (theme: Theme) => {
-        document.cookie = `theme=${theme}`;
+        document.cookie = `theme=${theme}; SameSite=Strict; Expires=${dayjs().add(10, 'years')}`;
         $selectedTheme = theme;
         prevTheme = null;
     };
@@ -73,8 +74,9 @@
                 {#each themes as theme}
                     <DropdownMenu.Item
                         on:click={() => setTheme(theme)}
-                        on:pointermove={() => onHoverStart(theme)}
-                        on:pointerleave={onHoverEnd}
+                        on:focusin={() => onHoverStart(theme)}
+                        on:focusout={onHoverEnd}
+                        data-highlighted={$selectedTheme === theme || undefined}
                     >
                         <Circle
                             fill="currentColor"
