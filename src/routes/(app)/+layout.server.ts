@@ -15,8 +15,10 @@ import {
 import { getPostsInProgress, getPostStatistics } from '$lib/server/services/content';
 import type { User } from '$lib/server/db/users.sql';
 import type { LayoutServerLoad } from './$types';
+import { themes, type Theme } from '$lib/types';
+import { is } from '$lib/util';
 
-export const load: LayoutServerLoad = async ({ route, locals, params }) => {
+export const load: LayoutServerLoad = async ({ route, locals, params, cookies }) => {
     const db = await getDb();
     const getIslandData = async () => {
         switch (route.id) {
@@ -93,9 +95,16 @@ export const load: LayoutServerLoad = async ({ route, locals, params }) => {
         return { type: 'err' };
     };
 
+    let themeString = cookies.get('theme');
+    if (!themes.includes(themeString as Theme /* Technically invalid assert, but it's okay */)) {
+        themeString = 'blue';
+    }
+    let theme = themeString as Theme;
+
     return {
         island: await getIslandData(),
         user: locals.user,
+        theme,
         mySubscriptions: locals.user ? await getUserSubscriptions(db, locals.user.id) : null,
         myChannels: locals.user ? await getChannelsByOwner(db, locals.user.id) : null,
         userStats: locals.user ? await getUserStats(db, locals.user.id) : null,

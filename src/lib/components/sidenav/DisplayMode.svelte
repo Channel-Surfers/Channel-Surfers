@@ -2,7 +2,7 @@
     import Sun from 'lucide-svelte/icons/sun';
     import Moon from 'lucide-svelte/icons/moon';
 
-    import { themes, type Theme } from '$lib/types';
+    import { themes, colours, type Theme } from '$lib/types';
     import { selectedTheme } from '$lib/stores';
 
     import { resetMode, setMode } from 'mode-watcher';
@@ -10,12 +10,36 @@
     import { Button } from '$lib/shadcn/components/ui/button/index.js';
     import { Circle, MonitorCog } from 'lucide-svelte';
 
-    const colours: { [key in Theme]: string } = {
-        green: 'hsl(142.1, 70.6%, 45.3%)',
-        rose: 'hsl(346.8, 77.2%, 49.8%)',
-        blue: 'hsl(217.2, 91.2%, 59.8%)',
+    let prevTheme: Theme | null = null;
+    // TODO: Save this to user configuration
+    const setTheme = (theme: Theme) => {
+        document.cookie = `theme=${theme}`;
+        $selectedTheme = theme;
+        prevTheme = null;
+    };
+
+    const onHoverStart = (theme: Theme) => {
+        if (!prevTheme) {
+            prevTheme = $selectedTheme;
+            $selectedTheme = theme;
+        }
+    };
+
+    const onHoverEnd = () => {
+        if (prevTheme) {
+            $selectedTheme = prevTheme;
+            prevTheme = null;
+        }
     };
 </script>
+
+<svelte:head>
+    {#each themes as theme}
+        <!-- Preload the styles -->
+        <link rel="stylesheet" href="/theme/{theme}.css" />
+    {/each}
+    <link rel="stylesheet" href="/theme/{$selectedTheme}.css" />
+</svelte:head>
 
 <DropdownMenu.Root>
     <DropdownMenu.Trigger asChild let:builder>
@@ -47,7 +71,9 @@
             <DropdownMenu.SubTrigger>Colour Theme</DropdownMenu.SubTrigger>
             <DropdownMenu.SubContent>
                 {#each themes as theme}
-                    <DropdownMenu.Item on:click={() => ($selectedTheme = theme)}>
+                    <DropdownMenu.Item on:click={() => setTheme(theme)}
+                        on:pointermove={() => onHoverStart(theme)}
+                        on:pointerleave={onHoverEnd}>
                         <Circle
                             fill="currentColor"
                             class="mr-2 h-4 w-4"

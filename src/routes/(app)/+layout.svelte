@@ -17,9 +17,10 @@
     import type { Channel } from '$lib/server/db/channels.sql';
     import { selectedTheme } from '$lib/stores';
 
-    if (!$selectedTheme) $selectedTheme = 'blue';
-
     export let data: LayoutServerData;
+
+    // default to previous value
+    $selectedTheme = data.theme;
 
     const updateChannels = async () => {
         const res = await fetch('/api/channels');
@@ -33,10 +34,6 @@
         ? (data.island.data.channelData as Channel)
         : null;
 </script>
-
-<svelte:head>
-    <link rel="stylesheet" href="/theme/{$selectedTheme}.css" />
-</svelte:head>
 
 <!-- Enable dark-mode detection and switching -->
 <ModeWatcher />
