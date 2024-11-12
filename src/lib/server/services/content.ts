@@ -398,6 +398,14 @@ export const updatePost = async (
     return await db.update(postTable).set(post).where(eq(postTable.id, post.id)).returning();
 };
 
+export const deletePost = async (db: DB, bunny: IBunnyClient, id: uuid) => {
+    const [del] = await db.delete(postTable).where(eq(postTable.id, id)).returning();
+    if (del) {
+        bunny.deleteVideo(del.videoId);
+    }
+    return del;
+};
+
 /**
  * Returns posts whose videos have yet to be uploaded
  */

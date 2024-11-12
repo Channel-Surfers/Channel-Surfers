@@ -46,3 +46,15 @@ export interface CommentData {
     comment: Comment;
     children: CommentData[];
 }
+
+/**
+ * Data used for creating a channel
+ */
+export interface CreateChannel {
+    name: string;
+    description?: string;
+    guidelines?: string;
+    bannerImage?: string;
+    icon?: string;
+    publishNow: boolean;
+}

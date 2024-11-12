@@ -14,6 +14,9 @@
     import * as tus from 'tus-js-client';
     import { PUBLIC_LIBRARY_ID } from '$env/static/public';
     import Progress from '$lib/shadcn/components/ui/progress/progress.svelte';
+    import type { SubmitFunction } from './$types';
+    import { enhance } from '$app/forms';
+    import Confirm from '$lib/components/Confirm.svelte';
 
     export let data;
 
@@ -149,7 +152,19 @@
         uploadProgress = null;
         upload = null;
     };
+
+    let confirmDelete: () => Promise<boolean>;
+    const onDelete: SubmitFunction = async ({ cancel }) => {
+        if (!(await confirmDelete())) {
+            cancel();
+        }
+    };
 </script>
+
+<Confirm bind:confirm={confirmDelete}>
+    <Dialog.Title>Are you sure you want to delete this pending post?</Dialog.Title>
+    <Dialog.Description>This action cannot be undone</Dialog.Description>
+</Confirm>
 
 {#if formState === 'METADATA'}
     <div class="m-auto grid min-h-full w-3/5 place-items-center">
@@ -235,7 +250,13 @@
             <form on:submit={uploadVideo} class="w-full">
                 <Label for="video" aria-required>Upload Video File</Label>
                 <Input name="video" type="file" required />
-                <Button class="mt-2 w-full" type="submit">Upload</Button>
+                <div class="mt-2 flex gap-2">
+                    <!-- Nested forms is needed here to do delete since we can't `action="?/delete"` with the `Button` component. -->
+                    <form method="POST" action="?/delete" use:enhance={onDelete}>
+                        <Button variant="destructive" type="submit">Delete</Button>
+                    </form>
+                    <Button class="grow" type="submit">Upload</Button>
+                </div>
             </form>
         {:else}
             <div class="flex w-full flex-col space-y-2">

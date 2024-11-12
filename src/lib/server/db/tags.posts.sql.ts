@@ -9,7 +9,7 @@ export const postTagTable = pgTable('post_tag', {
     id: uuid('id').primaryKey().defaultRandom(),
     postId: uuid('post_id')
         .notNull()
-        .references(() => postTable.id),
+        .references(() => postTable.id, { onDelete: 'cascade' }),
     tagId: uuid('tag_id')
         .notNull()
         .references(() => channelTagsTable.id),

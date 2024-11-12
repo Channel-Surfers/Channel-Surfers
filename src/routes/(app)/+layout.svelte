@@ -17,6 +17,12 @@
 
     export let data: LayoutServerData;
 
+    const updateChannels = async () => {
+        const res = await fetch('/api/channels');
+        data.myChannels = await res.json();
+        console.log(data.myChannels);
+    };
+
     $: ({ myChannels, mySubscriptions } = data);
     $: userAsUser = data.user ? (data.user as User) : null;
     $: channelAsChannel = data.island.data?.channelData
@@ -38,6 +44,7 @@
                     publicInfo: { displayName: channel.name },
                 }))}
                 subscriptions={mySubscriptions}
+                on:updateChannels={updateChannels}
             />
         {:else}
             <LeftNav />
@@ -55,7 +62,11 @@
             <HomeInfo stats={data.island.data} user={userAsUser} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
         {:else if data.island.type === 'channel' && data.island.data}
-            <ChannelInfo channel={channelAsChannel} isSubscribed={data.island.data.isSubscribed} />
+            <ChannelInfo
+                channel={channelAsChannel}
+                isSubscribed={data.island.data.isSubscribed}
+                signedIn={!!userAsUser}
+            />
         {:else if data.island.type === 'user' && data.island.exists && data.island.data}
             <UserInfo
                 isBlocking={data.island.data.isBlocking}
