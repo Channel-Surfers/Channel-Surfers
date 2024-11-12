@@ -7,8 +7,34 @@ export type Permissions = Omit<Role, 'id' | 'channelId' | 'title' | 'isOwner' | 
 /**
  * Converts `Role` to `Permissions`
  */
-const roleToPermissions = (role: Role | Permissions): Permissions => {
-    return role;
+export const roleToPermissions = (role: Role | Permissions): Permissions => {
+    return {
+        canCreateRoles: role.canCreateRoles,
+        canViewRoles: role.canViewRoles,
+        canEditRoles: role.canEditRoles,
+        canDeleteRoles: role.canDeleteRoles,
+        canAssignRoles: role.canAssignRoles,
+        canSetMessageOfTheDay: role.canSetMessageOfTheDay,
+        canEditName: role.canEditName,
+        canSetImage: role.canSetImage,
+        canViewUserTable: role.canViewUserTable,
+        canEditTags: role.canEditTags,
+        canSetGuidelines: role.canSetGuidelines,
+        canTimeoutUsers: role.canTimeoutUsers,
+        canBanUsers: role.canBanUsers,
+        canViewBannedUsers: role.canViewBannedUsers,
+        canUnbanUsers: role.canUnbanUsers,
+        canDeletePosts: role.canDeletePosts,
+        canDeleteComments: role.canDeleteComments,
+        canEditPostTags: role.canEditPostTags,
+        canViewReports: role.canViewReports,
+        canUpdateReports: role.canUpdateReports,
+        canResolveReports: role.canResolveReports,
+        canRegisterEvents: role.canRegisterEvents,
+        canViewEvents: role.canViewEvents,
+        canEditEvents: role.canEditEvents,
+        canUnregisterEvents: role.canUnregisterEvents,
+    };
 };
 /**
  * Reduces an array of Roles into one set of permissions in the form of `Permissions`
