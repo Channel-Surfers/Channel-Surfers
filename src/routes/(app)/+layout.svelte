@@ -1,5 +1,6 @@
 <script lang="ts">
     import '../../app.css';
+
     import { Toaster } from '$lib/shadcn/components/ui/sonner';
     import { ModeWatcher } from 'mode-watcher';
     import LeftNav from '$lib/components/sidenav/LeftNav.svelte';
@@ -14,8 +15,12 @@
     import type { User } from '$lib/server/db/users.sql';
     import { page } from '$app/stores';
     import type { Channel } from '$lib/server/db/channels.sql';
+    import { selectedTheme } from '$lib/stores';
 
     export let data: LayoutServerData;
+
+    // default to previous value
+    $selectedTheme = data.theme;
 
     const updateChannels = async () => {
         const res = await fetch('/api/channels');
