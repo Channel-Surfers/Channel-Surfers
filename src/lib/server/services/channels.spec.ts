@@ -41,12 +41,21 @@ describe.concurrent('channels suite', () => {
     );
 
     testWithDb(
-        'getting channels by user id returns successfully',
+        'getting private channels by user id returns successfully',
         async ({ expect, db }, { creator, createdChannel }) => {
             const userChannels = await getChannelsByOwner(db, creator.id);
             expect(userChannels).toStrictEqual([createdChannel]);
         },
         generateUserAndChannel
+    );
+
+    testWithDb(
+        'getting public channels by user id returns successfully',
+        async ({ expect, db }, { creator, createdChannel }) => {
+            const userChannels = await getChannelsByOwner(db, creator.id);
+            expect(userChannels).toStrictEqual([{ ...createdChannel, private: false }]);
+        },
+        generateUserAndPublicChannel
     );
 
     testWithDb(
@@ -232,7 +241,7 @@ const generateUserAndChannel = async (db: DB) => {
         .insert(channelTable)
         .values({ name: 'Channel-Surfers', createdBy: creator.id })
         .returning();
-    return { creator, createdChannel };
+    return { creator, createdChannel: { ...createdChannel, private: true } };
 };
 
 const generateUserAndChannels = (count: number) => async (db: DB) => {

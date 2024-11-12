@@ -89,8 +89,18 @@ export type ChannelInfo = Awaited<ReturnType<typeof getChannelInfo>>;
  * @param db PostgreSQL db
  * @param userId identifies a particular user
  */
-export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channel[]> => {
-    return await db.select().from(channelTable).where(eq(channelTable.createdBy, userId));
+export const getChannelsByOwner = async (
+    db: DB,
+    userId: string
+): Promise<(Channel & { private: boolean })[]> => {
+    const channels = await db
+        .select()
+        .from(channelTable)
+        .leftJoin(publicChannelTable, eq(publicChannelTable.channelId, channelTable.id))
+        .where(eq(channelTable.createdBy, userId))
+        .orderBy(channelTable.name);
+
+    return channels.map((c) => ({ ...c.channel, private: !c.public_channel }));
 };
 
 export const canViewChannel = async (db: DB, userId: uuid, channelId: uuid): Promise<boolean> => {

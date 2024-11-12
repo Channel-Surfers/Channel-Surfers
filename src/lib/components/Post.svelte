@@ -180,7 +180,7 @@
                 class:hidden={!hovering}
                 on:click={() => (playingVideo = true)}
             >
-                <Play fill="white" size="48" />
+                <Play fill="white" color="white" size="48" />
             </button>
             <img {src} alt="" class="h-full w-full rounded-lg" />
         {/if}
