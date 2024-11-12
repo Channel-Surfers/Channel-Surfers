@@ -15,7 +15,7 @@
     export let isBlocking: boolean = false;
     let followLoading = false;
 
-    $: isSelf = user && userInfo && user.id === userInfo.id;
+    $: isSelf = !!user && !!userInfo && user.id === userInfo.id;
 
     const updateFollow = (action: 'follow' | 'unfollow') => async () => {
         if (!userInfo) {
@@ -131,7 +131,7 @@
                     <DropdownMenu.Item
                         class="text-red-600"
                         on:click={toggleBlocking}
-                        disabled={!user}
+                        disabled={!user || isSelf}
                     >
                         {#if isBlocking}
                             <CircleCheck class="mr-2 h-4 w-4" />
