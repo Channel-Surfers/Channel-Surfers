@@ -16,7 +16,6 @@ import { getPostsInProgress, getPostStatistics } from '$lib/server/services/cont
 import type { User } from '$lib/server/db/users.sql';
 import type { LayoutServerLoad } from './$types';
 import { themes, type Theme } from '$lib/types';
-import { is } from '$lib/util';
 
 export const load: LayoutServerLoad = async ({ route, locals, params, cookies }) => {
     const db = await getDb();
@@ -96,10 +95,11 @@ export const load: LayoutServerLoad = async ({ route, locals, params, cookies })
     };
 
     let themeString = cookies.get('theme');
-    if (!themes.includes(themeString as Theme /* Technically invalid assert, but it's okay */)) {
+    // Technically invalid assert, since themeString can be anything, but it's okay since we're not assuming anything from that
+    if (!themes.includes(themeString as Theme)) {
         themeString = 'blue';
     }
-    let theme = themeString as Theme;
+    const theme = themeString as Theme;
 
     return {
         island: await getIslandData(),

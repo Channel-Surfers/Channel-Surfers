@@ -71,9 +71,11 @@
             <DropdownMenu.SubTrigger>Colour Theme</DropdownMenu.SubTrigger>
             <DropdownMenu.SubContent>
                 {#each themes as theme}
-                    <DropdownMenu.Item on:click={() => setTheme(theme)}
+                    <DropdownMenu.Item
+                        on:click={() => setTheme(theme)}
                         on:pointermove={() => onHoverStart(theme)}
-                        on:pointerleave={onHoverEnd}>
+                        on:pointerleave={onHoverEnd}
+                    >
                         <Circle
                             fill="currentColor"
                             class="mr-2 h-4 w-4"

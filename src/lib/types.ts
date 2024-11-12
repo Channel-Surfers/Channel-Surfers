@@ -60,7 +60,16 @@ export interface CreateChannel {
 }
 
 // NOTE: This must match the contents of /static/theme/
-export const themes = ['zinc', 'red', 'rose', 'orange', 'green', 'blue', 'yellow', 'violet'] as const;
+export const themes = [
+    'zinc',
+    'red',
+    'rose',
+    'orange',
+    'green',
+    'blue',
+    'yellow',
+    'violet',
+] as const;
 // These are all taken from shadcn-svelte's site: https://www.shadcn-svelte.com/themes
 export const colours: Record<Theme, string> = {
     zinc: 'hsl(240 5.2% 33.9%)',
@@ -72,4 +81,4 @@ export const colours: Record<Theme, string> = {
     yellow: 'hsl(47.9 95.8% 53.1%)',
     violet: 'hsl(263.4 70% 50.4%)',
 };
-export type Theme = typeof themes[number];
+export type Theme = (typeof themes)[number];
