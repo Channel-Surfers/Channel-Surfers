@@ -6,7 +6,6 @@
     export let data;
 </script>
 
-Settings
 <Tabs.Root>
     <Tabs.List class="flex flex-row grow">
         <Tabs.Trigger value="profile" class="flex flex-row grow" >Profile</Tabs.Trigger>
@@ -16,6 +15,6 @@ Settings
         <Profile userInfo={data.user}/>
     </Tabs.Content>
     <Tabs.Content value="blocked">
-        <Blocked />
+        <Blocked blocked={data.blockedUser}/>
     </Tabs.Content>
 </Tabs.Root>

@@ -41,7 +41,7 @@
             </form>
         </div>
     </Card.Content> 
-    <Card.Root>
+    <Card.Root class="m-6">
         <div class="flex flex-row justify-between">
             <div class="flex flex-row items-center space-x-4">
                     <Avatar.Root class="h-12 w-12">

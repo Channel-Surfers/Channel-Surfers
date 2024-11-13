@@ -113,7 +113,18 @@ export const userIsBlocking = async (db: DB, userId: string, blockedUserId: stri
     return !!block;
 };
 
+export const blockedByUser = async (db: DB, userId: string): Promise<User[]> => {
+    const blocked = await db
+        .select()
+        .from(userBlockTable)
+        .innerJoin(userTable, eq(userBlockTable.blockedUserId, userTable.id))
+        .where(eq(userBlockTable.userId, userId))
+    return blocked.map(u => u.user);
+};
+
+
 export const getUserByUsername = async (db: DB, username: string) => {
     const [user] = await db.select().from(userTable).where(eq(userTable.username, username));
     return user;
 };
+
