@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ locals }) => {
             type: 'home',
             sort: 'date',
             sortDirection: 'dsc',
-            filter: 'all',
+            filter: 'subscribed',
             requesterId: locals.user?.id,
         }),
         channels: await getChannels(db),

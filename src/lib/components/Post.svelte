@@ -163,7 +163,7 @@
     </Dialog.Portal>
 </Dialog.Root>
 
-<Card.Root class="m-auto my-3 flex w-[800px] flex-row p-2">
+<Card.Root class="m-auto my-2 flex w-[800px] flex-row p-2 first:mt-4">
     <div
         class="relative m-auto h-full w-2/5"
         on:mouseenter={() => (hovering = true)}

@@ -16,13 +16,14 @@ export const GET: RequestHandler = async ({ locals, params: { username }, url })
     const sort = url.searchParams.get('sort') || 'votes';
     if (!is(['votes', 'date'], sort)) return error(400, 'sort must be either `vote` or `date`');
 
-    const reverseSort = (url.searchParams.get('reverseSort') || 'false') === 'true';
+    const sortDirection = url.searchParams.get('sortDirection') || 'asc';
+    if (!is(['asc', 'dsc'], sortDirection)) return error(400, `sort must be either 'asc' or 'dsc'`);
 
     const posts = await getPosts(db, page, {
         requesterId: locals.user?.id,
         type: 'user',
         username,
-        reverseSort,
+        sortDirection,
         sort,
         filter,
     });

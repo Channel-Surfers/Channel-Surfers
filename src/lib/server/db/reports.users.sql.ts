@@ -8,6 +8,7 @@ import { reportStatusEnum } from './types.sql';
 export const userReportTable = pgTable('user_report', {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id').references(() => userTable.id),
+    reporterId: uuid('reporter_id').references(() => userTable.id),
     description: text('description').notNull(),
     resolution: text('resolution'),
     status: reportStatusEnum('status').notNull().default('INVESTIGATING'),

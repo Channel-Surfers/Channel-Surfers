@@ -1,6 +1,7 @@
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { postTable } from './posts.sql';
 import { reportStatusEnum } from './types.sql';
+import { userTable } from './users.sql';
 
 /**
  * @document public.post_report.md
@@ -8,6 +9,7 @@ import { reportStatusEnum } from './types.sql';
 export const postReportTable = pgTable('post_report', {
     id: uuid('id').primaryKey().defaultRandom(),
     postId: uuid('post_id').references(() => postTable.id, { onDelete: 'set null' }),
+    reporterId: uuid('reporter_id').references(() => userTable.id),
     description: text('description').notNull(),
     resolution: text('resolution'),
     status: reportStatusEnum('status').notNull().default('INVESTIGATING'),

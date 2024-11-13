@@ -17,13 +17,14 @@ export const GET: RequestHandler = async (event) => {
     const sort = event.url.searchParams.get('sort') || 'votes';
     if (!is(['votes', 'date'], sort)) return error(400, `sort must be either 'vote' or 'date'`);
 
-    const reverseSort = (event.url.searchParams.get('reverseSort') || 'false') === 'true';
+    const sortDirection = event.url.searchParams.get('sortDirection') || 'asc';
+    if (!is(['asc', 'dsc'], sortDirection)) return error(400, `sort must be either 'asc' or 'dsc'`);
 
     const posts = await getPosts(db, page, {
         requesterId: event.locals.user?.id,
         type: 'home',
         sort,
-        reverseSort,
+        sortDirection,
         filter,
     });
     return json(posts);

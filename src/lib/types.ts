@@ -82,3 +82,11 @@ export const colours: Record<Theme, string> = {
     violet: 'hsl(263.4 70% 50.4%)',
 };
 export type Theme = (typeof themes)[number];
+
+export interface ScrollFilters {
+    sort: 'votes' | 'date';
+    filter: 'subscribed' | 'all';
+    sortDirection?: 'asc' | 'dsc';
+    before?: Date;
+    after?: Date;
+}

@@ -117,9 +117,25 @@ export const userIsBlocking = async (db: DB, userId: string, blockedUserId: stri
     return !!block;
 };
 
+export const userBlocks = async (db: DB, userId: string): Promise<User[]> => {
+    const blocked = await db
+        .select()
+        .from(userBlockTable)
+        .innerJoin(userTable, eq(userBlockTable.blockedUserId, userTable.id))
+        .where(eq(userBlockTable.userId, userId));
+    return blocked.map((u) => u.user);
+};
+
 export const getUserByUsername = async (db: DB, username: string) => {
     const [user] = await db.select().from(userTable).where(eq(userTable.username, username));
     return user;
+};
+
+export const updateUser = async (
+    db: DB,
+    user: Pick<User, 'id'> & Pick<Partial<User>, 'username' | 'profileImage'>
+) => {
+    return await db.update(userTable).set(user).where(eq(userTable.id, user.id));
 };
 
 export type UserPermissionInfo = {
@@ -128,6 +144,7 @@ export type UserPermissionInfo = {
     highestRole: Role;
     permissions: Permissions;
 };
+
 export const getUserPermissionInfo = async (
     db: DB,
     userId: string,
