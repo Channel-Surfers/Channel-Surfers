@@ -149,3 +149,11 @@ export const getUserPermissionInfo = async (
         permissions: sumPermissions(roles.map((r) => r.role)),
     };
 };
+
+export const getUsers = async (db: DB, args: 'all') => {
+    if (args === 'all') {
+        return await db.select().from(userTable);
+    } else {
+        throw new Error('Bad inputs');
+    }
+};
