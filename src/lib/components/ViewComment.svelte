@@ -214,7 +214,7 @@
             </DropdownMenu.Root>
         </div>
 
-        <div class="ml-2 mr-2 mb-2">
+        <div class="mb-2 ml-2 mr-2">
             <Markdown md={commentData.comment.content} />
         </div>
 
