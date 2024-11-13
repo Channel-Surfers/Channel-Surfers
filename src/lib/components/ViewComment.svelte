@@ -77,15 +77,19 @@
 
         const res = await fetch(`/api/post/comments/${commentData.comment.id}/vote`, {
             method: 'POST',
-            body: `${userVote}`,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ vote: userVote }), // Send the vote direction as JSON
         });
 
         if (res.ok) {
             const ret = await res.json();
             ({ upvotes, downvotes } = ret);
-        } else {
-            toast.error('Unexpected error while submitting vote');
         }
+        // else {
+        //     toast.error('Unexpected error while submitting vote');
+        // }
     };
 
     const reportData = {

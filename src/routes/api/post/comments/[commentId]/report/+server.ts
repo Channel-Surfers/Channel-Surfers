@@ -21,7 +21,6 @@ export const POST: RequestHandler = async (event) => {
 
     const theUserId = user[0].id;
 
-
     try {
         await createUserReport(db, {
             description: data.details,
