@@ -16,54 +16,43 @@
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import { onMount } from 'svelte';
-
     export let commentData: CommentData;
-
     let reportDialogOpen = false;
     let viewingReplies = true;
     let pageCount = 0;
-
     let userVote: string | null;
     let downvotes = 0;
     let upvotes = 0;
-
     onMount(() => {
         // Destructuring to extract upvotes and downvotes
         const { upvotes: initialUpvotes, downvotes: initialDownvotes } = commentData.comment;
         upvotes = initialUpvotes;
         downvotes = initialDownvotes;
     });
-
     const loadMoreReplies = async (commentId: string) => {
         const res = await fetch(`/api/post/comments/${commentId}/replies?offset=${pageCount}`);
         const data = await res.json();
-
         const newReplies = data.filter(
             (reply: { comment: { id: string } }) =>
                 !commentData.children.some(
                     (existingReply) => existingReply.comment.id === reply.comment.id
                 )
         );
-
         commentData.children = [...commentData.children, ...newReplies];
         pageCount += 1;
     };
-
     const getMonthAndDate = (fullDate: string | Date) => {
         const date = fullDate instanceof Date ? fullDate : new Date(fullDate);
         const monthName = date.toLocaleString('default', { month: 'long' });
         const day = date.getDate();
-
         return `${monthName} ${day}`;
     };
-
     const vote = async (dir: 'UP' | 'DOWN') => {
         if (userVote === 'UP') {
             upvotes -= 1;
         } else if (userVote === 'DOWN') {
             downvotes -= 1;
         }
-
         if (userVote === dir) {
             userVote = null;
         } else {
@@ -74,26 +63,26 @@
             }
             userVote = dir;
         }
-
         const res = await fetch(`/api/post/comments/${commentData.comment.id}/vote`, {
             method: 'POST',
-            body: `${userVote}`,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ vote: userVote }), // Send the vote direction as JSON
         });
-
         if (res.ok) {
             const ret = await res.json();
             ({ upvotes, downvotes } = ret);
-        } else {
-            toast.error('Unexpected error while submitting vote');
         }
+        // else {
+        //     toast.error('Unexpected error while submitting vote');
+        // }
     };
-
     const reportData = {
         commentId: commentData.comment.id,
         reason: undefined,
         details: '',
     };
-
     const submitReport = async () => {
         console.log(reportData);
         const res = await fetch(`/api/post/comments/${commentData.comment.id}/report`, {
@@ -103,9 +92,7 @@
                 'content-type': 'application/json',
             },
         });
-
         // await res.json();
-
         if (res.ok) {
             toast.success('Report submitted sucessfully!');
             reportDialogOpen = false;
@@ -113,7 +100,6 @@
             toast.error('Unexpected error while submitting report.');
         }
     };
-
     function toggleReplies() {
         viewingReplies = !viewingReplies;
     }
@@ -155,7 +141,7 @@
     </Dialog.Portal>
 </Dialog.Root>
 
-<div class="comment-card p-4">
+<div class="comment-card ml-4 p-4">
     <Card.Root>
         <div class="flex items-center">
             <!-- Avatar Image -->
