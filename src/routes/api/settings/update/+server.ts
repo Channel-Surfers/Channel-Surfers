@@ -9,24 +9,13 @@ const userUpdateValidator = v.object({
     id: v.string(),
     username: v.string(),
     profileImage: v.optional(v.string()),
-    discordId: v.optional(v.bigint()),
-    githubId: v.optional(v.number()),
-    followers: v.optional(v.number()),
-    following: v.optional(v.number()),
-    createdOn: v.date(),
-    updatedOn: v.date(),
-
-    // Status of post
-    role: v.optional(
-        v.union([v.literal('USER'), v.literal('MODERATOR'), v.literal('ADMIN'), v.literal('SUPER')])
-    ),
 });
 
 export const PUT: RequestHandler = async (event) => {
     if (!event.locals.user) return error(401);
     const db = await getDb();
     const body = await event.request.json();
-
+    
     const parsedBody = v.safeParse(userUpdateValidator, { id: event.locals.user.id, ...body });
     if (!parsedBody.success) {
         throw error(400, parsedBody.issues.map((i) => i.message).join(', '));
