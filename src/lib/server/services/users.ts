@@ -117,7 +117,7 @@ export const userIsBlocking = async (db: DB, userId: string, blockedUserId: stri
     return !!block;
 };
 
-export const blockedByUser = async (db: DB, userId: string): Promise<User[]> => {
+export const userBlocks = async (db: DB, userId: string): Promise<User[]> => {
     const blocked = await db
         .select()
         .from(userBlockTable)
@@ -133,7 +133,7 @@ export const getUserByUsername = async (db: DB, username: string) => {
 
 export const updateUser = async (
     db: DB,
-    user: Pick<User, 'id'> & Omit<Partial<User>, 'username' | 'profileImage'>
+    user: Pick<User, 'id'> & Pick<Partial<User>, 'username' | 'profileImage'>
 ) => {
     return await db.update(userTable).set(user).where(eq(userTable.id, user.id));
 };

@@ -6,7 +6,7 @@
     export let data;
 </script>
 
-<Tabs.Root>
+<Tabs.Root class="p-2 pt-4">
     <Tabs.List class="flex grow flex-row">
         <Tabs.Trigger value="profile" class="flex grow flex-row">Profile</Tabs.Trigger>
         <Tabs.Trigger value="blocked" class="flex grow flex-row">Blocked</Tabs.Trigger>

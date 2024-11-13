@@ -12,26 +12,14 @@
     import DataTableCheckbox from '$lib/components/settings/BlockedUserData/BlockedUserDataTableCheckbox.svelte';
     import * as Table from '$lib/shadcn/components/ui/table';
     import { Button } from '$lib/shadcn/components/ui/button';
-    import { cn } from '$lib/util.ts';
+    import { cn } from '$lib/shadcn/utils';
     import { Input } from '$lib/shadcn/components/ui/input';
     import { toast } from 'svelte-sonner';
+    import { User } from 'lucide-svelte';
 
     export let users;
 
-    type blockedUser = {
-        id: string;
-        role: 'USER' | 'MODERATOR' | 'ADMIN' | 'SUPER';
-        username: string;
-        profileImage: string | null;
-        createdOn: Date;
-        updatedOn: Date;
-        discordId: bigint | null;
-        githubId: number | null;
-        followers: number;
-        following: number;
-    };
-
-    let data: blockedUser[] = users;
+    let data: User[] = users;
 
     const table = createTable(readable(data), {
         sort: addSortBy({ disableMultiSort: true }),
@@ -122,8 +110,7 @@
             data = data.filter((u) => !usersUnblock.includes(u.id));
             if (res.ok) {
                 toast.success('Unblocked users succesfully');
-            }
-            if (!res.ok) {
+            } else {
                 throw new Error(`Failed to unfollow user: ${await res.text()}`);
             }
         } catch (e) {

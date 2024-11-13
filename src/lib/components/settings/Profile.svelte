@@ -24,8 +24,7 @@
             });
             if (res.ok) {
                 toast.success('Update user succesfully');
-            }
-            if (!res.ok) {
+            } else {
                 throw new Error(`Failed to update user: ${await res.text()}`);
             }
         } catch (e) {
