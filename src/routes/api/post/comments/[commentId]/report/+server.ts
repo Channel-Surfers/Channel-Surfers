@@ -21,7 +21,6 @@ export const POST: RequestHandler = async (event) => {
 
     const theUserId = user[0].id;
 
-    console.log(theUserId);
 
     try {
         await createUserReport(db, {
@@ -31,8 +30,8 @@ export const POST: RequestHandler = async (event) => {
             status: 'INVESTIGATING',
             resolution: null,
         });
-    } catch (error: any) {
-        if (error.code === '23505') {
+    } catch (error) {
+        if (error instanceof Error && error.cause === '23505') {
             throw new Error(`A report with this ID already exists. Please use a different ID.`);
         } else {
             throw error;
