@@ -17,6 +17,7 @@
     import type { SubmitFunction } from './$types';
     import { enhance } from '$app/forms';
     import Confirm from '$lib/components/Confirm.svelte';
+    import Markdown from '$lib/components/Markdown.svelte';
 
     export let data;
 
@@ -29,6 +30,8 @@
     let channelSearchQuery = '';
     let channelSearchError: string | null = null;
     let selectedChannel: MiniChannel | null = null;
+
+    let description: string = '';
 
     let upload: tus.Upload | null = null;
     let uploadProgress: number | null = null;
@@ -173,11 +176,34 @@
 {#if formState === 'METADATA'}
     <div class="m-auto grid min-h-full w-3/5 place-items-center">
         <form method="POST" action="?/create" class="w-full">
-            <Label for={'title'} aria-required>Title</Label>
+            <Label for="title" aria-required>Title</Label>
+            <Input name="title" required class="mb-4" />
 
-            <Input name="title" required />
             <Label for="description">Description</Label>
-            <Textarea name="description" />
+            <Textarea name="description" class="font-mono" bind:value={description} />
+            <p class="pl-2 text-sm text-muted-foreground">
+                Supports
+                <a
+                    class="text-primary"
+                    href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+                >
+                    Markdown
+                </a>
+            </p>
+            <Card.Root class="my-4">
+                <Card.Header>
+                    <Card.Title>Markdown Preview</Card.Title>
+                </Card.Header>
+                <Card.Content>
+                    {#if description}
+                        <Markdown md={description} />
+                    {:else}
+                        <p class="text-muted-foreground">
+                            Type a description to see it rendered...
+                        </p>
+                    {/if}
+                </Card.Content>
+            </Card.Root>
             <div class="flex items-center space-x-2">
                 <Label class="my-2" aria-required>Channel:</Label>
                 {#if selectedChannel}
@@ -185,67 +211,69 @@
                 {/if}
             </div>
             <Input class="hidden" name="channelId" value={selectedChannel?.id} />
-            <div>
-                <Dialog.Root bind:open>
-                    <Dialog.Trigger
-                        on:click={() => {
-                            open = true;
-                        }}
-                        class={buttonVariants({ variant: 'outline' })}
-                        >Select Channel</Dialog.Trigger
-                    >
-                    <Dialog.Content class="sm:max-w-[625px]">
-                        <Dialog.Header>
-                            <Dialog.Title>Select Channel</Dialog.Title>
-                            <Dialog.Description>Select a channel</Dialog.Description>
-                        </Dialog.Header>
-                        <div class="flex space-x-2">
-                            <Checkbox
-                                id="terms"
-                                bind:checked={searchChannelIsPrivate}
-                                aria-labelledby="public-channel-label"
+            <div class="flex flex-row justify-between">
+                <div>
+                    <Dialog.Root bind:open>
+                        <Dialog.Trigger
+                            on:click={() => {
+                                open = true;
+                            }}
+                            class={buttonVariants({ variant: 'outline' })}
+                            >Select Channel</Dialog.Trigger
+                        >
+                        <Dialog.Content class="sm:max-w-[625px]">
+                            <Dialog.Header>
+                                <Dialog.Title>Select Channel</Dialog.Title>
+                                <Dialog.Description>Select a channel</Dialog.Description>
+                            </Dialog.Header>
+                            <div class="flex space-x-2">
+                                <Checkbox
+                                    id="terms"
+                                    bind:checked={searchChannelIsPrivate}
+                                    aria-labelledby="public-channel-label"
+                                />
+                                <Label id="public-channel-label">Private Channel</Label>
+                            </div>
+                            <Label>Search</Label>
+                            <Input
+                                placeholder="Channel search by name"
+                                on:keyup={debounce(handleInputUpdate)}
+                                bind:value={channelSearchQuery}
                             />
-                            <Label id="public-channel-label">Private Channel</Label>
-                        </div>
-                        <Label>Search</Label>
-                        <Input
-                            placeholder="Channel search by name"
-                            on:keyup={debounce(handleInputUpdate)}
-                            bind:value={channelSearchQuery}
-                        />
 
-                        <Card.Root>
-                            <Card.Content>
-                                <div class="flex w-full flex-col space-y-2">
-                                    <ScrollArea class="h-36 w-full space-y-2">
-                                        {#each channels as channel}
-                                            <div
-                                                class="my-1 flex w-full flex-row justify-between pr-4"
-                                            >
-                                                <p>{channel.name}</p>
-                                                <Button
-                                                    type="submit"
-                                                    on:click={() => selectChannel(channel)}
-                                                    >Select</Button
+                            <Card.Root>
+                                <Card.Content>
+                                    <div class="flex w-full flex-col space-y-2">
+                                        <ScrollArea class="h-36 w-full space-y-2">
+                                            {#each channels as channel}
+                                                <div
+                                                    class="my-1 flex w-full flex-row justify-between pr-4"
                                                 >
-                                            </div>
-                                        {:else}
-                                            <p>No channels found</p>
-                                        {/each}
-                                    </ScrollArea>
-                                    {#if canLoadMore}
-                                        <Button on:click={loadMoreChannels}>Load More</Button>
-                                    {/if}
-                                    {#if channelSearchError}
-                                        <p class="text-red-500">{channelSearchError}</p>
-                                    {/if}
-                                </div>
-                            </Card.Content>
-                        </Card.Root>
-                    </Dialog.Content>
-                </Dialog.Root>
+                                                    <p>{channel.name}</p>
+                                                    <Button
+                                                        type="submit"
+                                                        on:click={() => selectChannel(channel)}
+                                                        >Select</Button
+                                                    >
+                                                </div>
+                                            {:else}
+                                                <p>No channels found</p>
+                                            {/each}
+                                        </ScrollArea>
+                                        {#if canLoadMore}
+                                            <Button on:click={loadMoreChannels}>Load More</Button>
+                                        {/if}
+                                        {#if channelSearchError}
+                                            <p class="text-red-500">{channelSearchError}</p>
+                                        {/if}
+                                    </div>
+                                </Card.Content>
+                            </Card.Root>
+                        </Dialog.Content>
+                    </Dialog.Root>
+                </div>
+                <Button class="mt-2" type="submit">Create Post</Button>
             </div>
-            <Button class="mt-2" type="submit">Create Post</Button>
         </form>
     </div>
 {:else if formState === 'UPLOAD'}
