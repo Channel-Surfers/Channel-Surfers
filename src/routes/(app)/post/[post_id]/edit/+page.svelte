@@ -7,6 +7,8 @@
     import * as Dialog from '$lib/shadcn/components/ui/dialog';
     import { enhance } from '$app/forms';
     import type { SubmitFunction } from '@sveltejs/kit';
+    import * as Card from '$lib/shadcn/components/ui/card';
+    import Markdown from '$lib/components/Markdown.svelte';
 
     export let data;
     export let form;
@@ -57,6 +59,20 @@
             {#each form?.description ?? [] as m}
                 <p class="pl-2 text-sm text-red-400">{m}</p>
             {/each}
+            <Card.Root class="my-4">
+                <Card.Header>
+                    <Card.Title>Markdown Preview</Card.Title>
+                </Card.Header>
+                <Card.Content>
+                    {#if data.post.description}
+                        <Markdown md={data.post.description} />
+                    {:else}
+                        <p class="text-muted-foreground">
+                            Type a description to see it rendered...
+                        </p>
+                    {/if}
+                </Card.Content>
+            </Card.Root>
         </div>
 
         <div class="flex justify-between">
