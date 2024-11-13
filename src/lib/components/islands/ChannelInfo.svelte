@@ -53,7 +53,13 @@
         {#if isPrivate}
             <Button class="mt-2 w-full" disabled={!signedIn}>Leave</Button>
         {:else if isSubscribed}
-            <Button type="submit" variant="destructive" class="mt-2 w-full" disabled={!signedIn} on:click={toggleSub}>
+            <Button
+                type="submit"
+                variant="destructive"
+                class="mt-2 w-full"
+                disabled={!signedIn}
+                on:click={toggleSub}
+            >
                 Unsubscribe
             </Button>
         {:else}
