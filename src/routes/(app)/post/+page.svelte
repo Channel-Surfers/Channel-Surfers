@@ -31,6 +31,8 @@
     let channelSearchError: string | null = null;
     let selectedChannel: MiniChannel | null = null;
 
+    let description: string = '';
+
     let upload: tus.Upload | null = null;
     let uploadProgress: number | null = null;
 
@@ -160,8 +162,6 @@
             cancel();
         }
     };
-
-    let description: string = '';
 </script>
 
 <svelte:head>

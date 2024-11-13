@@ -2,7 +2,6 @@
     import * as Tooltip from '$lib/shadcn/components/ui/tooltip';
 
     export let href: string;
-    console.log($$props);
 </script>
 
 <Tooltip.Root openDelay={0}>
