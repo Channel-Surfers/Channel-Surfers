@@ -5,6 +5,7 @@
     import * as Card from '$lib/shadcn/components/ui/card';
     import ScrollArea from '$lib/shadcn/components/ui/scroll-area/scroll-area.svelte';
     import Separator from '$lib/shadcn/components/ui/separator/separator.svelte';
+    import { toast } from 'svelte-sonner';
 
     export let channel: ChannelInfo;
     export let signedIn: boolean;
@@ -12,6 +13,27 @@
     export let isSubscribed: boolean = false;
 
     let expandGuidelines = false;
+
+    let subLoading = false;
+    const toggleSub = async () => {
+        if (!channel || subLoading) return;
+        const newSubState = (isSubscribed = !isSubscribed);
+
+        try {
+            const res = await fetch(`/api/c/${channel.id}/subscribe`, {
+                method: newSubState ? 'POST' : 'DELETE',
+            });
+
+            if (!res.ok) {
+                throw new Error(`Failed to unfollow user: ${await res.text()}`);
+            }
+        } catch (e) {
+            console.error(e);
+            toast.error(`Failed to ${newSubState ? '' : 'un'}subscribe user from ${channel.name}`);
+            isSubscribed = !isSubscribed; // reset isSubscribed
+        }
+        subLoading = false;
+    };
 </script>
 
 <Card.Root>
@@ -31,11 +53,13 @@
         {#if isPrivate}
             <Button class="mt-2 w-full" disabled={!signedIn}>Leave</Button>
         {:else if isSubscribed}
-            <Button type="submit" variant="destructive" class="mt-2 w-full" disabled={!signedIn}
-                >Unsubscribe</Button
-            >
+            <Button type="submit" variant="destructive" class="mt-2 w-full" disabled={!signedIn} on:click={toggleSub}>
+                Unsubscribe
+            </Button>
         {:else}
-            <Button type="submit" class="mt-2 w-full" disabled={!signedIn}>Subscribe</Button>
+            <Button type="submit" class="mt-2 w-full" disabled={!signedIn} on:click={toggleSub}>
+                Subscribe
+            </Button>
         {/if}
     </Card.Content>
     {#if channel.guidelines}
