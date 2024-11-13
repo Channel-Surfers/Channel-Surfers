@@ -9,7 +9,5 @@ export const GET: RequestHandler = async ({ params: { commentId }, url }) => {
 
     const replies = await loadMoreRepliesToComment(db, commentId!, page);
 
-    console.log('Page ' + page + ' ID: ' + commentId);
-
     return json(replies);
 };

@@ -20,17 +20,12 @@ export const POST: RequestHandler = async (event) => {
     const vote: 'UP' | 'DOWN' | null = voteStr;
 
     if (vote) {
-        const ret = await addCommentVote(db, event.params.commentId, event.locals.user.id, vote);
-        console.log(`Vote added:`, ret); // Log details of the added vote
+        await addCommentVote(db, event.params.commentId, event.locals.user.id, vote);
     } else {
         await deleteCommentVote(db, event.params.commentId, event.locals.user.id);
-        console.log(
-            `Vote deleted for user ${event.locals.user.id} on comment ${event.params.commentId}`
-        );
     }
 
     const comment = await getComment(db, event.params.commentId);
-    console.log(`Updated comment data:`, comment); // Log the updated comment data
 
     return json(comment);
 };

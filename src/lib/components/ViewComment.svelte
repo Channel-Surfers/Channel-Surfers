@@ -16,6 +16,7 @@
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import { onMount } from 'svelte';
+    import Markdown from 'svelte-exmarkdown';
 
     export let commentData: CommentData;
 
@@ -28,7 +29,6 @@
     let upvotes = 0;
 
     onMount(async () => {
-        // Destructuring to extract upvotes and downvotes
         const { upvotes: initialUpvotes, downvotes: initialDownvotes } = commentData.comment;
         upvotes = initialUpvotes;
         downvotes = initialDownvotes;
@@ -95,7 +95,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ vote: userVote }), // Send the vote direction as JSON
+            body: JSON.stringify({ vote: userVote }),
         });
 
         if (res.ok) {
@@ -113,7 +113,6 @@
     };
 
     const submitReport = async () => {
-        console.log(reportData);
         const res = await fetch(`/api/post/comments/${commentData.comment.id}/report`, {
             method: 'POST',
             body: JSON.stringify(reportData),
@@ -121,8 +120,6 @@
                 'content-type': 'application/json',
             },
         });
-
-        // await res.json();
 
         if (res.ok) {
             toast.success('Report submitted sucessfully!');
@@ -176,7 +173,6 @@
 <div class="comment-card p-4">
     <Card.Root>
         <div class="flex items-center">
-            <!-- Avatar Image -->
             <Avatar.Root class="mb-2 ml-4 mt-4 h-8 w-8">
                 <Avatar.Image
                     src={commentData.user.profileImage || ''}
@@ -187,7 +183,6 @@
                 >
             </Avatar.Root>
 
-            <!-- Display Username -->
             <p class="mb-1 ml-2 h-4 w-full text-xl">
                 <a
                     href="/u/{commentData.user.username}"
@@ -197,12 +192,10 @@
                 </a>
             </p>
 
-            <!-- Display Day Uploaded -->
             <p class="mb-2 h-4 w-full text-right text-xl">
                 {getMonthAndDate(commentData.comment.createdOn)}
             </p>
 
-            <!-- Report Stuff -->
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild let:builder>
                     <Button builders={[builder]} variant="ghost" size="icon" class="ml-2 mr-2">
@@ -221,11 +214,11 @@
             </DropdownMenu.Root>
         </div>
 
-        <!-- Display Comment itself -->
-        <p class="mb-4 justify-start px-6 text-xl">{commentData.comment.content}</p>
+        <div class="ml-2 mr-2">
+            <Markdown md={commentData.comment.content} />
+        </div>
 
         <div class="mb-2 mr-4 flex flex-row items-center justify-end">
-            <!-- Toggle Replies Button -->
             {#if commentData.children && commentData.children.length > 0}
                 <button class="mr-2" on:click={toggleReplies}>
                     {viewingReplies ? 'Hide Replies' : 'Show Replies'}
@@ -253,14 +246,12 @@
             </Toggle>
         </div>
 
-        <!-- Display replies to current comment -->
         {#if viewingReplies}
             {#each commentData.children as reply}
                 <svelte:self commentData={reply} />
             {/each}
         {/if}
 
-        <!-- Load More Button -->
         {#if commentData.children && commentData.children.length >= PAGE_SIZE * pageCount}
             <div class="mb-4 flex justify-end px-6">
                 <Button

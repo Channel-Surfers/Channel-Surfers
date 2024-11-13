@@ -63,14 +63,12 @@ export const getPost = async (db: DB, postId: uuid) => {
     };
 };
 
-// Define function to get a user's vote on a specific comment
 export async function getUserVote(db: DB, commentId: uuid, userId: uuid) {
     const result = await db
         .select({ vote: commentVoteTable.vote })
         .from(commentVoteTable)
         .where(and(eq(commentVoteTable.commentId, commentId), eq(commentVoteTable.userId, userId)));
 
-    // Return the vote if found, otherwise return null
     return result.length ? result[0].vote : null;
 }
 
@@ -409,8 +407,8 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
 
 export const deleteCommentVote = async (db: DB, commentId: uuid, userId: uuid) => {
     const [ret] = await db
-        .delete(commentVoteTable) // Use commentVoteTable instead of commentTable
-        .where(and(eq(commentVoteTable.commentId, commentId), eq(commentVoteTable.userId, userId))) // Use commentVoteTable fields
+        .delete(commentVoteTable)
+        .where(and(eq(commentVoteTable.commentId, commentId), eq(commentVoteTable.userId, userId)))
         .returning();
 
     return ret;
@@ -426,7 +424,7 @@ export const addCommentVote = async (
         .insert(commentVoteTable)
         .values({ commentId, userId, vote })
         .onConflictDoUpdate({
-            target: [commentVoteTable.commentId, commentVoteTable.userId], // Corrected table and fields
+            target: [commentVoteTable.commentId, commentVoteTable.userId],
             set: { vote },
         })
         .returning();
