@@ -27,11 +27,26 @@
     let downvotes = 0;
     let upvotes = 0;
 
-    onMount(() => {
+    onMount(async () => {
         // Destructuring to extract upvotes and downvotes
         const { upvotes: initialUpvotes, downvotes: initialDownvotes } = commentData.comment;
         upvotes = initialUpvotes;
         downvotes = initialDownvotes;
+        try {
+            const response = await fetch(`/api/post/comments/${commentData.comment.id}/userVote`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                userVote = data.vote;
+            } else {
+                console.error('Failed to fetch user vote.');
+            }
+        } catch (error) {
+            console.error('Error fetching user vote:', error);
+        }
     });
 
     const loadMoreReplies = async (commentId: string) => {
@@ -86,10 +101,9 @@
         if (res.ok) {
             const ret = await res.json();
             ({ upvotes, downvotes } = ret);
+        } else {
+            toast.error('Unexpected error while submitting vote');
         }
-        // else {
-        //     toast.error('Unexpected error while submitting vote');
-        // }
     };
 
     const reportData = {

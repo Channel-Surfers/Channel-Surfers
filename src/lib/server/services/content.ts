@@ -63,6 +63,17 @@ export const getPost = async (db: DB, postId: uuid) => {
     };
 };
 
+// Define function to get a user's vote on a specific comment
+export async function getUserVote(db: DB, commentId: uuid, userId: uuid) {
+    const result = await db
+        .select({ vote: commentVoteTable.vote })
+        .from(commentVoteTable)
+        .where(and(eq(commentVoteTable.commentId, commentId), eq(commentVoteTable.userId, userId)));
+
+    // Return the vote if found, otherwise return null
+    return result.length ? result[0].vote : null;
+}
+
 export const getComment = async (db: DB, commentId: uuid) => {
     const comment = await db.select().from(commentTable).where(eq(commentTable.id, commentId));
 
