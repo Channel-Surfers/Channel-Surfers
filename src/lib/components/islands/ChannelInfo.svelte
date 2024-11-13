@@ -29,7 +29,9 @@
             }
         } catch (e) {
             console.error(e);
-            toast.error(`Failed to ${newSubState ? '' : 'un'}subscribe user from ${channel.name}`);
+            toast.error(
+                `Failed to ${newSubState ? 'subscribe to' : 'unsubscribe from'} ${channel.name}`
+            );
             isSubscribed = !isSubscribed; // reset isSubscribed
         }
         subLoading = false;
