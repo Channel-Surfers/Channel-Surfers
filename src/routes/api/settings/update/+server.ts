@@ -15,7 +15,7 @@ export const PUT: RequestHandler = async (event) => {
     if (!event.locals.user) return error(401);
     const db = await getDb();
     const body = await event.request.json();
-    
+
     const parsedBody = v.safeParse(userUpdateValidator, { id: event.locals.user.id, ...body });
     if (!parsedBody.success) {
         throw error(400, parsedBody.issues.map((i) => i.message).join(', '));

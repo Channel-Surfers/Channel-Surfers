@@ -131,12 +131,12 @@ export const getUserByUsername = async (db: DB, username: string) => {
     return user;
 };
 
-
 export const updateUser = async (
     db: DB,
     user: Pick<User, 'id'> & Omit<Partial<User>, 'username' | 'profileImage'>
 ) => {
     return await db.update(userTable).set(user).where(eq(userTable.id, user.id));
+};
 
 export type UserPermissionInfo = {
     userId: string;
@@ -144,7 +144,7 @@ export type UserPermissionInfo = {
     highestRole: Role;
     permissions: Permissions;
 };
-  
+
 export const getUserPermissionInfo = async (
     db: DB,
     userId: string,
