@@ -5,15 +5,27 @@
     import { Home, Settings, Flame } from 'lucide-svelte';
     import Route from './Route.svelte';
     import * as Accordion from '$lib/shadcn/components/ui/accordion';
+    import * as Dialog from '$lib/shadcn/components/ui/dialog';
     import type { UserSubscription } from '$lib/server/services/channels';
     import type { Playlist } from '$lib/server/db/playlists.sql';
-    import Button from '$lib/shadcn/components/ui/button/button.svelte';
+    import { Button } from '$lib/shadcn/components/ui/button';
+    import CreateChannelDialog from './CreateChannelDialog.svelte';
+    import { createEventDispatcher } from 'svelte';
     import DisplayMode from '$lib/components/sidenav/DisplayMode.svelte';
 
     // type signature here is temporary
-    export let channels: (Channel & { publicInfo: { displayName: string } | null })[] | null = null;
+    export let channels: (Channel & { private: boolean })[] | null = null;
     export let subscriptions: UserSubscription[] | null = null;
     export let playlists: Playlist[] | null = null;
+
+    const dispatch = createEventDispatcher();
+
+    const createChannel = () => {
+        dispatch('updateChannels');
+        channelDialogOpen = false;
+    };
+
+    let channelDialogOpen = false;
 </script>
 
 <div class="flex h-full flex-col justify-between">
@@ -28,17 +40,25 @@
                     <ScrollArea class="grow">
                         {#if channels}
                             {#each channels as channel}
-                                {#if channel.publicInfo}
+                                {#if channel.private}
                                     <Route
-                                        href={`/c/${channel.publicInfo.displayName}`}
-                                        title={channel.publicInfo.displayName}
+                                        href="/c/private/{channel.id}"
+                                        title="c/{channel.name}"
                                     />
                                 {:else}
-                                    <a href={`/c/private/${channel.id}`}>{channel.name}</a>
+                                    <Route href="/c/{channel.name}" title="c/{channel.name}" />
                                 {/if}
                             {:else}
                                 <p class="pl-2">You have no channels</p>
                             {/each}
+                            <Dialog.Root bind:open={channelDialogOpen}>
+                                <Dialog.Trigger class="flex w-full justify-center">
+                                    <Button class="m-2 w-full">Create Channel</Button>
+                                </Dialog.Trigger>
+                                {#key channelDialogOpen}
+                                    <CreateChannelDialog on:create={createChannel} />
+                                {/key}
+                            </Dialog.Root>
                         {:else}
                             <p class="pl-2">Login to create a channel</p>
                         {/if}
@@ -52,8 +72,8 @@
                         {#if subscriptions}
                             {#each subscriptions as sub}
                                 <Route
-                                    href={`/c/${sub.channelDisplayName}`}
-                                    title={sub.channelDisplayName}
+                                    href="/c/{sub.channelDisplayName}"
+                                    title="c/{sub.channelDisplayName}"
                                 />
                             {:else}
                                 <p class="pl-2">You have no subscriptions</p>

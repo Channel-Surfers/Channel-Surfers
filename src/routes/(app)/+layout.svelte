@@ -1,5 +1,6 @@
 <script lang="ts">
     import '../../app.css';
+
     import { Toaster } from '$lib/shadcn/components/ui/sonner';
     import { ModeWatcher } from 'mode-watcher';
     import LeftNav from '$lib/components/sidenav/LeftNav.svelte';
@@ -14,8 +15,18 @@
     import type { User } from '$lib/server/db/users.sql';
     import { page } from '$app/stores';
     import type { Channel } from '$lib/server/db/channels.sql';
+    import { selectedTheme } from '$lib/stores';
 
     export let data: LayoutServerData;
+
+    // default to previous value
+    $selectedTheme = data.theme;
+
+    const updateChannels = async () => {
+        const res = await fetch('/api/channels');
+        data.myChannels = await res.json();
+        console.log(data.myChannels);
+    };
 
     $: ({ myChannels, mySubscriptions } = data);
     $: userAsUser = data.user ? (data.user as User) : null;
@@ -33,11 +44,9 @@
     <div class="w-1/6 min-w-96 p-4">
         {#if data.user && myChannels}
             <LeftNav
-                channels={myChannels.map((channel) => ({
-                    ...channel,
-                    publicInfo: { displayName: channel.name },
-                }))}
+                channels={myChannels}
                 subscriptions={mySubscriptions}
+                on:updateChannels={updateChannels}
             />
         {:else}
             <LeftNav />
@@ -55,7 +64,11 @@
             <HomeInfo stats={data.island.data} user={userAsUser} />
             <!-- As channel routes are implemented, update this block to show `ChannelInfo` where appropriate -->
         {:else if data.island.type === 'channel' && data.island.data}
-            <ChannelInfo channel={channelAsChannel} isSubscribed={data.island.data.isSubscribed} />
+            <ChannelInfo
+                channel={channelAsChannel}
+                isSubscribed={data.island.data.isSubscribed}
+                signedIn={!!userAsUser}
+            />
         {:else if data.island.type === 'user' && data.island.exists && data.island.data}
             <UserInfo
                 isBlocking={data.island.data.isBlocking}

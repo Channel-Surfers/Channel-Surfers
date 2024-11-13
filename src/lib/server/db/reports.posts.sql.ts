@@ -7,7 +7,7 @@ import { reportStatusEnum } from './types.sql';
  */
 export const postReportTable = pgTable('post_report', {
     id: uuid('id').primaryKey().defaultRandom(),
-    postId: uuid('post_id').references(() => postTable.id),
+    postId: uuid('post_id').references(() => postTable.id, { onDelete: 'set null' }),
     description: text('description').notNull(),
     resolution: text('resolution'),
     status: reportStatusEnum('status').notNull().default('INVESTIGATING'),

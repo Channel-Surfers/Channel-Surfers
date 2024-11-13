@@ -1,11 +1,15 @@
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { and, count, countDistinct, eq } from 'drizzle-orm';
+import { and, asc, count, countDistinct, eq } from 'drizzle-orm';
 import { userTable, type NewUser, type User } from '../db/users.sql';
 import { postTable } from '../db/posts.sql';
 import { postVoteTable } from '../db/votes.posts.sql';
 import { followTable } from '../db/follows.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
+import { roleTable, type Role } from '../db/roles.sql';
+import { sumPermissions, type Permissions } from '$lib/utils/permissions';
+import { userRoleTable } from '../db/roles.users.sql';
+import { channelTable } from '../db/channels.sql';
 
 export const getUserById = async (db: DB, id: string): Promise<User> => {
     const [ret] = await db.select().from(userTable).where(eq(userTable.id, id));
@@ -127,9 +131,38 @@ export const getUserByUsername = async (db: DB, username: string) => {
     return user;
 };
 
+
 export const updateUser = async (
     db: DB,
     user: Pick<User, 'id'> & Omit<Partial<User>, 'username' | 'profileImage'>
 ) => {
     return await db.update(userTable).set(user).where(eq(userTable.id, user.id));
+
+export type UserPermissionInfo = {
+    userId: string;
+    channelId: string;
+    highestRole: Role;
+    permissions: Permissions;
+};
+  
+export const getUserPermissionInfo = async (
+    db: DB,
+    userId: string,
+    channelId: string
+): Promise<UserPermissionInfo> => {
+    const roles = await db
+        .select()
+        .from(roleTable)
+        .innerJoin(userRoleTable, eq(roleTable.id, userRoleTable.roleId))
+        .innerJoin(userTable, eq(userRoleTable.userId, userTable.id))
+        .innerJoin(channelTable, eq(roleTable.channelId, channelTable.id))
+        .where(and(eq(userRoleTable.userId, userId), eq(roleTable.channelId, channelId)))
+        .orderBy(asc(roleTable.ranking));
+
+    return {
+        highestRole: roles[0].role,
+        userId,
+        channelId,
+        permissions: sumPermissions(roles.map((r) => r.role)),
+    };
 };
