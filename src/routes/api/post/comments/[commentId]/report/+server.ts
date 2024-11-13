@@ -26,6 +26,7 @@ export const POST: RequestHandler = async (event) => {
             id: randomUUID(),
             status: 'INVESTIGATING',
             resolution: null,
+            reporterId: null
         });
     } catch (error) {
         if (error instanceof Error && error.cause === '23505') {
