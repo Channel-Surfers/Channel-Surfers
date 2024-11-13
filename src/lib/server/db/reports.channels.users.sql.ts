@@ -14,6 +14,7 @@ export const channelUserReportTable = pgTable('channel_user_reports', {
     channelId: uuid('channel_id')
         .notNull()
         .references(() => channelTable.id),
+    reporterId: uuid('reporter_id').references(() => userTable.id),
     description: text('description').notNull(),
     resolution: text('resolution'),
     status: reportStatusEnum('status').notNull().default('INVESTIGATING'),

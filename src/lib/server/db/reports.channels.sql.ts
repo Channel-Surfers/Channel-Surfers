@@ -1,6 +1,7 @@
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { channelTable } from './channels.sql';
 import { reportStatusEnum } from './types.sql';
+import { userTable } from './users.sql';
 
 /**
  * @document public.channel_report.md
@@ -8,6 +9,7 @@ import { reportStatusEnum } from './types.sql';
 export const channelReportTable = pgTable('channel_report', {
     id: uuid('id').primaryKey().defaultRandom(),
     channelId: uuid('channel_id').references(() => channelTable.id),
+    reporterId: uuid('reporter_id').references(() => userTable.id),
     description: text('description').notNull(),
     resolution: text('resolution'),
     status: reportStatusEnum('status').notNull().default('INVESTIGATING'),

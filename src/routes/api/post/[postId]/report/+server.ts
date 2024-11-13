@@ -10,11 +10,13 @@ export const POST: RequestHandler = async (event) => {
     await createChannelReport(db, {
         description: data.details,
         postId: event.params.postId,
+        reporterId: event.locals.user.id,
     });
     if (data.reason.value === 'site') {
         await createPostReport(db, {
             description: data.details,
             postId: event.params.postId,
+            reporterId: event.locals.user.id,
         });
     }
     return new Response(null, {
