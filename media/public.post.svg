@@ -227,64 +227,70 @@
 <!-- public.channel_post_report -->
 <g id="node4" class="node">
 <title>public.channel_post_report</title>
-<polygon fill="#efefef" stroke="none" points="829.87,-1320 829.87,-1355.6 1164.8,-1355.6 1164.8,-1320 829.87,-1320"/>
-<polygon fill="none" stroke="black" points="829.87,-1320 829.87,-1355.6 1164.8,-1355.6 1164.8,-1320 829.87,-1320"/>
-<text text-anchor="start" x="836.87" y="-1333.4" font-family="Arial Bold" font-size="18.00">public.channel_post_report</text>
-<text text-anchor="start" x="1033.31" y="-1333.4" font-family="Arial" font-size="14.00">    </text>
-<text text-anchor="start" x="1064.43" y="-1333.4" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="black" points="829.87,-1289.2 829.87,-1320 1164.8,-1320 1164.8,-1289.2 829.87,-1289.2"/>
-<text text-anchor="start" x="836.87" y="-1301.4" font-family="Arial" font-size="14.00">id </text>
-<text text-anchor="start" x="851.66" y="-1301.4" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="829.87,-1258.4 829.87,-1289.2 1164.8,-1289.2 1164.8,-1258.4 829.87,-1258.4"/>
-<text text-anchor="start" x="836.87" y="-1270.6" font-family="Arial" font-size="14.00">post_id </text>
-<text text-anchor="start" x="885.9" y="-1270.6" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="829.87,-1227.6 829.87,-1258.4 1164.8,-1258.4 1164.8,-1227.6 829.87,-1227.6"/>
-<text text-anchor="start" x="836.87" y="-1239.8" font-family="Arial" font-size="14.00">description </text>
-<text text-anchor="start" x="908.46" y="-1239.8" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="829.87,-1196.8 829.87,-1227.6 1164.8,-1227.6 1164.8,-1196.8 829.87,-1196.8"/>
-<text text-anchor="start" x="836.87" y="-1209" font-family="Arial" font-size="14.00">resolution </text>
-<text text-anchor="start" x="901.46" y="-1209" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="829.87,-1166 829.87,-1196.8 1164.8,-1196.8 1164.8,-1166 829.87,-1166"/>
-<text text-anchor="start" x="836.87" y="-1178.2" font-family="Arial" font-size="14.00">status </text>
-<text text-anchor="start" x="878.11" y="-1178.2" font-family="Arial" font-size="14.00" fill="#666666">[report_status]</text>
+<polygon fill="#efefef" stroke="none" points="829.87,-1335.4 829.87,-1371 1164.8,-1371 1164.8,-1335.4 829.87,-1335.4"/>
+<polygon fill="none" stroke="black" points="829.87,-1335.4 829.87,-1371 1164.8,-1371 1164.8,-1335.4 829.87,-1335.4"/>
+<text text-anchor="start" x="836.87" y="-1348.8" font-family="Arial Bold" font-size="18.00">public.channel_post_report</text>
+<text text-anchor="start" x="1033.31" y="-1348.8" font-family="Arial" font-size="14.00">    </text>
+<text text-anchor="start" x="1064.43" y="-1348.8" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="black" points="829.87,-1304.6 829.87,-1335.4 1164.8,-1335.4 1164.8,-1304.6 829.87,-1304.6"/>
+<text text-anchor="start" x="836.87" y="-1316.8" font-family="Arial" font-size="14.00">id </text>
+<text text-anchor="start" x="851.66" y="-1316.8" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="829.87,-1273.8 829.87,-1304.6 1164.8,-1304.6 1164.8,-1273.8 829.87,-1273.8"/>
+<text text-anchor="start" x="836.87" y="-1286" font-family="Arial" font-size="14.00">post_id </text>
+<text text-anchor="start" x="885.9" y="-1286" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="829.87,-1243 829.87,-1273.8 1164.8,-1273.8 1164.8,-1243 829.87,-1243"/>
+<text text-anchor="start" x="836.87" y="-1255.2" font-family="Arial" font-size="14.00">reporter_id </text>
+<text text-anchor="start" x="908.46" y="-1255.2" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="829.87,-1212.2 829.87,-1243 1164.8,-1243 1164.8,-1212.2 829.87,-1212.2"/>
+<text text-anchor="start" x="836.87" y="-1224.4" font-family="Arial" font-size="14.00">description </text>
+<text text-anchor="start" x="908.46" y="-1224.4" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="829.87,-1181.4 829.87,-1212.2 1164.8,-1212.2 1164.8,-1181.4 829.87,-1181.4"/>
+<text text-anchor="start" x="836.87" y="-1193.6" font-family="Arial" font-size="14.00">resolution </text>
+<text text-anchor="start" x="901.46" y="-1193.6" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="829.87,-1150.6 829.87,-1181.4 1164.8,-1181.4 1164.8,-1150.6 829.87,-1150.6"/>
+<text text-anchor="start" x="836.87" y="-1162.8" font-family="Arial" font-size="14.00">status </text>
+<text text-anchor="start" x="878.11" y="-1162.8" font-family="Arial" font-size="14.00" fill="#666666">[report_status]</text>
 </g>
 <!-- public.channel_post_report&#45;&gt;public.post -->
 <g id="edge3" class="edge">
 <title>public.channel_post_report:post_id&#45;&gt;public.post:id</title>
-<path fill="none" stroke="black" d="M1176.19,-1272.96C1228.27,-1263.76 1190.01,-1180.88 1164.8,-1122.8 1139.7,-1064.95 1087.03,-1083 1061.82,-1025.2 1044.55,-985.6 1017.61,-928 1060.82,-928"/>
-<polygon fill="black" stroke="black" points="1176.1,-1272.97 1165.77,-1269.29 1170.79,-1273.4 1166.47,-1273.75 1166.47,-1273.75 1166.47,-1273.75 1170.79,-1273.4 1166.5,-1278.26 1176.1,-1272.97"/>
-<text text-anchor="start" x="1172.8" y="-1283.8" font-family="Arial" font-size="10.00">FOREIGN KEY (post_id) REFERENCES post(id)</text>
+<path fill="none" stroke="black" d="M1175.93,-1288.55C1242.44,-1279.47 1198.46,-1176.84 1164.8,-1107.4 1139.26,-1054.7 1087.49,-1077.84 1061.82,-1025.2 1042.88,-986.37 1017.61,-928 1060.82,-928"/>
+<polygon fill="black" stroke="black" points="1176.12,-1288.54 1165.85,-1284.69 1170.79,-1288.88 1166.47,-1289.16 1166.47,-1289.16 1166.47,-1289.16 1170.79,-1288.88 1166.42,-1293.67 1176.12,-1288.54"/>
+<text text-anchor="start" x="1172.8" y="-1299.2" font-family="Arial" font-size="10.00">FOREIGN KEY (post_id) REFERENCES post(id)</text>
 </g>
 <!-- public.post_report -->
 <g id="node5" class="node">
 <title>public.post_report</title>
-<polygon fill="#efefef" stroke="none" points="1269.35,-1320 1269.35,-1355.6 1539.32,-1355.6 1539.32,-1320 1269.35,-1320"/>
-<polygon fill="none" stroke="black" points="1269.35,-1320 1269.35,-1355.6 1539.32,-1355.6 1539.32,-1320 1269.35,-1320"/>
-<text text-anchor="start" x="1276.35" y="-1333.4" font-family="Arial Bold" font-size="18.00">public.post_report</text>
-<text text-anchor="start" x="1407.83" y="-1333.4" font-family="Arial" font-size="14.00">    </text>
-<text text-anchor="start" x="1438.95" y="-1333.4" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="black" points="1269.35,-1289.2 1269.35,-1320 1539.32,-1320 1539.32,-1289.2 1269.35,-1289.2"/>
-<text text-anchor="start" x="1276.35" y="-1301.4" font-family="Arial" font-size="14.00">id </text>
-<text text-anchor="start" x="1291.14" y="-1301.4" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="1269.35,-1258.4 1269.35,-1289.2 1539.32,-1289.2 1539.32,-1258.4 1269.35,-1258.4"/>
-<text text-anchor="start" x="1276.35" y="-1270.6" font-family="Arial" font-size="14.00">post_id </text>
-<text text-anchor="start" x="1325.39" y="-1270.6" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="1269.35,-1227.6 1269.35,-1258.4 1539.32,-1258.4 1539.32,-1227.6 1269.35,-1227.6"/>
-<text text-anchor="start" x="1276.35" y="-1239.8" font-family="Arial" font-size="14.00">description </text>
-<text text-anchor="start" x="1347.95" y="-1239.8" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="1269.35,-1196.8 1269.35,-1227.6 1539.32,-1227.6 1539.32,-1196.8 1269.35,-1196.8"/>
-<text text-anchor="start" x="1276.35" y="-1209" font-family="Arial" font-size="14.00">resolution </text>
-<text text-anchor="start" x="1340.95" y="-1209" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="1269.35,-1166 1269.35,-1196.8 1539.32,-1196.8 1539.32,-1166 1269.35,-1166"/>
-<text text-anchor="start" x="1276.35" y="-1178.2" font-family="Arial" font-size="14.00">status </text>
-<text text-anchor="start" x="1317.6" y="-1178.2" font-family="Arial" font-size="14.00" fill="#666666">[report_status]</text>
+<polygon fill="#efefef" stroke="none" points="1269.35,-1335.4 1269.35,-1371 1539.32,-1371 1539.32,-1335.4 1269.35,-1335.4"/>
+<polygon fill="none" stroke="black" points="1269.35,-1335.4 1269.35,-1371 1539.32,-1371 1539.32,-1335.4 1269.35,-1335.4"/>
+<text text-anchor="start" x="1276.35" y="-1348.8" font-family="Arial Bold" font-size="18.00">public.post_report</text>
+<text text-anchor="start" x="1407.83" y="-1348.8" font-family="Arial" font-size="14.00">    </text>
+<text text-anchor="start" x="1438.95" y="-1348.8" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="black" points="1269.35,-1304.6 1269.35,-1335.4 1539.32,-1335.4 1539.32,-1304.6 1269.35,-1304.6"/>
+<text text-anchor="start" x="1276.35" y="-1316.8" font-family="Arial" font-size="14.00">id </text>
+<text text-anchor="start" x="1291.14" y="-1316.8" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="1269.35,-1273.8 1269.35,-1304.6 1539.32,-1304.6 1539.32,-1273.8 1269.35,-1273.8"/>
+<text text-anchor="start" x="1276.35" y="-1286" font-family="Arial" font-size="14.00">post_id </text>
+<text text-anchor="start" x="1325.39" y="-1286" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="1269.35,-1243 1269.35,-1273.8 1539.32,-1273.8 1539.32,-1243 1269.35,-1243"/>
+<text text-anchor="start" x="1276.35" y="-1255.2" font-family="Arial" font-size="14.00">reporter_id </text>
+<text text-anchor="start" x="1347.95" y="-1255.2" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="1269.35,-1212.2 1269.35,-1243 1539.32,-1243 1539.32,-1212.2 1269.35,-1212.2"/>
+<text text-anchor="start" x="1276.35" y="-1224.4" font-family="Arial" font-size="14.00">description </text>
+<text text-anchor="start" x="1347.95" y="-1224.4" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="1269.35,-1181.4 1269.35,-1212.2 1539.32,-1212.2 1539.32,-1181.4 1269.35,-1181.4"/>
+<text text-anchor="start" x="1276.35" y="-1193.6" font-family="Arial" font-size="14.00">resolution </text>
+<text text-anchor="start" x="1340.95" y="-1193.6" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="1269.35,-1150.6 1269.35,-1181.4 1539.32,-1181.4 1539.32,-1150.6 1269.35,-1150.6"/>
+<text text-anchor="start" x="1276.35" y="-1162.8" font-family="Arial" font-size="14.00">status </text>
+<text text-anchor="start" x="1317.6" y="-1162.8" font-family="Arial" font-size="14.00" fill="#666666">[report_status]</text>
 </g>
 <!-- public.post_report&#45;&gt;public.post -->
 <g id="edge4" class="edge">
 <title>public.post_report:post_id&#45;&gt;public.post:id</title>
-<path fill="none" stroke="black" d="M1258.03,-1272.98C1206.53,-1264 1249.88,-1183.04 1269.35,-1122.8 1285.74,-1072.13 1322.38,-1075.84 1338.86,-1025.2 1352.22,-984.12 1383.06,-928 1339.86,-928"/>
-<polygon fill="black" stroke="black" points="1258.05,-1272.98 1267.66,-1278.26 1263.37,-1273.4 1267.69,-1273.75 1267.69,-1273.75 1267.69,-1273.75 1263.37,-1273.4 1268.38,-1269.29 1258.05,-1272.98"/>
-<text text-anchor="start" x="1019.38" y="-1257.8" font-family="Arial" font-size="10.00">FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE SET NULL</text>
+<path fill="none" stroke="black" d="M1258.27,-1288.57C1192.34,-1279.74 1242.62,-1179.79 1269.35,-1107.4 1285.92,-1062.52 1322.18,-1070.04 1338.86,-1025.2 1353.92,-984.71 1383.06,-928 1339.86,-928"/>
+<polygon fill="black" stroke="black" points="1258.04,-1288.56 1267.74,-1293.67 1263.36,-1288.89 1267.69,-1289.16 1267.69,-1289.16 1267.69,-1289.16 1263.36,-1288.89 1268.3,-1284.69 1258.04,-1288.56"/>
+<text text-anchor="start" x="1019.38" y="-1273.2" font-family="Arial" font-size="10.00">FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE SET NULL</text>
 </g>
 <!-- public.post_tag -->
 <g id="node6" class="node">

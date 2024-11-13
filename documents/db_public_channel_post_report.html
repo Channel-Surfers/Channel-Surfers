@@ -30,6 +30,15 @@
 <td></td>
 </tr>
 <tr>
+<td>reporter_id</td>
+<td>uuid</td>
+<td></td>
+<td>true</td>
+<td></td>
+<td><a href="lib_server_db_users_sql.userTable.public_user.html">public.user</a></td>
+<td></td>
+</tr>
+<tr>
 <td>description</td>
 <td>text</td>
 <td></td>
@@ -76,6 +85,11 @@
 <td>channel_post_report_pkey</td>
 <td>PRIMARY KEY</td>
 <td>PRIMARY KEY (id)</td>
+</tr>
+<tr>
+<td>channel_post_report_reporter_id_user_id_fk</td>
+<td>FOREIGN KEY</td>
+<td>FOREIGN KEY (reporter_id) REFERENCES &quot;user&quot;(id)</td>
 </tr>
 </tbody>
 </table>

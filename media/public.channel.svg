@@ -240,67 +240,73 @@
 <!-- public.channel_report -->
 <g id="node6" class="node">
 <title>public.channel_report</title>
-<polygon fill="#efefef" stroke="none" points="1626.2,-1551 1626.2,-1586.6 1922.13,-1586.6 1922.13,-1551 1626.2,-1551"/>
-<polygon fill="none" stroke="black" points="1626.2,-1551 1626.2,-1586.6 1922.13,-1586.6 1922.13,-1551 1626.2,-1551"/>
-<text text-anchor="start" x="1633.2" y="-1564.4" font-family="Arial Bold" font-size="18.00">public.channel_report</text>
-<text text-anchor="start" x="1790.64" y="-1564.4" font-family="Arial" font-size="14.00">    </text>
-<text text-anchor="start" x="1821.76" y="-1564.4" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="black" points="1626.2,-1520.2 1626.2,-1551 1922.13,-1551 1922.13,-1520.2 1626.2,-1520.2"/>
-<text text-anchor="start" x="1633.2" y="-1532.4" font-family="Arial" font-size="14.00">id </text>
-<text text-anchor="start" x="1647.99" y="-1532.4" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="1626.2,-1489.4 1626.2,-1520.2 1922.13,-1520.2 1922.13,-1489.4 1626.2,-1489.4"/>
-<text text-anchor="start" x="1633.2" y="-1501.6" font-family="Arial" font-size="14.00">channel_id </text>
-<text text-anchor="start" x="1704.81" y="-1501.6" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="1626.2,-1458.6 1626.2,-1489.4 1922.13,-1489.4 1922.13,-1458.6 1626.2,-1458.6"/>
-<text text-anchor="start" x="1633.2" y="-1470.8" font-family="Arial" font-size="14.00">description </text>
-<text text-anchor="start" x="1704.79" y="-1470.8" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="1626.2,-1427.8 1626.2,-1458.6 1922.13,-1458.6 1922.13,-1427.8 1626.2,-1427.8"/>
-<text text-anchor="start" x="1633.2" y="-1440" font-family="Arial" font-size="14.00">resolution </text>
-<text text-anchor="start" x="1697.79" y="-1440" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="1626.2,-1397 1626.2,-1427.8 1922.13,-1427.8 1922.13,-1397 1626.2,-1397"/>
-<text text-anchor="start" x="1633.2" y="-1409.2" font-family="Arial" font-size="14.00">status </text>
-<text text-anchor="start" x="1674.44" y="-1409.2" font-family="Arial" font-size="14.00" fill="#666666">[report_status]</text>
+<polygon fill="#efefef" stroke="none" points="1626.2,-1566.4 1626.2,-1602 1922.13,-1602 1922.13,-1566.4 1626.2,-1566.4"/>
+<polygon fill="none" stroke="black" points="1626.2,-1566.4 1626.2,-1602 1922.13,-1602 1922.13,-1566.4 1626.2,-1566.4"/>
+<text text-anchor="start" x="1633.2" y="-1579.8" font-family="Arial Bold" font-size="18.00">public.channel_report</text>
+<text text-anchor="start" x="1790.64" y="-1579.8" font-family="Arial" font-size="14.00">    </text>
+<text text-anchor="start" x="1821.76" y="-1579.8" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="black" points="1626.2,-1535.6 1626.2,-1566.4 1922.13,-1566.4 1922.13,-1535.6 1626.2,-1535.6"/>
+<text text-anchor="start" x="1633.2" y="-1547.8" font-family="Arial" font-size="14.00">id </text>
+<text text-anchor="start" x="1647.99" y="-1547.8" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="1626.2,-1504.8 1626.2,-1535.6 1922.13,-1535.6 1922.13,-1504.8 1626.2,-1504.8"/>
+<text text-anchor="start" x="1633.2" y="-1517" font-family="Arial" font-size="14.00">channel_id </text>
+<text text-anchor="start" x="1704.81" y="-1517" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="1626.2,-1474 1626.2,-1504.8 1922.13,-1504.8 1922.13,-1474 1626.2,-1474"/>
+<text text-anchor="start" x="1633.2" y="-1486.2" font-family="Arial" font-size="14.00">reporter_id </text>
+<text text-anchor="start" x="1704.79" y="-1486.2" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="1626.2,-1443.2 1626.2,-1474 1922.13,-1474 1922.13,-1443.2 1626.2,-1443.2"/>
+<text text-anchor="start" x="1633.2" y="-1455.4" font-family="Arial" font-size="14.00">description </text>
+<text text-anchor="start" x="1704.79" y="-1455.4" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="1626.2,-1412.4 1626.2,-1443.2 1922.13,-1443.2 1922.13,-1412.4 1626.2,-1412.4"/>
+<text text-anchor="start" x="1633.2" y="-1424.6" font-family="Arial" font-size="14.00">resolution </text>
+<text text-anchor="start" x="1697.79" y="-1424.6" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="1626.2,-1381.6 1626.2,-1412.4 1922.13,-1412.4 1922.13,-1381.6 1626.2,-1381.6"/>
+<text text-anchor="start" x="1633.2" y="-1393.8" font-family="Arial" font-size="14.00">status </text>
+<text text-anchor="start" x="1674.44" y="-1393.8" font-family="Arial" font-size="14.00" fill="#666666">[report_status]</text>
 </g>
 <!-- public.channel_report&#45;&gt;public.channel -->
 <g id="edge5" class="edge">
 <title>public.channel_report:channel_id&#45;&gt;public.channel:id</title>
-<path fill="none" stroke="black" d="M1929.74,-1496.82C1958.98,-1421.32 1948.47,-835.6 1913.68,-835.6"/>
-<polygon fill="black" stroke="black" points="1929.72,-1496.84 1919.88,-1501.67 1926.32,-1500.95 1923.55,-1504.28 1923.55,-1504.28 1923.55,-1504.28 1926.32,-1500.95 1926.81,-1507.41 1929.72,-1496.84"/>
-<text text-anchor="start" x="1930.13" y="-1514.8" font-family="Arial" font-size="10.00">FOREIGN KEY (channel_id) REFERENCES channel(id)</text>
+<path fill="none" stroke="black" d="M1929.71,-1512.51C1959.87,-1437.3 1949.34,-835.6 1913.68,-835.6"/>
+<polygon fill="black" stroke="black" points="1929.85,-1512.35 1919.93,-1517.02 1926.38,-1516.4 1923.56,-1519.69 1923.56,-1519.69 1923.56,-1519.69 1926.38,-1516.4 1926.76,-1522.87 1929.85,-1512.35"/>
+<text text-anchor="start" x="1930.13" y="-1530.2" font-family="Arial" font-size="10.00">FOREIGN KEY (channel_id) REFERENCES channel(id)</text>
 </g>
 <!-- public.channel_user_reports -->
 <g id="node7" class="node">
 <title>public.channel_user_reports</title>
-<polygon fill="#efefef" stroke="none" points="2026.2,-1566.4 2026.2,-1602 2368.12,-1602 2368.12,-1566.4 2026.2,-1566.4"/>
-<polygon fill="none" stroke="black" points="2026.2,-1566.4 2026.2,-1602 2368.12,-1602 2368.12,-1566.4 2026.2,-1566.4"/>
-<text text-anchor="start" x="2033.2" y="-1579.8" font-family="Arial Bold" font-size="18.00">public.channel_user_reports</text>
-<text text-anchor="start" x="2236.63" y="-1579.8" font-family="Arial" font-size="14.00">    </text>
-<text text-anchor="start" x="2267.75" y="-1579.8" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="black" points="2026.2,-1535.6 2026.2,-1566.4 2368.12,-1566.4 2368.12,-1535.6 2026.2,-1535.6"/>
-<text text-anchor="start" x="2033.2" y="-1547.8" font-family="Arial" font-size="14.00">id </text>
-<text text-anchor="start" x="2047.99" y="-1547.8" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="2026.2,-1504.8 2026.2,-1535.6 2368.12,-1535.6 2368.12,-1504.8 2026.2,-1504.8"/>
-<text text-anchor="start" x="2033.2" y="-1517" font-family="Arial" font-size="14.00">user_id </text>
-<text text-anchor="start" x="2083.01" y="-1517" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="2026.2,-1474 2026.2,-1504.8 2368.12,-1504.8 2368.12,-1474 2026.2,-1474"/>
-<text text-anchor="start" x="2033.2" y="-1486.2" font-family="Arial" font-size="14.00">channel_id </text>
-<text text-anchor="start" x="2104.82" y="-1486.2" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="black" points="2026.2,-1443.2 2026.2,-1474 2368.12,-1474 2368.12,-1443.2 2026.2,-1443.2"/>
-<text text-anchor="start" x="2033.2" y="-1455.4" font-family="Arial" font-size="14.00">description </text>
-<text text-anchor="start" x="2104.8" y="-1455.4" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="2026.2,-1412.4 2026.2,-1443.2 2368.12,-1443.2 2368.12,-1412.4 2026.2,-1412.4"/>
-<text text-anchor="start" x="2033.2" y="-1424.6" font-family="Arial" font-size="14.00">resolution </text>
-<text text-anchor="start" x="2097.8" y="-1424.6" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="black" points="2026.2,-1381.6 2026.2,-1412.4 2368.12,-1412.4 2368.12,-1381.6 2026.2,-1381.6"/>
-<text text-anchor="start" x="2033.2" y="-1393.8" font-family="Arial" font-size="14.00">status </text>
-<text text-anchor="start" x="2074.44" y="-1393.8" font-family="Arial" font-size="14.00" fill="#666666">[report_status]</text>
+<polygon fill="#efefef" stroke="none" points="2026.2,-1581.8 2026.2,-1617.4 2368.12,-1617.4 2368.12,-1581.8 2026.2,-1581.8"/>
+<polygon fill="none" stroke="black" points="2026.2,-1581.8 2026.2,-1617.4 2368.12,-1617.4 2368.12,-1581.8 2026.2,-1581.8"/>
+<text text-anchor="start" x="2033.2" y="-1595.2" font-family="Arial Bold" font-size="18.00">public.channel_user_reports</text>
+<text text-anchor="start" x="2236.63" y="-1595.2" font-family="Arial" font-size="14.00">    </text>
+<text text-anchor="start" x="2267.75" y="-1595.2" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="black" points="2026.2,-1551 2026.2,-1581.8 2368.12,-1581.8 2368.12,-1551 2026.2,-1551"/>
+<text text-anchor="start" x="2033.2" y="-1563.2" font-family="Arial" font-size="14.00">id </text>
+<text text-anchor="start" x="2047.99" y="-1563.2" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="2026.2,-1520.2 2026.2,-1551 2368.12,-1551 2368.12,-1520.2 2026.2,-1520.2"/>
+<text text-anchor="start" x="2033.2" y="-1532.4" font-family="Arial" font-size="14.00">user_id </text>
+<text text-anchor="start" x="2083.01" y="-1532.4" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="2026.2,-1489.4 2026.2,-1520.2 2368.12,-1520.2 2368.12,-1489.4 2026.2,-1489.4"/>
+<text text-anchor="start" x="2033.2" y="-1501.6" font-family="Arial" font-size="14.00">channel_id </text>
+<text text-anchor="start" x="2104.82" y="-1501.6" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="2026.2,-1458.6 2026.2,-1489.4 2368.12,-1489.4 2368.12,-1458.6 2026.2,-1458.6"/>
+<text text-anchor="start" x="2033.2" y="-1470.8" font-family="Arial" font-size="14.00">reporter_id </text>
+<text text-anchor="start" x="2104.8" y="-1470.8" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="black" points="2026.2,-1427.8 2026.2,-1458.6 2368.12,-1458.6 2368.12,-1427.8 2026.2,-1427.8"/>
+<text text-anchor="start" x="2033.2" y="-1440" font-family="Arial" font-size="14.00">description </text>
+<text text-anchor="start" x="2104.8" y="-1440" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="2026.2,-1397 2026.2,-1427.8 2368.12,-1427.8 2368.12,-1397 2026.2,-1397"/>
+<text text-anchor="start" x="2033.2" y="-1409.2" font-family="Arial" font-size="14.00">resolution </text>
+<text text-anchor="start" x="2097.8" y="-1409.2" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="black" points="2026.2,-1366.2 2026.2,-1397 2368.12,-1397 2368.12,-1366.2 2026.2,-1366.2"/>
+<text text-anchor="start" x="2033.2" y="-1378.4" font-family="Arial" font-size="14.00">status </text>
+<text text-anchor="start" x="2074.44" y="-1378.4" font-family="Arial" font-size="14.00" fill="#666666">[report_status]</text>
 </g>
 <!-- public.channel_user_reports&#45;&gt;public.channel -->
 <g id="edge6" class="edge">
 <title>public.channel_user_reports:channel_id&#45;&gt;public.channel:id</title>
-<path fill="none" stroke="black" d="M2016.08,-1485.09C1969.47,-1438.1 1988.36,-1021.76 1974.16,-968.8 1957.32,-906 1978.7,-835.6 1913.68,-835.6"/>
-<polygon fill="black" stroke="black" points="2015.86,-1484.98 2022.98,-1493.33 2020.68,-1487.26 2024.6,-1489.11 2024.6,-1489.11 2024.6,-1489.11 2020.68,-1487.26 2026.82,-1485.19 2015.86,-1484.98"/>
-<text text-anchor="start" x="2032.2" y="-1473.4" font-family="Arial" font-size="10.00">FOREIGN KEY (channel_id) REFERENCES channel(id)</text>
+<path fill="none" stroke="black" d="M2015.82,-1500.36C1967.99,-1451.98 1988.7,-1023.33 1974.16,-968.8 1957.41,-905.98 1978.7,-835.6 1913.68,-835.6"/>
+<polygon fill="black" stroke="black" points="2015.86,-1500.38 2022.98,-1508.72 2020.68,-1502.66 2024.6,-1504.51 2024.6,-1504.51 2024.6,-1504.51 2020.68,-1502.66 2026.83,-1500.59 2015.86,-1500.38"/>
+<text text-anchor="start" x="2032.2" y="-1488.8" font-family="Arial" font-size="10.00">FOREIGN KEY (channel_id) REFERENCES channel(id)</text>
 </g>
 <!-- public.role -->
 <g id="node8" class="node">
