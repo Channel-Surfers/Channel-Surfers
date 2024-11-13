@@ -3,6 +3,7 @@ import type { DB } from '..';
 import { followTable } from '../db/follows.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
 import type { uuid } from '$lib/types';
+import { subscriptionTable } from '../db/subscriptions.sql';
 
 export const followUser = async (db: DB, followerId: string, userId: string) => {
     let [following] = await db
@@ -46,5 +47,26 @@ export const unblockUser = async (db: DB, userId: uuid, blockedUserId: uuid) => 
         )
         .returning();
     if (!deleted) throw new Error('not blocking');
+    return true;
+};
+
+export const subscribe = async (db: DB, userId: uuid, channelId: uuid) => {
+    const [subscription] = await db
+        .insert(subscriptionTable)
+        .values({ userId, channelId })
+        .onConflictDoNothing()
+        .returning();
+    if (!subscription) throw new Error('already subscribed');
+    return subscription;
+};
+
+export const unsubscribe = async (db: DB, userId: uuid, channelId: uuid) => {
+    const [subscription] = await db
+        .delete(subscriptionTable)
+        .where(
+            and(eq(subscriptionTable.userId, userId), eq(subscriptionTable.channelId, channelId))
+        )
+        .returning();
+    if (!subscription) throw new Error('not subscribed');
     return true;
 };
