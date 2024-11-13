@@ -2,7 +2,7 @@
     import type { Channel } from '$lib/server/db/channels.sql';
     import ScrollArea from '$lib/shadcn/components/ui/scroll-area/scroll-area.svelte';
     import Separator from '$lib/shadcn/components/ui/separator/separator.svelte';
-    import { Home, Settings, Flame } from 'lucide-svelte';
+    import { Home, Settings, Flame, Newspaper } from 'lucide-svelte';
     import Route from './Route.svelte';
     import * as Accordion from '$lib/shadcn/components/ui/accordion';
     import * as Dialog from '$lib/shadcn/components/ui/dialog';
@@ -30,8 +30,9 @@
 
 <div class="flex h-full flex-col justify-between">
     <div class="flex grow flex-col">
-        <Route title={'Home'} icon={Home} href="/" />
-        <Route title={'Popular'} icon={Flame} href="/h/popular" />
+        <Route title="Home" icon={Home} href="/" />
+        <Route title="Subscribed" icon={Newspaper} href="/subscribed" />
+        <Route title="Popular" icon={Flame} href="/h/popular" />
         <Separator class="mt-2" />
         <Accordion.Root class="h-full" multiple>
             <Accordion.Item value="my_channels">

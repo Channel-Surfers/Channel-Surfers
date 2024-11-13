@@ -3,19 +3,15 @@
 
     export let data;
 
-    const filter = 'all';
-    const sort = 'date';
-    const reverseSort = false;
     const now = new Date();
-
     const getPosts = async (page: number) => {
         const search = new URLSearchParams({
             page: `${page}`,
             type: 'home',
             after: now.toISOString(),
-            sort,
-            filter,
-            reverseSort: `${reverseSort}`,
+            sort: 'date',
+            filter: 'all',
+            sortDirection: 'dsc',
         });
         const res = await fetch(`/api/posts?${search}`);
 

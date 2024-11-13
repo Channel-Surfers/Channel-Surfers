@@ -78,7 +78,7 @@ interface GenericPostFilter {
     requesterId?: uuid;
     sort: 'votes' | 'date';
     filter: 'subscribed' | 'all';
-    reverseSort?: boolean;
+    sortDirection?: 'asc' | 'dsc';
     before?: Date;
     after?: Date;
 }
@@ -151,7 +151,7 @@ export const getPosts = async (db: DB, page: number, filter: PostFilter): Promis
     // List of conditions, eventually joined by `and`.
     const conditions = [eq(postTable.status, 'OK')];
 
-    const dirFn = filter.reverseSort ? asc : desc;
+    const dirFn = filter.sortDirection === 'asc' ? asc : desc;
     switch (filter.filter) {
         case 'all':
             break;
