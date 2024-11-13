@@ -1,4 +1,4 @@
-import { and, eq, inArray} from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import type { DB } from '..';
 import { followTable } from '../db/follows.sql';
 import { userBlockTable } from '../db/blocks.users.sql';
@@ -42,12 +42,15 @@ export const unblockMultipleUsers = async (db: DB, userId: uuid, blockedUserId: 
     const [deleted] = await db
         .delete(userBlockTable)
         .where(
-            and(eq(userBlockTable.userId, userId), inArray(userBlockTable.blockedUserId, blockedUserId))
+            and(
+                eq(userBlockTable.userId, userId),
+                inArray(userBlockTable.blockedUserId, blockedUserId)
+            )
         )
         .returning();
     if (!deleted) throw new Error('not blocking');
     return true;
-}
+};
 
 export const unblockUser = async (db: DB, userId: uuid, blockedUserId: uuid) => {
     const [deleted] = await db

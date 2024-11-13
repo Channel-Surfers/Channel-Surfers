@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import type { ClassValue } from "clsx";
-import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import type { ClassValue } from 'clsx';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export const sleep = (delayMs: number): Promise<void> =>
     new Promise((res) => setTimeout(() => res(), delayMs));
@@ -57,5 +57,5 @@ export const debounce = <T extends (...args: unknown[]) => void>(callback: T, wa
 };
 
 export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
+    return twMerge(clsx(inputs));
 }
