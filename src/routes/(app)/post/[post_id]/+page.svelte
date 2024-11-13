@@ -1,6 +1,6 @@
 <script lang="ts">
     import Player from '$lib/components/Player.svelte';
-    import ViewComment from "$lib/components/ViewComment.svelte"
+    import ViewComment from '$lib/components/ViewComment.svelte';
     import Score from '$lib/components/Score.svelte';
     import { AspectRatio } from '$lib/shadcn/components/ui/aspect-ratio';
     import { Badge } from '$lib/shadcn/components/ui/badge';
@@ -13,25 +13,19 @@
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import UserChannel from '$lib/components/UserChannel.svelte';
     import { ScrollArea } from '$lib/shadcn/components/ui/scroll-area';
-    import { Skeleton } from '$lib/shadcn/components/ui/skeleton';
     import { toast } from 'svelte-sonner';
     import { EllipsisVertical, Flag } from 'lucide-svelte';
     import { Button } from '$lib/shadcn/components/ui/button';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
     import { gfmPlugin } from 'svelte-exmarkdown/gfm';
     import Elapsed from '$lib/components/Elapsed.svelte';
-    import Textarea from '$lib/shadcn/components/ui/textarea/textarea.svelte';
-    //import { commentTable } from '$lib/server/db/comments.sql.js';
 
     export let data;
-
-    let newComment: any;
 
     let {
         userVote,
         post: { upvotes, downvotes },
     } = data;
-
 
     const vote = async (dir: 'UP' | 'DOWN') => {
         if (userVote === 'UP') {
@@ -64,10 +58,6 @@
             toast.error('Unexpected error while submitting vote');
         }
     };
-
-    const leaveComment = async() => {
-        console.log(newComment);
-    }
 
     const mdPlugins = [gfmPlugin()];
 </script>
@@ -166,35 +156,15 @@
     <!-- NOW TO DISPLAY THE COMMENTS -->
     <Card.Root class="mx-auto my-4 p-2">
         <Card.Header class="px-6">
-          <Card.Title>Comments</Card.Title>
+            <Card.Title>Comments</Card.Title>
         </Card.Header>
 
         <Card.Content>
             {#each data.commentTreeForThisPost as commentData}
-                <ViewComment {commentData}/>
-	        {/each}
+                <ViewComment {commentData} />
+            {/each}
         </Card.Content>
-
     </Card.Root>
-
-    <!-- Leave a Comment Section -->
-<Card.Root class="mx-auto my-4 p-4">
-    <Card.Header>
-        <Card.Title>Leave a Comment</Card.Title>
-    </Card.Header>
-
-    <Card.Content>
-        <Textarea
-            placeholder="Write your comment here..."
-            bind:value={newComment}
-            class="w-full mb-4"
-        />
-        <Button variant="secondary" on:click={leaveComment}>
-            Post Comment
-        </Button>
-    </Card.Content>
-</Card.Root>
-
 </ScrollArea>
 
 <style>

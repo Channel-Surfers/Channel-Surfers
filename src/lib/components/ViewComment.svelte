@@ -1,10 +1,6 @@
-
-
-<script lang='ts'>
-    
+<script lang="ts">
     import * as Card from '$lib/shadcn/components/ui/card';
     import * as Avatar from '$lib/shadcn/components/ui/avatar/index';
-    import { Skeleton } from '$lib/shadcn/components/ui/skeleton/index';
     import { Button } from '$lib/shadcn/components/ui/button';
     import { PAGE_SIZE } from '$lib';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
@@ -14,35 +10,46 @@
     import { Label } from '$lib/shadcn/components/ui/label';
     import { Textarea } from '$lib/shadcn/components/ui/textarea';
     import { toast } from 'svelte-sonner';
-    import { string } from 'valibot';
     import type { CommentData } from '$lib/types';
     import { Toggle } from '$lib/shadcn/components/ui/toggle';
     import Score from './Score.svelte';
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
+    import { onMount } from 'svelte';
 
-    export let commentData : CommentData;
+    export let commentData: CommentData;
+
     let reportDialogOpen = false;
     let viewingReplies = true;
     let pageCount = 0;
 
-    const loadMoreReplies = async (commentId: string, page: number) => {
+    let userVote: string | null;
+    let downvotes = 0;
+    let upvotes = 0;
+
+    onMount(() => {
+        // Destructuring to extract upvotes and downvotes
+        const { upvotes: initialUpvotes, downvotes: initialDownvotes } = commentData.comment;
+        upvotes = initialUpvotes;
+        downvotes = initialDownvotes;
+    });
+
+    const loadMoreReplies = async (commentId: string) => {
         const res = await fetch(`/api/post/comments/${commentId}/replies?offset=${pageCount}`);
         const data = await res.json();
-        
-        // Ensure only unique replies are added
-        const newReplies = data.filter((reply: { comment: { id: string; }; }) => 
-            !commentData.children.some(existingReply => existingReply.comment.id === reply.comment.id)
+
+        const newReplies = data.filter(
+            (reply: { comment: { id: string } }) =>
+                !commentData.children.some(
+                    (existingReply) => existingReply.comment.id === reply.comment.id
+                )
         );
 
-
-        // Append new replies to the current replies
         commentData.children = [...commentData.children, ...newReplies];
-        console.log("Updated commentData.children:", commentData.children);
-        pageCount += 1;  
+        pageCount += 1;
     };
 
-    const getMonthAndDate = (fullDate: string | Date) => { 
+    const getMonthAndDate = (fullDate: string | Date) => {
         const date = fullDate instanceof Date ? fullDate : new Date(fullDate);
         const monthName = date.toLocaleString('default', { month: 'long' });
         const day = date.getDate();
@@ -50,14 +57,42 @@
         return `${monthName} ${day}`;
     };
 
+    const vote = async (dir: 'UP' | 'DOWN') => {
+        if (userVote === 'UP') {
+            upvotes -= 1;
+        } else if (userVote === 'DOWN') {
+            downvotes -= 1;
+        }
+
+        if (userVote === dir) {
+            userVote = null;
+        } else {
+            if (dir === 'UP') {
+                upvotes += 1;
+            } else {
+                downvotes += 1;
+            }
+            userVote = dir;
+        }
+
+        const res = await fetch(`/api/post/comments/${commentData.comment.id}/vote`, {
+            method: 'POST',
+            body: `${userVote}`,
+        });
+
+        if (res.ok) {
+            const ret = await res.json();
+            ({ upvotes, downvotes } = ret);
+        } else {
+            toast.error('Unexpected error while submitting vote');
+        }
+    };
+
     const reportData = {
         commentId: commentData.comment.id,
         reason: undefined,
         details: '',
     };
-
-
-    
 
     const submitReport = async () => {
         console.log(reportData);
@@ -82,10 +117,7 @@
     function toggleReplies() {
         viewingReplies = !viewingReplies;
     }
-
-
 </script>
-  
 
 <Dialog.Root bind:open={reportDialogOpen}>
     <Dialog.Portal>
@@ -100,7 +132,9 @@
                         <Select.Value placeholder="What is the reason for the report?" />
                     </Select.Trigger>
                     <Select.Content>
-                        <Select.Item value="community">Comment violates community guidelines</Select.Item>
+                        <Select.Item value="community"
+                            >Comment violates community guidelines</Select.Item
+                        >
                         <Select.Item value="site">Comment violates site guidelines</Select.Item>
                     </Select.Content>
                 </Select.Root>
@@ -121,88 +155,104 @@
     </Dialog.Portal>
 </Dialog.Root>
 
-
-
-<div class="comment-card p-4 ">
+<div class="comment-card p-4">
     <Card.Root>
         <div class="flex items-center">
             <!-- Avatar Image -->
-            <Avatar.Root class="h-8 w-8 ml-4 mt-4 mb-2">
-                <Avatar.Image src={commentData.user.profileImage || ''} alt={commentData.user.username} />
-                <Avatar.Fallback>{commentData.user.username[0]?.toUpperCase() || '?'}</Avatar.Fallback>
+            <Avatar.Root class="mb-2 ml-4 mt-4 h-8 w-8">
+                <Avatar.Image
+                    src={commentData.user.profileImage || ''}
+                    alt={commentData.user.username}
+                />
+                <Avatar.Fallback
+                    >{commentData.user.username[0]?.toUpperCase() || '?'}</Avatar.Fallback
+                >
             </Avatar.Root>
-            
+
             <!-- Display Username -->
-            <p class="h-4 w-full text-xl mb-1 ml-2">
-                <a href="/u/{commentData.user.username}" class="decoration-slate-500 underline-offset-2 hover:underline">
+            <p class="mb-1 ml-2 h-4 w-full text-xl">
+                <a
+                    href="/u/{commentData.user.username}"
+                    class="decoration-slate-500 underline-offset-2 hover:underline"
+                >
                     u/{commentData.user.username}
                 </a>
             </p>
 
-            <div class="flex flex-row items-center">
-                <Toggle
-                    size="sm"
-                    class="hover:text-upvote data-[state=on]:text-upvote"
-                >
-                    <ArrowUp />
-                </Toggle>
-                <Toggle
-                    size="sm"
-                    class="hover:text-downvote data-[state=on]:text-downvote"
-                >
-                    <ArrowDown />
-                </Toggle>
-            </div>
-
             <!-- Display Day Uploaded -->
-            <p class="h-4 w-full text-xl text-right mb-2">
+            <p class="mb-2 h-4 w-full text-right text-xl">
                 {getMonthAndDate(commentData.comment.createdOn)}
             </p>
 
             <!-- Report Stuff -->
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild let:builder>
-                    <Button builders={[builder]} variant="ghost" size="icon" class = "mr-2 ml-2">
+                    <Button builders={[builder]} variant="ghost" size="icon" class="ml-2 mr-2">
                         <EllipsisVertical />
                     </Button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content class="mr-2">
-                    <DropdownMenu.Item class="text-red-600" on:click={() => (reportDialogOpen = true)}>
+                    <DropdownMenu.Item
+                        class="text-red-600"
+                        on:click={() => (reportDialogOpen = true)}
+                    >
                         <Flag fill="currentColor" class="mr-2 h-4 w-4" />
                         <span>Report</span>
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
-
         </div>
 
         <!-- Display Comment itself -->
-        <p class = "px-6 justify-start text-xl mb-4">{commentData.comment.content}</p>
+        <p class="mb-4 justify-start px-6 text-xl">{commentData.comment.content}</p>
 
-        <!-- Toggle Replies Button -->
-        {#if commentData.children && commentData.children.length > 0}
-            <button class="toggle-btn ml-4 mb-2" on:click={toggleReplies}>
-                {viewingReplies ? 'Hide Replies' : 'Show Replies'}
-            </button>
-        {/if}
-        
+        <div class="mb-2 mr-4 flex flex-row items-center justify-end">
+            <!-- Toggle Replies Button -->
+            {#if commentData.children && commentData.children.length > 0}
+                <button class="mr-2" on:click={toggleReplies}>
+                    {viewingReplies ? 'Hide Replies' : 'Show Replies'}
+                </button>
+            {/if}
+
+            <Toggle
+                size="sm"
+                class="hover:text-upvote data-[state=on]:text-upvote"
+                pressed={userVote === 'UP'}
+                on:click={() => vote('UP')}
+            >
+                <ArrowUp />
+            </Toggle>
+            <span class="w-8 text-center">
+                <Score side="top" {upvotes} {downvotes} />
+            </span>
+            <Toggle
+                size="sm"
+                class="hover:text-downvote data-[state=on]:text-downvote"
+                pressed={userVote === 'DOWN'}
+                on:click={() => vote('DOWN')}
+            >
+                <ArrowDown />
+            </Toggle>
+        </div>
+
         <!-- Display replies to current comment -->
         {#if viewingReplies}
             {#each commentData.children as reply}
                 <svelte:self commentData={reply} />
             {/each}
         {/if}
-            
+
         <!-- Load More Button -->
         {#if commentData.children && commentData.children.length >= PAGE_SIZE * pageCount}
-            <div class="px-6 flex justify-end mb-4">
-                <Button class="w-fit mb-2" variant="secondary" on:click={async() => loadMoreReplies(commentData.comment.id, pageCount)}>
+            <div class="mb-4 flex justify-end px-6">
+                <Button
+                    class="mb-2 w-fit"
+                    variant="secondary"
+                    on:click={async () => loadMoreReplies(commentData.comment.id)}
+                >
                     Load More
                 </Button>
             </div>
         {/if}
-
-
-
     </Card.Root>
 </div>

@@ -1,22 +1,15 @@
-import { getDb } from "$lib/server";
-import { loadMoreRepliesToComment } from "$lib/server/services/content";
-import { json, type RequestHandler } from "@sveltejs/kit";
+import { getDb } from '$lib/server';
+import { loadMoreRepliesToComment } from '$lib/server/services/content';
+import { json, type RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ params: { commentId }, request, locals, url}) => {
-    
+export const GET: RequestHandler = async ({ params: { commentId }, url }) => {
     const db = await getDb();
-    
-    const page = Number(url.searchParams.get("offset"));
+
+    const page = Number(url.searchParams.get('offset'));
 
     const replies = await loadMoreRepliesToComment(db, commentId!, page);
 
-    console.log(commentId);
-    console.log(page);
-
-    // for (const reply of replies){
-        // console.log(reply.children);
-    // }
+    console.log('Page ' + page + ' ID: ' + commentId);
 
     return json(replies);
-
 };

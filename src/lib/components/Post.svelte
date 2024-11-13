@@ -220,7 +220,6 @@
             </DropdownMenu.Content>
         </DropdownMenu.Root>
 
-        
         <div class="flex flex-col items-center">
             <Toggle
                 size="sm"

@@ -46,5 +46,3 @@ export interface CommentData {
     comment: Comment;
     children: CommentData[];
 }
-
-
