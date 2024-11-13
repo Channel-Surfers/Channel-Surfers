@@ -174,13 +174,13 @@ describe.concurrent('content suite', () => {
     );
 
     testWithDb(
-        'get posts { type: home, sort: date, filter: all, reverseSort: true }',
+        'get posts { type: home, sort: date, filter: all, sortDirection: asc }',
         async ({ expect, db }, { post1, post2 }) => {
             const [p1, p2, ...rest] = await getPosts(db, 0, {
                 type: 'home',
                 sort: 'date',
                 filter: 'all',
-                reverseSort: true,
+                sortDirection: 'asc',
             });
 
             expect(rest).toHaveLength(0);
@@ -279,7 +279,7 @@ describe.concurrent('content suite', () => {
                 type: 'user',
                 sort: 'date',
                 filter: 'subscribed',
-                reverseSort: true,
+                sortDirection: 'asc',
                 after,
                 username: users[0].username,
             });
@@ -319,7 +319,7 @@ describe.concurrent('content suite', () => {
                 type: 'user',
                 sort: 'date',
                 filter: 'all',
-                reverseSort: true,
+                sortDirection: 'asc',
                 username: u.username,
                 requesterId: requester.id,
             });

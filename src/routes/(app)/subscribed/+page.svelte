@@ -8,19 +8,20 @@
     const filters: ScrollFilters = {
         sort: 'date',
         sortDirection: 'dsc',
-        filter: 'all',
+        filter: 'subscribed',
         after: new Date(),
     };
 
     const getPosts = async (page: number) => {
         const search = new URLSearchParams({
             page: `${page}`,
+            type: 'home',
             after: filters.after!.toISOString(),
             sort: filters.sort as string,
             filter: filters.filter as string,
             sortDirection: filters.sortDirection as string,
         });
-        const res = await fetch(`/api/u/${data.username}/posts?${search}`);
+        const res = await fetch(`/api/posts?${search}`);
 
         if (res.status !== 200) {
             throw new Error(await res.text());
@@ -31,7 +32,7 @@
 </script>
 
 <svelte:head>
-    <title>u/{data.username} | Channel Surfers</title>
+    <title>Subscribed | Channel Surfers</title>
 </svelte:head>
 
 <InfiniteScroll

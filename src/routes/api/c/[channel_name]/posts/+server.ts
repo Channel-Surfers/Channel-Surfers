@@ -17,7 +17,8 @@ export const GET: RequestHandler = async (event) => {
     const sort = event.url.searchParams.get('sort') || 'votes';
     if (!is(['votes', 'date'], sort)) return error(400, 'sort must be either `vote` or `date`');
 
-    const reverseSort = (event.url.searchParams.get('reverseSort') || 'false') === 'true';
+    const sortDirection = event.url.searchParams.get('sortDirection') || 'asc';
+    if (!is(['asc', 'dsc'], sortDirection)) return error(400, `sort must be either 'asc' or 'dsc'`);
 
     const channel = await getPublicChannelByName(db, event.params.channel_name);
     if (channel === null) return error(404);
@@ -26,7 +27,7 @@ export const GET: RequestHandler = async (event) => {
         requesterId: event.locals.user?.id,
         type: 'channel',
         channelId: channel.id,
-        reverseSort,
+        sortDirection,
         sort,
         filter,
     });
