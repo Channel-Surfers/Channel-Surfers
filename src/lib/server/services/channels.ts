@@ -1,6 +1,6 @@
 import type { DB } from '..';
 import { ResourceNotFoundError } from './utils/errors';
-import { eq, and, like, isNull, or, ilike } from 'drizzle-orm';
+import { eq, and, like, isNull, or, ilike, count } from 'drizzle-orm';
 import type { uuid } from '$lib/types';
 
 import { subscriptionTable } from '../db/subscriptions.sql';
@@ -89,17 +89,34 @@ export type ChannelInfo = Awaited<ReturnType<typeof getChannelInfo>>;
  * @param db PostgreSQL db
  * @param userId identifies a particular user
  */
-export const getChannelsByOwner = async (db: DB, userId: string): Promise<Channel[]> => {
-    return await db.select().from(channelTable).where(eq(channelTable.createdBy, userId));
+export const getChannelsByOwner = async (
+    db: DB,
+    userId: string
+): Promise<(Channel & { private: boolean })[]> => {
+    const channels = await db
+        .select()
+        .from(channelTable)
+        .leftJoin(publicChannelTable, eq(publicChannelTable.channelId, channelTable.id))
+        .where(eq(channelTable.createdBy, userId))
+        .orderBy(channelTable.name);
+
+    return channels.map((c) => ({ ...c.channel, private: !c.public_channel }));
 };
 
 export const canViewChannel = async (db: DB, userId: uuid, channelId: uuid): Promise<boolean> => {
-    const [ret] = await db
+    const [publicChannel] = await db
         .select()
         .from(publicChannelTable)
         .where(eq(publicChannelTable.channelId, channelId));
 
-    if (ret) return true;
+    if (publicChannel) return true;
+
+    const [channel] = await db
+        .select()
+        .from(channelTable)
+        .where(and(eq(channelTable.id, channelId), eq(channelTable.createdBy, userId)));
+
+    if (channel) return true;
 
     const [userPerm] = await db
         .select()
@@ -111,18 +128,25 @@ export const canViewChannel = async (db: DB, userId: uuid, channelId: uuid): Pro
 };
 
 export const createChannel = async (db: DB, channelData: NewChannel): Promise<Channel> => {
+    const existingChannel = await getPrivateChannel(db, channelData.createdBy, channelData.name);
+
+    if (existingChannel)
+        throw new Error(
+            `User ${channelData.createdBy} already has channel named '${channelData.name}'`
+        );
+
     const [channel] = await db.insert(channelTable).values(channelData).returning();
 
     return channel;
 };
 
-export const publishChannel = async (db: DB, channel: Channel): Promise<PublicChannel> => {
+export const publishChannel = async (
+    db: DB,
+    { name, id: channelId }: { name: string; id: uuid }
+): Promise<PublicChannel> => {
     const [publicChannel] = await db
         .insert(publicChannelTable)
-        .values({
-            name: channel.name,
-            channelId: channel.id,
-        })
+        .values({ name, channelId })
         .returning();
 
     return publicChannel;
@@ -138,6 +162,19 @@ export const getPublicChannelByName = async (db: DB, name: string): Promise<Chan
     return ret.channel;
 };
 export type PublicChannelByName = Awaited<ReturnType<typeof getPublicChannelByName>>;
+
+export const getPrivateChannel = async (
+    db: DB,
+    userId: uuid,
+    channelName: string
+): Promise<Channel | null> => {
+    const [existingChannel] = await db
+        .select()
+        .from(channelTable)
+        .where(and(eq(channelTable.createdBy, userId), eq(channelTable.name, channelName)))
+        .limit(1);
+    return existingChannel || null;
+};
 
 export const searchChannelsByName = async (
     db: DB,
@@ -202,3 +239,20 @@ export const searchChannelsByName = async (
 };
 export type ChannelSearchResults = Awaited<ReturnType<typeof searchChannelsByName>>;
 export type MiniChannel = ChannelSearchResults[number];
+
+export const canDeletePostInChannel = async (db: DB, userId: uuid, channelId: uuid) => {
+    const [{ c }] = await db
+        .select({
+            c: count(roleTable.id),
+        })
+        .from(roleTable)
+        .innerJoin(userRoleTable, eq(roleTable.id, userRoleTable.roleId))
+        .where(
+            and(
+                eq(userRoleTable.userId, userId),
+                eq(roleTable.channelId, channelId),
+                roleTable.canDeletePosts
+            )
+        );
+    return c > 0;
+};

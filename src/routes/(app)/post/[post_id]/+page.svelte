@@ -7,18 +7,19 @@
     import * as Card from '$lib/shadcn/components/ui/card';
     import { Toggle } from '$lib/shadcn/components/ui/toggle';
 
-    import Markdown from 'svelte-exmarkdown';
-
     import ArrowUp from 'lucide-svelte/icons/arrow-up';
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import UserChannel from '$lib/components/UserChannel.svelte';
     import { ScrollArea } from '$lib/shadcn/components/ui/scroll-area';
     import { toast } from 'svelte-sonner';
-    import { EllipsisVertical, Flag } from 'lucide-svelte';
+    import { EllipsisVertical, Flag, Pencil, Trash2 } from 'lucide-svelte';
     import { Button } from '$lib/shadcn/components/ui/button';
     import * as DropdownMenu from '$lib/shadcn/components/ui/dropdown-menu';
-    import { gfmPlugin } from 'svelte-exmarkdown/gfm';
+    import * as Dialog from '$lib/shadcn/components/ui/dialog';
     import Elapsed from '$lib/components/Elapsed.svelte';
+    import Confirm from '$lib/components/Confirm.svelte';
+    import { goto } from '$app/navigation';
+    import Markdown from '$lib/components/Markdown.svelte';
 
     export let data;
 
@@ -59,12 +60,29 @@
         }
     };
 
-    const mdPlugins = [gfmPlugin()];
+    let confirmDelete: () => Promise<boolean>;
+    const del = async () => {
+        if (!(await confirmDelete())) return;
+        const res = await fetch(`/api/post/${data.post.id}`, {
+            method: 'DELETE',
+        });
+
+        if (res.ok) {
+            goto('/');
+        } else {
+            toast.error('Unexpected error while deleting post.');
+        }
+    };
 </script>
 
 <svelte:head>
     <title>{data.post.title.substring(0, 20)} | Channel Surfers</title>
 </svelte:head>
+
+<Confirm bind:confirm={confirmDelete}>
+    <Dialog.Title>Are you sure you want to delete this post?</Dialog.Title>
+    <Dialog.Description>This action cannot be undone</Dialog.Description>
+</Confirm>
 
 <ScrollArea class="flex h-full w-full flex-col px-4">
     <Card.Root class="mx-auto my-4 px-2 pt-2">
@@ -78,6 +96,18 @@
                         </Button>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
+                        {#if data.signedIn?.id === data.post.createdBy}
+                            <DropdownMenu.Item href="/post/{data.post.id}/edit">
+                                <Pencil class="mr-2 h-4 w-4" />
+                                <span>Edit</span>
+                            </DropdownMenu.Item>
+                        {/if}
+                        {#if data.canDelete}
+                            <DropdownMenu.Item class="text-red-600" on:click={del}>
+                                <Trash2 class="mr-2 h-4 w-4" />
+                                <span>Delete</span>
+                            </DropdownMenu.Item>
+                        {/if}
                         <DropdownMenu.Item class="text-red-600">
                             <Flag fill="currentColor" class="mr-2 h-4 w-4" />
                             <span>Report</span>
@@ -147,7 +177,7 @@
             <!-- Description -->
             {#if data.post.description}
                 <p class="markdown">
-                    <Markdown md={data.post.description} plugins={mdPlugins} />
+                    <Markdown md={data.post.description} />
                 </p>
             {/if}
         </Card.Content>
@@ -166,15 +196,3 @@
         </Card.Content>
     </Card.Root>
 </ScrollArea>
-
-<style>
-    .markdown :global(h1) {
-        font-size: 1.2em;
-        font-weight: bold;
-    }
-
-    .markdown :global(a) {
-        color: blue;
-        text-decoration: underline;
-    }
-</style>

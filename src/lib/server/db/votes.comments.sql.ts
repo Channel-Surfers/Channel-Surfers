@@ -9,7 +9,7 @@ import { voteEnum } from './types.sql';
 export const commentVoteTable = pgTable(
     'comment_vote',
     {
-        commentId: uuid('comment_id').references(() => commentTable.id),
+        commentId: uuid('comment_id').references(() => commentTable.id, { onDelete: 'cascade' }),
         userId: uuid('user_id').references(() => userTable.id),
         vote: voteEnum('vote'),
     },

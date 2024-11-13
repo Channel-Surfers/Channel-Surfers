@@ -1,5 +1,6 @@
 <script lang="ts">
     import InfiniteScroll from '$lib/components/InfiniteScroll.svelte';
+    import { page } from '$app/stores';
 
     export let data;
 
@@ -27,4 +28,8 @@
     };
 </script>
 
-<InfiniteScroll init_buffer={data.posts} get_posts={getPosts} signed_in={!!data.user} />
+<svelte:head>
+    <title>c/{$page.params.channelName} | Channel Surfers</title>
+</svelte:head>
+
+<InfiniteScroll initBuffer={data.posts} {getPosts} signedIn={data.user} />

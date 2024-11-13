@@ -5,37 +5,70 @@
     import * as Card from '$lib/shadcn/components/ui/card';
     import ScrollArea from '$lib/shadcn/components/ui/scroll-area/scroll-area.svelte';
     import Separator from '$lib/shadcn/components/ui/separator/separator.svelte';
+    import { toast } from 'svelte-sonner';
 
     export let channel: ChannelInfo;
+    export let signedIn: boolean;
     export let isPrivate: boolean = false;
     export let isSubscribed: boolean = false;
 
     let expandGuidelines = false;
+
+    let subLoading = false;
+    const toggleSub = async () => {
+        if (!channel || subLoading) return;
+        const newSubState = (isSubscribed = !isSubscribed);
+
+        try {
+            const res = await fetch(`/api/c/${channel.id}/subscribe`, {
+                method: newSubState ? 'POST' : 'DELETE',
+            });
+
+            if (!res.ok) {
+                throw new Error(`Failed to unfollow user: ${await res.text()}`);
+            }
+        } catch (e) {
+            console.error(e);
+            toast.error(
+                `Failed to ${newSubState ? 'subscribe to' : 'unsubscribe from'} ${channel.name}`
+            );
+            isSubscribed = !isSubscribed; // reset isSubscribed
+        }
+        subLoading = false;
+    };
 </script>
 
 <Card.Root>
     <Card.Header>
         <div class="flex flex-row items-center justify-between">
-            <div class="flex flex-row items-center space-x-4">
-                <Avatar.Root class="h-12 w-12">
-                    <!--<Avatar.Image src={ channel.avatar || ''} alt={user.username} />-->
-                    <Avatar.Fallback class="font-bold"
-                        >{channel.name[0]?.toUpperCase() || '?'}</Avatar.Fallback
-                    >
-                </Avatar.Root>
-                <h1 class="text-xl font-bold">{isPrivate ? 'c/private/' : 'c/'}{channel.name}</h1>
-            </div>
-            {#if isPrivate}
-                <Button>Leave</Button>
-            {:else if isSubscribed}
-                <Button type="submit" variant="destructive">Unsubscribe</Button>
-            {:else}
-                <Button type="submit">Subscribe</Button>
-            {/if}
+            <Avatar.Root class="h-12 w-12">
+                <Avatar.Image src={channel.icon || ''} alt={channel.name} />
+                <Avatar.Fallback class="font-bold">
+                    {channel.name[0]?.toUpperCase() || '?'}
+                </Avatar.Fallback>
+            </Avatar.Root>
+            <h1 class="text-xl font-bold">c/{channel.name}</h1>
         </div>
     </Card.Header>
     <Card.Content>
         <p>{channel.description}</p>
+        {#if isPrivate}
+            <Button class="mt-2 w-full" disabled={!signedIn}>Leave</Button>
+        {:else if isSubscribed}
+            <Button
+                type="submit"
+                variant="destructive"
+                class="mt-2 w-full"
+                disabled={!signedIn}
+                on:click={toggleSub}
+            >
+                Unsubscribe
+            </Button>
+        {:else}
+            <Button type="submit" class="mt-2 w-full" disabled={!signedIn} on:click={toggleSub}>
+                Subscribe
+            </Button>
+        {/if}
     </Card.Content>
     {#if channel.guidelines}
         <Card.Footer>
