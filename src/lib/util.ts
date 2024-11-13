@@ -55,5 +55,3 @@ export const debounce = <T extends (...args: unknown[]) => void>(callback: T, wa
         timeout = setTimeout(() => callback(...args), wait);
     };
 };
-
-
