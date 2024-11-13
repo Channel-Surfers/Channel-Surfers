@@ -69,6 +69,7 @@
         "mode-watcher": "^0.4.1",
         "postgres": "^3.4.4",
         "svelte-exmarkdown": "^3.0.5",
+        "svelte-headless-table": "^0.18.3",
         "svelte-sonner": "^0.3.28",
         "tailwind-merge": "^2.5.2",
         "tailwind-variants": "^0.2.1",
