@@ -1,5 +1,9 @@
 # Channel Surfers
 
+> [!WARNING]
+> This project was developed for a short-term purpose and is no longer
+> maintained.
+
 ## Developing
 
 To develop this application, you must have [NodeJS](https://nodejs.org) (20 or higher) and [npm](https://www.npmjs.com/) installed.
