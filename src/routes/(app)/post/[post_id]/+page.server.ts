@@ -1,5 +1,5 @@
 import { getDb } from '$lib/server';
-import { getPost, getUserPostVote } from '$lib/server/services/content';
+import { getPost, getUserPostVote, getCommentTree } from '$lib/server/services/content';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { canDeletePostInChannel, canViewChannel } from '$lib/server/services/channels';
@@ -24,6 +24,8 @@ export const load: PageServerLoad = async (event) => {
         ? await getUserPostVote(db, event.locals.user.id, postId)
         : null;
 
+    const commentTreeForThisPost = await getCommentTree(db, postId);
+
     let canDelete = false;
     if (event.locals.user) {
         canDelete =
@@ -35,6 +37,7 @@ export const load: PageServerLoad = async (event) => {
         userVote,
         canDelete,
         signedIn: event.locals.user,
+        commentTreeForThisPost,
         ...data,
     };
 };

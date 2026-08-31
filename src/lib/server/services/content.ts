@@ -33,6 +33,8 @@ import {
 } from '../db/reports.channels.posts.sql';
 import { postReportTable, type NewPostReport, type PostReport } from '../db/reports.posts.sql';
 import type { IBunnyClient } from '../bunny';
+import { userReportTable, type UserReport } from '../db/reports.users.sql';
+import { commentVoteTable } from '../db/votes.comments.sql';
 
 export const getPost = async (db: DB, postId: uuid) => {
     const [a] = await db
@@ -59,6 +61,21 @@ export const getPost = async (db: DB, postId: uuid) => {
         tags,
         privateChannel: false,
     };
+};
+
+export async function getUserVote(db: DB, commentId: uuid, userId: uuid) {
+    const result = await db
+        .select({ vote: commentVoteTable.vote })
+        .from(commentVoteTable)
+        .where(and(eq(commentVoteTable.commentId, commentId), eq(commentVoteTable.userId, userId)));
+
+    return result.length ? result[0].vote : null;
+}
+
+export const getComment = async (db: DB, commentId: uuid) => {
+    const comment = await db.select().from(commentTable).where(eq(commentTable.id, commentId));
+
+    return comment[0] || null;
 };
 
 export const getUserPostVote = async (
@@ -305,16 +322,39 @@ export const getCommentTree = async (db: DB, postId: string): Promise<CommentDat
         .orderBy(commentTable.createdOn)
         .limit(Math.floor(PAGE_SIZE / 2));
 
-    const commentTree = firstLevelComments.map((c) => ({
-        user: c.user,
-        comment: c.comment,
+    const commentTree = firstLevelComments.map((a) => ({
+        user: a.user,
+        comment: a.comment,
         children: secondLevelComments
-            .filter((b) => b.comment.replyTo === c.comment.id)
+            .filter((b) => b.comment.replyTo === a.comment.id)
             .map((b) => ({
                 user: b.user,
                 comment: b.comment,
                 children: [],
             })),
+    }));
+
+    return commentTree;
+};
+
+export const loadMoreRepliesToComment = async (
+    db: DB,
+    commentId: string,
+    page: number
+): Promise<CommentData[]> => {
+    const replies = await db
+        .select()
+        .from(commentTable)
+        .where(eq(commentTable.replyTo, commentId))
+        .innerJoin(userTable, eq(userTable.id, commentTable.creatorId))
+        .orderBy(commentTable.createdOn)
+        .limit(PAGE_SIZE)
+        .offset(PAGE_SIZE * page);
+
+    const commentTree = replies.map((commentDataElement) => ({
+        user: commentDataElement.user,
+        comment: commentDataElement.comment,
+        children: [],
     }));
 
     return commentTree;
@@ -338,6 +378,12 @@ export const createPostReport = async (
     return ret;
 };
 
+export const createUserReport = async (db: DB, newUserReport: UserReport): Promise<UserReport> => {
+    const [ret] = await db.insert(userReportTable).values(newUserReport).returning();
+
+    return ret;
+};
+
 export const deletePostVote = async (db: DB, postId: uuid, userId: uuid) => {
     const [ret] = await db
         .delete(postVoteTable)
@@ -356,6 +402,33 @@ export const addPostVote = async (db: DB, postId: uuid, userId: uuid, vote: 'UP'
             set: { vote },
         })
         .returning();
+    return ret;
+};
+
+export const deleteCommentVote = async (db: DB, commentId: uuid, userId: uuid) => {
+    const [ret] = await db
+        .delete(commentVoteTable)
+        .where(and(eq(commentVoteTable.commentId, commentId), eq(commentVoteTable.userId, userId)))
+        .returning();
+
+    return ret;
+};
+
+export const addCommentVote = async (
+    db: DB,
+    commentId: uuid,
+    userId: uuid,
+    vote: 'UP' | 'DOWN'
+) => {
+    const [ret] = await db
+        .insert(commentVoteTable)
+        .values({ commentId, userId, vote })
+        .onConflictDoUpdate({
+            target: [commentVoteTable.commentId, commentVoteTable.userId],
+            set: { vote },
+        })
+        .returning();
+
     return ret;
 };
 

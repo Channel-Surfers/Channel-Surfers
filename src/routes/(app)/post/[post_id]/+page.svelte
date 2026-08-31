@@ -1,5 +1,6 @@
 <script lang="ts">
     import Player from '$lib/components/Player.svelte';
+    import ViewComment from '$lib/components/ViewComment.svelte';
     import Score from '$lib/components/Score.svelte';
     import { AspectRatio } from '$lib/shadcn/components/ui/aspect-ratio';
     import { Badge } from '$lib/shadcn/components/ui/badge';
@@ -10,7 +11,6 @@
     import ArrowDown from 'lucide-svelte/icons/arrow-down';
     import UserChannel from '$lib/components/UserChannel.svelte';
     import { ScrollArea } from '$lib/shadcn/components/ui/scroll-area';
-    import { Skeleton } from '$lib/shadcn/components/ui/skeleton';
     import { toast } from 'svelte-sonner';
     import { EllipsisVertical, Flag, Pencil, Trash2 } from 'lucide-svelte';
     import { Button } from '$lib/shadcn/components/ui/button';
@@ -183,12 +183,16 @@
         </Card.Content>
     </Card.Root>
 
+    <!-- NOW TO DISPLAY THE COMMENTS -->
     <Card.Root class="mx-auto my-4 p-2">
         <Card.Header class="px-6">
             <Card.Title>Comments</Card.Title>
         </Card.Header>
+
         <Card.Content>
-            <Skeleton class="mt-2 h-5 w-2/3" />
+            {#each data.commentTreeForThisPost as commentData}
+                <ViewComment {commentData} />
+            {/each}
         </Card.Content>
     </Card.Root>
 </ScrollArea>
